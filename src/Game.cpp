@@ -80,11 +80,6 @@ Game::Game(std::string title, int width, int height) {
 
 	// Modo relativo do mouse. Posição do mouse é fornecido apesar do que dizem em sites.
 	SDL_SetRelativeMouseMode(SDL_TRUE);
-
-	// Muda o cursor, mas em modo relativo não mostra memso assim.
-	SDL_Cursor* cursor;
-	cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
-	SDL_SetCursor(cursor);
 }
 
 Game::~Game() {
@@ -179,7 +174,6 @@ void Game::Run() {
 		stateStack.top()->Update(dt);
 		stateStack.top()->Render();
 		SDL_RenderPresent(renderer);
-		//SDL_Delay(33);
 	}
 
 	// Limpando os recursos.
@@ -199,4 +193,10 @@ void Game::CalculateDeltaTime() {
 
 float Game::GetDeltaTime() {
 	return dt;
+}
+
+Vec2 Game::GetWindowSize() {
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+	return {(float)w, (float)h};
 }

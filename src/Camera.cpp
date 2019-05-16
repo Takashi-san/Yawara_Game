@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "InputManager.h"
+#include "Game.h"
 
 GameObject* Camera::focus;
 Vec2 Camera::pos;
@@ -15,9 +16,8 @@ void Camera::Unfollow() {
 
 void Camera::Update(float dt) {
 	if (focus != nullptr) {
-		// Se mudar o tamanho da tela tem que mudar aqui!!!
-		pos.x = focus->box.Center().x - 1024/2;
-		pos.y = focus->box.Center().y - 600/2;
+		pos.x = focus->box.Center().x - Game::GetInstance().GetWindowSize().x/2;
+		pos.y = focus->box.Center().y - Game::GetInstance().GetWindowSize().y/2;
 	} else {
 		InputManager& input = InputManager::GetInstance();
 

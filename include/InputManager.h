@@ -37,6 +37,7 @@
 		int updateCounter;
 		int mouseX;
 		int mouseY;
+		float mouseS;
 
 		InputManager();
 		~InputManager();
@@ -54,6 +55,7 @@
 
 		int GetMouseX();
 		int GetMouseY();
+		void SetMouseS(float);
 
 		bool QuitRequested();
 

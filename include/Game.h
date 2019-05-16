@@ -4,6 +4,7 @@
 #define INCLUDE_SDL_TTF
 #include "SDL_include.h"
 #include "State.h"
+#include "Vec2.h"
 
 #include <string>
 #include <iostream>
@@ -40,6 +41,7 @@
 		void Run();
 		
 		float GetDeltaTime();
+		Vec2 GetWindowSize();
 	};
 	
 #endif
