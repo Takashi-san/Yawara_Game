@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <stdbool.h>
+#include <memory>
 
 #ifndef CAMERA
 	#define CAMERA
@@ -12,13 +13,15 @@
 
 	class Camera {
 	private:
-		static GameObject* focus;
+		static std::weak_ptr<GameObject> focus1, focus2;
 
 	public:
 		static Vec2 pos;
 		static Vec2 speed;
+		static float ratio;
 
-		static void Follow(GameObject*);
+		static void Follow(std::weak_ptr<GameObject>);
+		static void Follow(std::weak_ptr<GameObject>, std::weak_ptr<GameObject>);
 		static void Unfollow();
 		static void Update(float);
 	};

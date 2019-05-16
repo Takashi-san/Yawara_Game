@@ -94,7 +94,6 @@ StageState::StageState() {
 	ptr->box.x = 704;
 	ptr->box.y = 640;
 	ptr->AddComponent(penb);
-	Camera::Follow(ptr.get());
 
 	// Cursor
 	GameObject *gocur = new GameObject();
@@ -105,6 +104,9 @@ StageState::StageState() {
 	spcur->SetScale(0.1, 0.1);
 	ptr->AddComponent(cur);
 	ptr->AddComponent(spcur);
+
+	Camera::Follow(GetObjectPtr(gopen), weak_ptr);
+	Camera::ratio = 0.37;
 
 	// BGM
 	bgMusic.Open("assets/audio/stageState.ogg");
