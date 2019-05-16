@@ -1,4 +1,6 @@
 #include "InputManager.h"
+#include "Game.h"
+#include "Vec2.h"
 
 InputManager& InputManager::GetInstance(){
 	static InputManager instance;
@@ -14,8 +16,9 @@ InputManager::InputManager() {
 	quitRequested = false;
 	updateCounter = 0;
 
-	mouseX = 0;
-	mouseY = 0;
+	mouseX = Game::GetInstance().GetWindowSize().x/2;
+	mouseY = Game::GetInstance().GetWindowSize().y/2;
+	mouseS = 1;
 }
 
 InputManager::~InputManager() {
@@ -25,9 +28,6 @@ InputManager::~InputManager() {
 
 void InputManager::Update() {
 	SDL_Event event;
-
-	// Obtem coordenadas do mouse.
-	SDL_GetMouseState(&mouseX, &mouseY);
 
 	// Reseta quitRequested.
 	quitRequested = false;
@@ -67,7 +67,31 @@ void InputManager::Update() {
 				keyState[event.key.keysym.sym] = false;
 				keyUpdate[event.key.keysym.sym] = updateCounter;
 			}
+
+			// Obtem coordenadas do mouse. Possibilidade de controlar sensitividade do mouse.
+			if((event.type == SDL_MOUSEMOTION) && SDL_GetRelativeMouseMode()) {
+				mouseX += (int)(mouseS * event.motion.xrel);
+				mouseY += (int)(mouseS * event.motion.yrel);
+
+				// Limita o mouse na janela.
+				Vec2 window = Game::GetInstance().GetWindowSize();
+				if (mouseX < 0) {
+					mouseX = 0;
+				} else if (mouseX > window.x) {
+					mouseX = window.x;
+				}
+				if (mouseY < 0) {
+					mouseY = 0;
+				} else if (mouseY > window.y) {
+					mouseY = window.y;
+				}
+			}
 		}
+	}
+
+	// Obtem coordenadas do mouse. EASY AND RAW. Caso relative mode dê erro.
+	if (!SDL_GetRelativeMouseMode()) {
+		SDL_GetMouseState(&mouseX, &mouseY);
 	}
 }
 
@@ -101,6 +125,10 @@ int InputManager::GetMouseX() {
 
 int InputManager::GetMouseY() {
 	return mouseY;
+}
+
+void InputManager::SetMouseS(float mouseS) {
+	this->mouseS = mouseS;
 }
 
 bool InputManager::QuitRequested() {

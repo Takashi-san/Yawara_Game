@@ -71,12 +71,15 @@ Game::Game(std::string title, int width, int height) {
 	}
 
 	// Iniciar renderizador.
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (renderer == nullptr){
 		// falhou na inicializacao.
 		std::cout << "Erro inicialização SDL_CreateRenderer: " << SDL_GetError() << "\n";
 		exit(EXIT_FAILURE);
 	}
+
+	// Modo relativo do mouse. Posição do mouse é fornecido apesar do que dizem em sites.
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 Game::~Game() {
@@ -171,7 +174,6 @@ void Game::Run() {
 		stateStack.top()->Update(dt);
 		stateStack.top()->Render();
 		SDL_RenderPresent(renderer);
-		SDL_Delay(33);
 	}
 
 	// Limpando os recursos.
@@ -191,4 +193,10 @@ void Game::CalculateDeltaTime() {
 
 float Game::GetDeltaTime() {
 	return dt;
+}
+
+Vec2 Game::GetWindowSize() {
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+	return {(float)w, (float)h};
 }
