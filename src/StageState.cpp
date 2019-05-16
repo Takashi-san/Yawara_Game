@@ -42,6 +42,7 @@ StageState::StageState() {
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp);
 
+	/*
 	// Alien
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
@@ -74,6 +75,7 @@ StageState::StageState() {
 	ptr->box.x = 700 - goali4->box.w/2;
 	ptr->box.y = 150 - goali4->box.h/2;
 	ptr->AddComponent(alien4);
+	*/
 
 	GameObject *goali5 = new GameObject();
 	weak_ptr = AddObject(goali5);
@@ -150,6 +152,16 @@ void StageState::Update(float dt) {
 	}
 
 	Camera::Update(dt);
+
+	// Componentes dependentes de Camera.
+	// update dos CameraFollower.
+	for (unsigned int i = 0; i < objectArray.size(); i++) {
+		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("CameraFollower"));
+		if (coli != nullptr) {
+			coli->Update(dt);
+			break;
+		}
+	}
 }
 
 void StageState::Render() {
