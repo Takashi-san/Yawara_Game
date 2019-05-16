@@ -15,6 +15,7 @@
 #include "Data.h"
 #include "EndState.h"
 #include "Game.h"
+#include "Cursor.h"
 
 StageState::StageState() {
 	std::weak_ptr<GameObject> weak_ptr;
@@ -95,6 +96,16 @@ StageState::StageState() {
 	ptr->AddComponent(penb);
 	Camera::Follow(ptr.get());
 
+	// Cursor
+	GameObject *gocur = new GameObject();
+	weak_ptr = AddObject(gocur);
+	ptr = weak_ptr.lock();
+	Cursor *cur = new Cursor(*ptr);
+	Sprite *spcur = new Sprite(*ptr, "assets/img/penguinface.png");
+	spcur->SetScale(0.1, 0.1);
+	ptr->AddComponent(cur);
+	ptr->AddComponent(spcur);
+
 	// BGM
 	bgMusic.Open("assets/audio/stageState.ogg");
 	bgMusic.Play(-1);
@@ -157,6 +168,15 @@ void StageState::Update(float dt) {
 	// update dos CameraFollower.
 	for (unsigned int i = 0; i < objectArray.size(); i++) {
 		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("CameraFollower"));
+		if (coli != nullptr) {
+			coli->Update(dt);
+			break;
+		}
+	}
+
+	// update dos Cursor.
+	for (unsigned int i = 0; i < objectArray.size(); i++) {
+		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("Cursor"));
 		if (coli != nullptr) {
 			coli->Update(dt);
 			break;

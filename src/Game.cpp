@@ -77,6 +77,14 @@ Game::Game(std::string title, int width, int height) {
 		std::cout << "Erro inicialização SDL_CreateRenderer: " << SDL_GetError() << "\n";
 		exit(EXIT_FAILURE);
 	}
+
+	// Modo relativo do mouse. Posição do mouse é fornecido apesar do que dizem em sites.
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
+	// Muda o cursor, mas em modo relativo não mostra memso assim.
+	SDL_Cursor* cursor;
+	cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
+	SDL_SetCursor(cursor);
 }
 
 Game::~Game() {
