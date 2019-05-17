@@ -24,7 +24,7 @@ DFLAGS = -ggdb -O0 -DDEBUG
 RFLAGS = -O3 -mtune=native
 
 INC_PATH = $(sort $(dir $(wildcard include/*/)))
-SRC_PATH = src
+SRC_PATH = $(sort $(dir $(wildcard src/*/)))
 BIN_PATH = build/bin
 DEP_PATH = build/dep
 
@@ -88,11 +88,11 @@ $(EXEC):	$(OBJ_FILES)
 
 #Gera os arquivos objetos
 $(BIN_PATH)/%.o:	$(DEP_PATH)/%.d	|	folders
-	$(COMPILER) $(INC_PATHS) $(addprefix $(SRC_PATH)/,$(notdir $(<:.d=.cpp))) -c $(FLAGS) -o $@
+	$(COMPILER) $(INC_PATHS) $(subst //,/,$(filter %$(notdir $(<:.d=.cpp)), $(CPP_FILES))) -c $(FLAGS) -o $@
 
 #Gera os arquivos de dependência
 $(DEP_PATH)/%.d: $(SRC_PATH)/%.cpp | folders
-	$(COMPILER) $(INC_PATHS) $< $(DEP_FLAGS) $(FLAGS)
+	$(COMPILER) $(INC_PATHS) $(subst //,/,$(filter %$(notdir $(@:.d=.cpp)), $(CPP_FILES))) $(DEP_FLAGS) $(FLAGS)
 
 clean:
 		-$(RMDIR) $(DEP_PATH)
