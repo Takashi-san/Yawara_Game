@@ -23,14 +23,16 @@ DFLAGS = -ggdb -O0 -DDEBUG
 #Diretivas extras para release
 RFLAGS = -O3 -mtune=native
 
-INC_PATH = $(sort $(dir $(wildcard include/*/)))
-SRC_PATH = $(sort $(dir $(wildcard src/*/)))
+INC_PATH = $(sort $(dir $(wildcard include/*/*/)))
+INC_PATH += include/
+SRC_PATH = $(sort $(dir $(wildcard src/*/*/)))
+SRC_PATH += src/
 BIN_PATH = build/bin
 DEP_PATH = build/dep
 
 # Uma lista de arquivos por extensão:
-CPP_FILES = $(wildcard $(SRC_PATH)/*.cpp)
-INC_FILES = $(wildcard $(INC_PATH)/*.hpp)
+CPP_FILES = $(wildcard $(addsuffix *.cpp, $(SRC_PATH)))
+INC_FILES = $(wildcard $(addsuffix *.hpp, $(INC_PATH)))
 FILE_NAMES = $(sort $(notdir $(CPP_FILES:.cpp=)) $(notdir $(INC_FILES:.hpp=)))
 DEP_FILES	=	$(addprefix	$(DEP_PATH)/,$(addsufix	.d,$(FILE_NAMES)))
 OBJ_FILES	=	$(addprefix	$(BIN_PATH)/,$(notdir	$(CPP_FILES:.cpp=.o)))
@@ -88,11 +90,11 @@ $(EXEC):	$(OBJ_FILES)
 
 #Gera os arquivos objetos
 $(BIN_PATH)/%.o:	$(DEP_PATH)/%.d	|	folders
-	$(COMPILER) $(INC_PATHS) $(subst //,/,$(filter %$(notdir $(<:.d=.cpp)), $(CPP_FILES))) -c $(FLAGS) -o $@
+	$(COMPILER) $(INC_PATHS) $(subst //,/,$(filter %/$(notdir $(<:.d=.cpp)), $(CPP_FILES))) -c $(FLAGS) -o $@
 
 #Gera os arquivos de dependência
-$(DEP_PATH)/%.d: $(SRC_PATH)/%.cpp | folders
-	$(COMPILER) $(INC_PATHS) $(subst //,/,$(filter %$(notdir $(@:.d=.cpp)), $(CPP_FILES))) $(DEP_FLAGS) $(FLAGS)
+$(DEP_PATH)/%.d:
+	$(COMPILER) $(INC_PATHS) $(subst //,/,$(filter %/$(notdir $(@:.d=.cpp)), $(CPP_FILES))) $(DEP_FLAGS) $(FLAGS)
 
 clean:
 		-$(RMDIR) $(DEP_PATH)
