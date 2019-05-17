@@ -24,7 +24,7 @@ DFLAGS = -ggdb -O0 -DDEBUG
 RFLAGS = -O3 -mtune=native
 
 INC_PATH = $(sort $(dir $(wildcard include/*/)))
-SRC_PATH = $(sort $(dir $(wildcard src/*/)))
+SRC_PATH = src
 BIN_PATH = build/bin
 DEP_PATH = build/dep
 
