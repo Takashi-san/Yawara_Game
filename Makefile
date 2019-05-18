@@ -90,11 +90,12 @@ $(EXEC):	$(OBJ_FILES)
 
 #Gera os arquivos objetos
 $(BIN_PATH)/%.o:	$(DEP_PATH)/%.d	|	folders
-	$(COMPILER) $(INC_PATHS) $(subst //,/,$(filter %/$(notdir $(<:.d=.cpp)), $(CPP_FILES))) -c $(FLAGS) -o $@
+	$(COMPILER) $(INC_PATHS) $(subst //,/,$(filter %/$*.cpp, $(CPP_FILES))) -c $(FLAGS) -o $@
 
+.SECONDEXPANSION:
 #Gera os arquivos de dependência
-$(DEP_PATH)/%.d:
-	$(COMPILER) $(INC_PATHS) $(subst //,/,$(filter %/$(notdir $(@:.d=.cpp)), $(CPP_FILES))) $(DEP_FLAGS) $(FLAGS)
+$(DEP_PATH)/%.d:	$$(filter $$(addsuffix $$*.cpp, $$(SRC_PATH)), $$(CPP_FILES))	|	folders
+	$(COMPILER) $(INC_PATHS) $(subst //,/,$(filter %/$*.cpp, $(CPP_FILES))) $(DEP_FLAGS) $(FLAGS)
 
 clean:
 		-$(RMDIR) $(DEP_PATH)
