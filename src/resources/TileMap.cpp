@@ -26,7 +26,7 @@ void TileMap::Load(std::string file){
 			for(int i = 0; i < mapHeight; i++){
 				for(int j = 0; j < mapWidth; j++){
 					std::getline(input, in, ',');
-					tileMatrix.push_back(std::stoi(in) - 1);
+					tileMatrix.push_back(std::stoi(in));
 				}
 				std::getline(input, in);
 			}

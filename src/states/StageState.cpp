@@ -33,17 +33,36 @@ StageState::StageState() {
 	ptr->AddComponent(cmfl);
 	
 	// TileMap
+	GameObject *gomp2 = new GameObject();
+	weak_ptr = AddObject(gomp2);
+	ptr = weak_ptr.lock();
+	tileset = new TileSet(*ptr, 16, 16, "assets/img/solo.png");
+	TileMap *tlmp2 = new TileMap(*ptr, "assets/map/solo2.txt", tileset);
+	tlmp2->SetParallax(1);
+	ptr->box.x = 0;
+	ptr->box.y = 0;
+	ptr->AddComponent(tlmp2);
+
+	// TileMap
+	GameObject *gomp1 = new GameObject();
+	weak_ptr = AddObject(gomp1);
+	ptr = weak_ptr.lock();
+	TileMap *tlmp1 = new TileMap(*ptr, "assets/map/solo1.txt", tileset);
+	tlmp1->SetParallax(1);
+	ptr->box.x = 0;
+	ptr->box.y = 0;
+	ptr->AddComponent(tlmp1);
+
+	// TileMap
 	GameObject *gomp = new GameObject();
 	weak_ptr = AddObject(gomp);
 	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, 64, 64, "assets/img/tileset.png");
-	TileMap *tlmp = new TileMap(*ptr, "assets/map/tileMap.txt", tileset);
+	TileMap *tlmp = new TileMap(*ptr, "assets/map/solo.txt", tileset);
 	tlmp->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp);
 
-	/*
 	// Alien
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
@@ -52,7 +71,7 @@ StageState::StageState() {
 	ptr->box.x = 512 - goali1->box.w/2;
 	ptr->box.y = 300 - goali1->box.h/2;
 	ptr->AddComponent(alien1);
-
+/*
 	GameObject *goali2 = new GameObject();
 	weak_ptr = AddObject(goali2);
 	ptr = weak_ptr.lock();
@@ -76,7 +95,6 @@ StageState::StageState() {
 	ptr->box.x = 700 - goali4->box.w/2;
 	ptr->box.y = 150 - goali4->box.h/2;
 	ptr->AddComponent(alien4);
-	*/
 
 	GameObject *goali5 = new GameObject();
 	weak_ptr = AddObject(goali5);
@@ -85,7 +103,7 @@ StageState::StageState() {
 	ptr->box.x = 212 - goali5->box.w/2;
 	ptr->box.y = 200 - goali5->box.h/2;
 	ptr->AddComponent(alien5);
-
+*/
 	// PenguinBody
 	GameObject *gopen = new GameObject();
 	weak_ptr = AddObject(gopen);
