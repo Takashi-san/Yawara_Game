@@ -63,6 +63,28 @@ StageState::StageState() {
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp);
 
+	// TileMap
+	GameObject *gomp3 = new GameObject();
+	weak_ptr = AddObject(gomp3);
+	ptr = weak_ptr.lock();
+	tileset = new TileSet(*ptr, 16*9, 16*10, "assets/img/plant.png");
+	TileMap *tlmp3 = new TileMap(*ptr, "assets/map/rock.txt", tileset);
+	tlmp2->SetParallax(1);
+	ptr->box.x = 0;
+	ptr->box.y = 0;
+	ptr->AddComponent(tlmp3);
+
+	// TileMap
+	GameObject *gomp4 = new GameObject();
+	weak_ptr = AddObject(gomp4);
+	ptr = weak_ptr.lock();
+	tileset = new TileSet(*ptr, 16*9, 16*10, "assets/img/plant.png");
+	TileMap *tlmp4 = new TileMap(*ptr, "assets/map/plant.txt", tileset);
+	tlmp2->SetParallax(1);
+	ptr->box.x = 0;
+	ptr->box.y = 0;
+	ptr->AddComponent(tlmp4);
+
 	// Alien
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
