@@ -79,6 +79,7 @@ void Sprite::Render() {
 
 void Sprite::Render(int x, int y) {
 	Game& instance = Game::GetInstance();
+	float tmp;
 
 	SDL_Rect dst;
 	dst.x = x;
@@ -86,6 +87,13 @@ void Sprite::Render(int x, int y) {
 	dst.w = clipRect.w*scale.x;
 	dst.h = clipRect.h*scale.y;
 	
+	tmp = Vec2(dst.w, dst.h).Modulo();
+	if ((x < -tmp) || (y < -tmp)) {
+		return;
+	} else if ((x > (tmp + instance.GetWindowSize().x)) || (y > (tmp + instance.GetWindowSize().y))) {
+		return;
+	}
+
 	SDL_RenderCopyEx(instance.GetRenderer(), texture.get(), &clipRect, &dst, associated.angleDeg, nullptr, SDL_FLIP_NONE);
 }
 

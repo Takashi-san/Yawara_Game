@@ -1,9 +1,11 @@
 #include "TileMap.h"
 #include "Camera.h"
 
-TileMap::TileMap(GameObject& associated, std::string file, TileSet* tileSet): Component(associated) {
+TileMap::TileMap(GameObject& associated, int tileWidth, int tileHeight, std::string file, TileSet* tileSet): Component(associated) {
 	this->tileSet = tileSet;
 	this->parallax = 0;
+	this->tileWidth = tileWidth;
+	this->tileHeight = tileHeight;
 	Load(file);
 }
 
@@ -26,7 +28,7 @@ void TileMap::Load(std::string file){
 			for(int i = 0; i < mapHeight; i++){
 				for(int j = 0; j < mapWidth; j++){
 					std::getline(input, in, ',');
-					tileMatrix.push_back(std::stoi(in) - 1);
+					tileMatrix.push_back(std::stoi(in));
 				}
 				std::getline(input, in);
 			}
@@ -49,7 +51,7 @@ int& TileMap::At(int x, int y, int z=0) {
 void TileMap::RenderLayer(int layer, int cameraX=0, int cameraY=0) {
 	for(int i = 0; i < mapHeight; i++){
 		for(int j = 0; j < mapWidth; j++){
-			tileSet->RenderTile(tileMatrix[j + i*mapWidth + layer*mapWidth*mapHeight], (j+1)*tileSet->GetTileWidth() - cameraX, (i+0.5)*tileSet->GetTileHeight() - cameraY);
+			tileSet->RenderTile(tileMatrix[j + i*mapWidth + layer*mapWidth*mapHeight], j*tileWidth - cameraX, (i+1)*tileHeight - tileSet->GetTileHeight() - cameraY);
 		}
 	}
 }
@@ -74,6 +76,14 @@ int TileMap::GetDepth() {
 
 void TileMap::SetParallax(float parallax) {
 	this->parallax = parallax;
+}
+
+void TileMap::SetTileHeight(int tileHeight) {
+	this->tileHeight = tileHeight;
+}
+
+void TileMap::SetTileWidth(int tileWidth) {
+	this->tileWidth = tileWidth;
 }
 
 void TileMap::Update(float dt) {
