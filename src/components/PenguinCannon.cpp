@@ -8,8 +8,8 @@
 #include "Timer.h"
 
 PenguinCannon::PenguinCannon(GameObject& associated, std::weak_ptr<GameObject> penguinBody) : Component(associated) {
-	Sprite* sp = new Sprite(associated, "assets/img/cubngun.png");
-	associated.AddComponent(sp);
+	//Sprite* sp = new Sprite(associated, "assets/img/cubngun.png");
+	//associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 

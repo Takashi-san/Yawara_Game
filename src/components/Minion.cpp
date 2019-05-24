@@ -7,9 +7,10 @@
 #include "Sound.h"
 
 Minion::Minion(GameObject& associated, std::weak_ptr<GameObject> alienCenter, float arcOffsetDeg) : Component(associated) {
-	Sprite* sp = new Sprite(associated, "assets/img/minion.png");
+	//Sprite* sp = new Sprite(associated, "assets/img/minion.png");
+	Sprite* sp = new Sprite(associated, "assets/img/spirit_r.png", 12, 0.140);
 	float escala = 1.0 + float(std::rand()/float(RAND_MAX/0.5));
-	sp->SetScale(escala, escala);
+	//sp->SetScale(escala, escala);
 	Collider *cl = new Collider(associated, {0.85, 0.85});
 	associated.AddComponent(sp);
 	associated.AddComponent(cl);

@@ -13,7 +13,8 @@ PenguinBody* PenguinBody::player;
 PenguinBody::PenguinBody(GameObject& associated) : Component(associated) {
 	player = this;
 
-	Sprite* sp = new Sprite(associated, "assets/img/penguin.png");
+	//Sprite* sp = new Sprite(associated, "assets/img/penguin.png");
+	Sprite* sp = new Sprite(associated, "assets/img/guara_r.png", 12, 0.070);
 	associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
