@@ -58,11 +58,11 @@ void PenguinBody::Update(float dt) {
 		}
 	}
 
-	if (input.IsKeyDown(A_KEY)) {
-		angle -= PBODY_VEL_ANG*dt;
+	if (input.KeyPress(A_KEY)) {
+		angle -= 45*0.0174533;
 	}
-	if (input.IsKeyDown(D_KEY)) {
-		angle += PBODY_VEL_ANG*dt;
+	if (input.KeyPress(D_KEY)) {
+		angle += 45*0.0174533;
 	}
 
 	speed.x = linearSpeed;
