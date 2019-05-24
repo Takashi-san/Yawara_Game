@@ -18,7 +18,9 @@ Alien::Alien(GameObject& associated, int nMinions, float restOffset) : Component
 	speed.y = 0;
 	this->nMinions = nMinions;
 	this->restOffset = restOffset;
-	Sprite *sp = new Sprite(associated, "assets/img/alien.png");
+	//Sprite *sp = new Sprite(associated, "assets/img/alien.png");
+	Sprite *sp = new Sprite(associated, "assets/img/boss.png");
+	//Sprite* sp = new Sprite(associated, "assets/img/guara_r.png", 12, 0.140);
 	Collider *cl = new Collider(associated, {0.85, 0.85});
 	associated.AddComponent(sp);
 	associated.AddComponent(cl);
