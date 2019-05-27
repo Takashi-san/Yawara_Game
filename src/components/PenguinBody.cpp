@@ -65,6 +65,8 @@ void PenguinBody::Update(float dt) {
 	if (input.KeyPress(D_KEY)) {
 		angle += 45*0.0174533;
 	}
+	if(angle >= 360*0.0174533 || angle <= -360*0.0174533)
+		angle = 0;
 
 	speed.x = linearSpeed;
 	speed.y = 0;
