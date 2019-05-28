@@ -1,3 +1,5 @@
+#pragma once // Alows to initializate the header just once
+
 #include "State.h"
 #include "Music.h"
 
@@ -6,24 +8,20 @@
 #include <stdbool.h>
 #include <memory>
 
-#ifndef ENDSTATE
-	#define ENDSTATE
+class EndState : public State
+{
+public:
+	EndState();
+	~EndState();
 
-	class EndState : public State{
-	public:
-		EndState();
-		~EndState();
+	void LoadAssets();
+	void Update(float dt);
+	void Render();
 
-		void LoadAssets();
-		void Update(float dt);
-		void Render();
+	void Start();
+	void Pause();
+	void Resume();
 
-		void Start();
-		void Pause();
-		void Resume();
-
-	private:
-		Music bgMusic;
-	};
-
-#endif
+private:
+	Music bgMusic;
+};

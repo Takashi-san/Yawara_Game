@@ -1,3 +1,5 @@
+#pragma once // Alows to initializate the header just once
+
 #include "GameObject.h"
 #include "Component.h"
 
@@ -6,16 +8,12 @@
 #include <iostream>
 #include <stdbool.h>
 
-#ifndef CAMERA_FOLLOW
-	#define CAMERA_FOLLOW
+class CameraFollower : public Component
+{
+public:
+	CameraFollower(GameObject &);
 
-	class CameraFollower: public Component{
-	public:
-		CameraFollower(GameObject&);
-
-		void Update(float);
-		void Render();
-		bool Is(std::string);
-	};
-
-#endif
+	void Update(float);
+	void Render();
+	bool Is(std::string);
+};

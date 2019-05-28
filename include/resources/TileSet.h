@@ -1,3 +1,5 @@
+#pragma once // Alows to initializate the header just once
+
 #include "Sprite.h"
 #include "GameObject.h"
 
@@ -5,20 +7,16 @@
 #include <iostream>
 #include <stdbool.h>
 
-#ifndef TILESET
-	#define TILESET
+class TileSet
+{
+private:
+	Sprite tileSet;
+	int rows, columns;
+	int tileWidth, tileHeight;
 
-	class TileSet{
-	private:
-		Sprite tileSet;
-		int rows, columns;
-		int tileWidth, tileHeight;
-
-	public:
-		TileSet(GameObject&, int, int, std::string);
-		void RenderTile(unsigned int, int, int);
-		int GetTileWidth();
-		int GetTileHeight();
-	};
-
-#endif
+public:
+	TileSet(GameObject &, int, int, std::string);
+	void RenderTile(unsigned int, int, int);
+	int GetTileWidth();
+	int GetTileHeight();
+};

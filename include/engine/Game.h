@@ -1,3 +1,5 @@
+#pragma once // Alows to initializate the header just once
+
 #define INCLUDE_SDL
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
@@ -11,37 +13,33 @@
 #include <stdbool.h>
 #include <stack>
 
-#ifndef GAME
-	#define GAME
-		
-	class Game {
-	private:
-		Uint32 frameStart;
-		float dt;
+class Game
+{
+private:
+	Uint32 frameStart;
+	float dt;
 
-		static Game* instance;
-		
-		State* storedState;
-		SDL_Window* window;
-		SDL_Renderer* renderer;
-		std::stack<std::unique_ptr<State>> stateStack;
+	static Game *instance;
 
-		void CalculateDeltaTime();
+	State *storedState;
+	SDL_Window *window;
+	SDL_Renderer *renderer;
+	std::stack<std::unique_ptr<State>> stateStack;
 
-	public:
-		Game(std::string, int, int);
-		~Game();
+	void CalculateDeltaTime();
 
-		static Game& GetInstance();
-		SDL_Renderer* GetRenderer();
-		State& GetCurrentState();
+public:
+	Game(std::string, int, int);
+	~Game();
 
-		void Push(State*);
+	static Game &GetInstance();
+	SDL_Renderer *GetRenderer();
+	State &GetCurrentState();
 
-		void Run();
-		
-		float GetDeltaTime();
-		Vec2 GetWindowSize();
-	};
-	
-#endif
+	void Push(State *);
+
+	void Run();
+
+	float GetDeltaTime();
+	Vec2 GetWindowSize();
+};

@@ -1,3 +1,5 @@
+#pragma once // Alows to initializate the header just once
+
 #define INCLUDE_SDL
 #include "SDL_include.h"
 
@@ -6,60 +8,56 @@
 #include <stdbool.h>
 #include <unordered_map>
 
-#ifndef INPUT
-	#define INPUT	
-	
-	#define LEFT_ARROW_KEY 		SDLK_LEFT
-	#define RIGHT_ARROW_KEY 	SDLK_RIGHT
-	#define UP_ARROW_KEY 		SDLK_UP
-	#define DOWN_ARROW_KEY 		SDLK_DOWN
-	
-	#define W_KEY 				SDLK_w
-	#define A_KEY 				SDLK_a
-	#define S_KEY 				SDLK_s
-	#define D_KEY 				SDLK_d
-	
-	#define SPACE_KEY 			SDLK_SPACE
-	#define ESCAPE_KEY 			SDLK_ESCAPE
-	
-	#define LEFT_MOUSE_BUTTON 	SDL_BUTTON_LEFT
-	#define RIGHT_MOUSE_BUTTON 	SDL_BUTTON_RIGHT
+#define LEFT_ARROW_KEY SDLK_LEFT
+#define RIGHT_ARROW_KEY SDLK_RIGHT
+#define UP_ARROW_KEY SDLK_UP
+#define DOWN_ARROW_KEY SDLK_DOWN
 
-	class InputManager{
-	private:
-		bool mouseState[6];
-		int mouseUpdate[6];
+#define W_KEY SDLK_w
+#define A_KEY SDLK_a
+#define S_KEY SDLK_s
+#define D_KEY SDLK_d
 
-		std::unordered_map<int, bool> keyState;
-		std::unordered_map<int, int> keyUpdate;
+#define SPACE_KEY SDLK_SPACE
+#define ESCAPE_KEY SDLK_ESCAPE
 
-		bool quitRequested;
-		int updateCounter;
-		int mouseX;
-		int mouseY;
-		float mouseS;
+#define LEFT_MOUSE_BUTTON SDL_BUTTON_LEFT
+#define RIGHT_MOUSE_BUTTON SDL_BUTTON_RIGHT
 
-		InputManager();
-		~InputManager();
+class InputManager
+{
+private:
+	bool mouseState[6];
+	int mouseUpdate[6];
 
-	public:
-		void Update();
+	std::unordered_map<int, bool> keyState;
+	std::unordered_map<int, int> keyUpdate;
 
-		bool KeyPress(int);
-		bool KeyRelease(int);
-		bool IsKeyDown(int);
+	bool quitRequested;
+	int updateCounter;
+	int mouseX;
+	int mouseY;
+	float mouseS;
 
-		bool MousePress(int);
-		bool MouseRelease(int);
-		bool IsMouseDown(int);
+	InputManager();
+	~InputManager();
 
-		int GetMouseX();
-		int GetMouseY();
-		void SetMouseS(float);
+public:
+	void Update();
 
-		bool QuitRequested();
+	bool KeyPress(int);
+	bool KeyRelease(int);
+	bool IsKeyDown(int);
 
-		static InputManager& GetInstance();
-	};	
+	bool MousePress(int);
+	bool MouseRelease(int);
+	bool IsMouseDown(int);
 
-#endif
+	int GetMouseX();
+	int GetMouseY();
+	void SetMouseS(float);
+
+	bool QuitRequested();
+
+	static InputManager &GetInstance();
+};

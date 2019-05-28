@@ -1,3 +1,5 @@
+#pragma once // Alows to initializate the header just once
+
 #define INCLUDE_SDL
 #define INCLUDE_SDL_MIXER
 #include "SDL_include.h"
@@ -8,26 +10,23 @@
 #include <iostream>
 #include <stdbool.h>
 
-#ifndef SOUND
-	#define SOUND
-		
-	class Sound : public Component{
-	private:
-		std::shared_ptr<Mix_Chunk> chunk;
-		int channel;
+class Sound : public Component
+{
+private:
+	std::shared_ptr<Mix_Chunk> chunk;
+	int channel;
 
-	public:
-		Sound(GameObject&);
-		Sound(GameObject&, std::string);
-		~Sound();
+public:
+	Sound(GameObject &);
+	Sound(GameObject &, std::string);
+	~Sound();
 
-		void Play(int);
-		void Stop();
-		void Open(std::string);
-		bool IsOpen();
+	void Play(int);
+	void Stop();
+	void Open(std::string);
+	bool IsOpen();
 
-		void Update(float);
-		void Render();
-		bool Is(std::string);
-	};	
-#endif
+	void Update(float);
+	void Render();
+	bool Is(std::string);
+};

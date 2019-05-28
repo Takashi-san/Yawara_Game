@@ -1,3 +1,5 @@
+#pragma once // Alows to initializate the header just once
+
 #include "State.h"
 
 #include <string>
@@ -5,21 +7,17 @@
 #include <stdbool.h>
 #include <memory>
 
-#ifndef TITLESTATE
-	#define TITLESTATE
+class TitleState : public State
+{
+public:
+	TitleState();
+	~TitleState();
 
-	class TitleState : public State{
-	public:
-		TitleState();
-		~TitleState();
+	void LoadAssets();
+	void Update(float dt);
+	void Render();
 
-		void LoadAssets();
-		void Update(float dt);
-		void Render();
-
-		void Start();
-		void Pause();
-		void Resume();
-	};
-
-#endif
+	void Start();
+	void Pause();
+	void Resume();
+};
