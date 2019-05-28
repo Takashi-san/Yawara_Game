@@ -19,6 +19,8 @@ private:
 	enum Direction { RIGHT, UP, LEFT, DOWN, LEFT_DOWN, LEFT_UP, RIGHT_DOWN, RIGHT_UP };
 	Direction dir, new_dir;
 
+	std::weak_ptr<GameObject> tapu;
+
 public:
 	static Yawara* player;
 	

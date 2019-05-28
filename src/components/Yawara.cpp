@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Bullet.h"
 #include "Sound.h"
+#include "Tapu.h"
 
 Yawara* Yawara::player;
 
@@ -29,6 +30,16 @@ Yawara::~Yawara() {
 }
 
 void Yawara::Start() {
+
+	GameObject *go = new GameObject();
+	std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
+	tapu = weak_ptr;
+
+	Tapu* tp = new Tapu(*ptr, Game::GetInstance().GetCurrentState().GetObjectPtr(&associated));
+	ptr->box.x = associated.box.x;
+	ptr->box.y = associated.box.y;
+	ptr->AddComponent(tp);
 
 }
 
