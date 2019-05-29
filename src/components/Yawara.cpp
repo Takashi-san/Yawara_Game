@@ -121,8 +121,50 @@ void Yawara::Update(float dt) {
 		if (idle) {	
 			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 			if (sp) {
-				sp->Open("assets/img/idle.png");
-				sp->SetFrameCount(6);
+				switch (dir) {
+					case RIGHT:
+						sp->Open("assets/img/yawara_r.png");
+						sp->SetFrameCount(12);
+					break;
+
+					case LEFT:
+						sp->Open("assets/img/yawara_run_l.png");
+						sp->SetFrameCount(10);
+					break;
+
+					case UP:
+						sp->Open("assets/img/yawara_u.png");
+						sp->SetFrameCount(1);
+					break;
+
+					case DOWN:
+						sp->Open("assets/img/yawara_d.png");
+						sp->SetFrameCount(1);
+					break;
+
+					case RIGHT_UP:
+						sp->Open("assets/img/yawara_ur.png");
+						sp->SetFrameCount(1);
+					break;
+
+					case RIGHT_DOWN:
+						sp->Open("assets/img/yawara_dr.png");
+						sp->SetFrameCount(1);
+					break;
+
+					case LEFT_UP:
+						sp->Open("assets/img/yawara_ul.png");
+						sp->SetFrameCount(1);
+					break;
+
+					case LEFT_DOWN:
+						sp->Open("assets/img/yawara_dl.png");
+						sp->SetFrameCount(1);
+					break;
+
+					default:
+					break;
+				}
 			}
 		} else {
 			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
