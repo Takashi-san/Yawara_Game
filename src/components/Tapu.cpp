@@ -17,29 +17,54 @@ Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component
 	angle = 0;
 	this->yawara = Yawara;
     radius = 100;
+	dir = LEFT;
+	changedDir = false;
 }
 
 void Tapu::Update(float dt) {
 	static Timer cd;
 	InputManager& input = InputManager::GetInstance();
 
-	std::shared_ptr<GameObject> pb = yawara.lock();
-	if (pb) {
+	std::shared_ptr<GameObject> ywr = yawara.lock();
+	if (ywr) {
 
 		Vec2 newPos(input.GetMouseX() + Camera::pos.x, input.GetMouseY() + Camera::pos.y);
-		Vec2 dist = newPos - pb->box.Center();
+		Vec2 dist = newPos - ywr->box.Center();
 
 		angle = 0;
 		associated.angleDeg = 0;
 
 		if(dist.Modulo() > radius){
-			newPos = pb->box.Center() + ((dist/dist.Modulo()) * radius);
+			newPos = ywr->box.Center() + ((dist/dist.Modulo()) * radius);
 			angle = atan2(input.GetMouseY() + Camera::pos.y - associated.box.Center().y, input.GetMouseX() + Camera::pos.x - associated.box.Center().x);
 			associated.angleDeg = angle/0.0174533;
 		}
 		associated.box.Centered(newPos);
 		cd.Update(dt);
-		if(input.MousePress(LEFT_MOUSE_BUTTON) && cd.Get() > PCANNON_SHOOT_CD){
+
+		dist = associated.box.Center() - ywr->box.Center();
+		changedDir = false;
+
+		if(dist.x >= 0){
+			if(dir == LEFT){
+				changedDir = true;
+				dir = RIGHT;
+			}
+		} else {
+			if (dir == RIGHT){
+				dir = LEFT;
+				changedDir = true;
+			}
+		}
+
+		if(dir == LEFT && (dist.Modulo() >= (radius - 1))){
+			associated.angleDeg += 180;
+		} else if (dir == LEFT) {
+			angle += M_PI;
+		}
+		
+
+		if(input.MousePress(LEFT_MOUSE_BUTTON) && cd.Get() > TAPU_SHOOT_CD){
 			Shoot();
 			cd.Restart();
 		}
@@ -57,6 +82,21 @@ void Tapu::Update(float dt) {
 
 void Tapu::Render() {
 
+
+	Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+	if(sp && changedDir){
+
+		switch (dir)
+		{
+			case LEFT:
+				sp->Open("assets/img/spirit_l.png");
+				break;
+			
+			case RIGHT:
+				sp->Open("assets/img/spirit_r.png");
+				break;
+		}		
+	}
 }
 
 bool Tapu::Is(std::string type) {
@@ -70,14 +110,15 @@ void Tapu::Shoot() {
 	GameObject *go = new GameObject();
 	weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 	ptr = weak_ptr.lock();
-
-	Bullet *bam = new Bullet(*ptr, angle, PCANNON_BULLET_SPEED, PCANNON_BULLET_DAMAGE, PCANNON_BULLET_RANGE, "assets/img/minionbullet2.png", 3, 0.04, false);
+	
+	Bullet *bam = new Bullet(*ptr, angle, TAPU_BULLET_SPEED, TAPU_BULLET_DAMAGE, TAPU_BULLET_RANGE, "assets/img/minionbullet2.png", 3, 0.04, false);
 	ptr->box.Centered(associated.box.Center());
 	Vec2 offset(associated.box.w/2, 0);
 	offset.Rotate(angle);
 	ptr->box.x += offset.x;
 	ptr->box.y += offset.y;
 	ptr->AddComponent(bam);
+
 }
 
 void Tapu::NotifyCollision(GameObject& other) {
