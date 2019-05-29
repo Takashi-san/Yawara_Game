@@ -37,7 +37,7 @@ StageState::StageState() {
 	weak_ptr = AddObject(gomp2);
 	ptr = weak_ptr.lock();
 	tileset = new TileSet(*ptr, 16, 16, "assets/img/solo.png");
-	TileMap *tlmp2 = new TileMap(*ptr, 16, 16, "assets/map/solo2.txt", tileset);
+	TileMap *tlmp2 = new TileMap(*ptr, 16, 16, "assets/map/mapa1_solo_base.csv", tileset);
 	tlmp2->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
@@ -47,7 +47,7 @@ StageState::StageState() {
 	GameObject *gomp1 = new GameObject();
 	weak_ptr = AddObject(gomp1);
 	ptr = weak_ptr.lock();
-	TileMap *tlmp1 = new TileMap(*ptr, 16, 16, "assets/map/solo1.txt", tileset);
+	TileMap *tlmp1 = new TileMap(*ptr, 16, 16, "assets/map/mapa1_rochedo.csv", tileset);
 	tlmp1->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
@@ -57,34 +57,22 @@ StageState::StageState() {
 	GameObject *gomp = new GameObject();
 	weak_ptr = AddObject(gomp);
 	ptr = weak_ptr.lock();
-	TileMap *tlmp = new TileMap(*ptr, 16, 16, "assets/map/solo.txt", tileset);
+	TileMap *tlmp = new TileMap(*ptr, 16, 16, "assets/map/mapa1_solo_cima.csv", tileset);
 	tlmp->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp);
-
-	// TileMap
+/*
+	// Colision Visível
 	GameObject *gomp3 = new GameObject();
 	weak_ptr = AddObject(gomp3);
 	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, 16*9, 16*10, "assets/img/plant.png");
-	TileMap *tlmp3 = new TileMap(*ptr, 16, 16, "assets/map/rock.txt", tileset);
-	tlmp2->SetParallax(1);
+	TileMap *tlmp3 = new TileMap(*ptr, 16, 16, "assets/map/colisao.csv", tileset);
+	tlmp3->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp3);
-
-	// TileMap
-	GameObject *gomp4 = new GameObject();
-	weak_ptr = AddObject(gomp4);
-	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, 16*9, 16*10, "assets/img/plant.png");
-	TileMap *tlmp4 = new TileMap(*ptr, 16, 16, "assets/map/plant.txt", tileset);
-	tlmp2->SetParallax(1);
-	ptr->box.x = 0;
-	ptr->box.y = 0;
-	ptr->AddComponent(tlmp4);
-
+*/
 	// Alien
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
