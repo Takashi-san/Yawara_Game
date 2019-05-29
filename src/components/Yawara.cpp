@@ -13,7 +13,7 @@ Yawara* Yawara::player;
 Yawara::Yawara(GameObject& associated) : Component(associated) {
 	player = this;
 
-	Sprite* sp = new Sprite(associated, "assets/img/guara_r.png", 12, 0.100);
+	Sprite* sp = new Sprite(associated, "assets/img/yawara_r.png", 12, 0.100);
 	associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
@@ -38,87 +38,139 @@ void Yawara::Update(float dt) {
 	if (input.IsKeyDown(W_KEY)) {
 		if (input.IsKeyDown(A_KEY)) {
 			speed = {-YAWARA_SPEED/2, -YAWARA_SPEED/2};
-			new_dir = LEFT_UP;
+			if (dir != LEFT_UP) {
+				change_sprite = true;
+			}
+			dir = LEFT_UP;
 		} else if (input.IsKeyDown(D_KEY)) {
 			speed = {YAWARA_SPEED/2, -YAWARA_SPEED/2};
-			new_dir = RIGHT_UP;
+			if (dir != RIGHT_UP) {
+				change_sprite = true;
+			}
+			dir = RIGHT_UP;
 		} else {
 			speed = {0, -YAWARA_SPEED};
-			new_dir = UP;
+			if (dir != UP) {
+				change_sprite = true;
+			}
+			dir = UP;
+		}
+
+		if (idle) {
+			change_sprite = true;
 		}
 		idle = false;
 	} else if (input.IsKeyDown(S_KEY)) {
 		if (input.IsKeyDown(A_KEY)) {
 			speed = {-YAWARA_SPEED/2, YAWARA_SPEED/2};
-			new_dir = LEFT_DOWN;
+			if (dir != LEFT_DOWN) {
+				change_sprite = true;
+			}
+			dir = LEFT_DOWN;
 		} else if (input.IsKeyDown(D_KEY)) {
 			speed = {YAWARA_SPEED/2, YAWARA_SPEED/2};
-			new_dir = RIGHT_DOWN;
+			if (dir != RIGHT_DOWN) {
+				change_sprite = true;
+			}
+			dir = RIGHT_DOWN;
 		} else {
 			speed = {0, YAWARA_SPEED};
-			new_dir = DOWN;
+			if (dir != DOWN) {
+				change_sprite = true;
+			}
+			dir = DOWN;
+		}
+
+		if (idle) {
+			change_sprite = true;
 		}
 		idle = false;
 	} else if (input.IsKeyDown(A_KEY)) {
 		speed = {-YAWARA_SPEED, 0};
-		new_dir = LEFT;
+		if (dir != LEFT) {
+			change_sprite = true;
+		}
+		dir = LEFT;
+
+		if (idle) {
+			change_sprite = true;
+		}
 		idle = false;
 	} else if (input.IsKeyDown(D_KEY)) {
 		speed = {YAWARA_SPEED, 0};
-		new_dir = RIGHT;
+		if (dir != RIGHT) {
+			change_sprite = true;
+		}
+		dir = RIGHT;
+
+		if (idle) {
+			change_sprite = true;
+		}
 		idle = false;
 	} else {
 		speed = {0, 0};
-		new_dir = dir;
+		
+		if (!idle) {
+			change_sprite = true;
+		}
 		idle = true;
 	}
 
-	if (idle) {	
-		Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
-		if (sp) {
-			sp->Open("assets/img/idle.png");
-			sp->SetFrameCount(6);
-		}
-	} else if (new_dir != dir) {
-		dir = new_dir;
+	if (change_sprite) {
+		change_sprite = false;
+		if (idle) {	
+			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+			if (sp) {
+				sp->Open("assets/img/idle.png");
+				sp->SetFrameCount(6);
+			}
+		} else {
+			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+			if (sp) {
+				switch (dir) {
+					case RIGHT:
+						sp->Open("assets/img/yawara_r.png");
+						sp->SetFrameCount(12);
+					break;
 
-		Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
-		if (sp) {
-			switch (dir) {
-				case RIGHT:
-					sp->Open("assets/img/guara_r.png");
-					sp->SetFrameCount(12);
-				break;
+					case LEFT:
+						sp->Open("assets/img/yawara_l.png");
+						sp->SetFrameCount(12);
+					break;
 
-				case LEFT:
-					sp->Open("assets/img/guara_l.png");
-					sp->SetFrameCount(12);
-				break;
+					case UP:
+						sp->Open("assets/img/yawara_u.png");
+						sp->SetFrameCount(1);
+					break;
 
-				case UP:
-					sp->Open("assets/img/walk_up.png");
-					sp->SetFrameCount(5);
-				break;
+					case DOWN:
+						sp->Open("assets/img/yawara_d.png");
+						sp->SetFrameCount(1);
+					break;
 
-				case DOWN:
-					sp->Open("assets/img/walk_down.png");
-					sp->SetFrameCount(5);
-				break;
+					case RIGHT_UP:
+						sp->Open("assets/img/yawara_ur.png");
+						sp->SetFrameCount(1);
+					break;
 
-				case RIGHT_UP:
-				break;
+					case RIGHT_DOWN:
+						sp->Open("assets/img/yawara_dr.png");
+						sp->SetFrameCount(1);
+					break;
 
-				case RIGHT_DOWN:
-				break;
+					case LEFT_UP:
+						sp->Open("assets/img/yawara_ul.png");
+						sp->SetFrameCount(1);
+					break;
 
-				case LEFT_UP:
-				break;
+					case LEFT_DOWN:
+						sp->Open("assets/img/yawara_dl.png");
+						sp->SetFrameCount(1);
+					break;
 
-				case LEFT_DOWN:
-				break;
-
-				default:
-				break;
+					default:
+					break;
+				}
 			}
 		}
 	}

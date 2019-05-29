@@ -15,9 +15,9 @@ class Yawara : public Component{
 private:
 	Vec2 speed;
 	int hp;
-	bool idle;
+	bool idle, change_sprite;
 	enum Direction { RIGHT, UP, LEFT, DOWN, LEFT_DOWN, LEFT_UP, RIGHT_DOWN, RIGHT_UP };
-	Direction dir, new_dir;
+	Direction dir;
 
 public:
 	static Yawara* player;
