@@ -117,6 +117,7 @@ void Yawara::Update(float dt) {
 	}
 
 	if (change_sprite) {
+		Vec2 position = associated.box.Center();
 		change_sprite = false;
 		if (idle) {	
 			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
@@ -201,8 +202,8 @@ void Yawara::Update(float dt) {
 					break;
 
 					case LEFT_UP:
-						sp->Open("assets/img/yawara_ul.png");
-						sp->SetFrameCount(1);
+						sp->Open("assets/img/yawara_run_ul.png");
+						sp->SetFrameCount(9);
 					break;
 
 					case LEFT_DOWN:
@@ -215,6 +216,7 @@ void Yawara::Update(float dt) {
 				}
 			}
 		}
+		associated.box.Centered(position);
 	}
 
 	associated.box.x += speed.x*dt;
