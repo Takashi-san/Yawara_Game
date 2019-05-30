@@ -129,17 +129,17 @@ void Yawara::Update(float dt) {
 					break;
 
 					case LEFT:
-						sp->Open("assets/img/yawara_run_l.png");
-						sp->SetFrameCount(10);
+						sp->Open("assets/img/yawara_l.png");
+						sp->SetFrameCount(12);
 					break;
 
 					case UP:
-						sp->Open("assets/img/yawara_u.png");
+						sp->Open("assets/img/yawara_u2.png");
 						sp->SetFrameCount(1);
 					break;
 
 					case DOWN:
-						sp->Open("assets/img/yawara_d.png");
+						sp->Open("assets/img/yawara_d2.png");
 						sp->SetFrameCount(1);
 					break;
 
@@ -177,18 +177,18 @@ void Yawara::Update(float dt) {
 					break;
 
 					case LEFT:
-						sp->Open("assets/img/yawara_l.png");
-						sp->SetFrameCount(12);
+						sp->Open("assets/img/yawara_run_l.png");
+						sp->SetFrameCount(10);
 					break;
 
 					case UP:
-						sp->Open("assets/img/yawara_u.png");
-						sp->SetFrameCount(1);
+						sp->Open("assets/img/yawara_run_u.png");
+						sp->SetFrameCount(9);
 					break;
 
 					case DOWN:
-						sp->Open("assets/img/yawara_d.png");
-						sp->SetFrameCount(1);
+						sp->Open("assets/img/yawara_run_d.png");
+						sp->SetFrameCount(9);
 					break;
 
 					case RIGHT_UP:
@@ -207,8 +207,8 @@ void Yawara::Update(float dt) {
 					break;
 
 					case LEFT_DOWN:
-						sp->Open("assets/img/yawara_dl.png");
-						sp->SetFrameCount(1);
+						sp->Open("assets/img/yawara_run_dl.png");
+						sp->SetFrameCount(9);
 					break;
 
 					default:
