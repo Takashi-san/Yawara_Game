@@ -9,7 +9,13 @@
 
 class TitleState : public State
 {
+private:
+	GameObject* selection;
+	enum Option { PLAY, QUIT };
+	Option opt;
+
 public:
+
 	TitleState();
 	~TitleState();
 
