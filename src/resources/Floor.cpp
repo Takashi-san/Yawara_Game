@@ -1,18 +1,19 @@
 #include "Floor.h"
 
-Floor::Floor(GameObject &associated, int tileWidth, int tileHeight, string file) : Component(associated)
-{
-    this->tileWidth = tileWidth;
-    this->tileHeight = tileHeight;
-    Load(file);
-}
+vector<int> Floor::floorMatrix;
+int Floor::mapWidth;
+int Floor::mapHeight;
+int Floor::tileWidth;
+int Floor::tileHeight;
+bool Floor::loaded = false;
+Vec2 Floor::pos;
+Vec2 Floor::speed;
+float Floor::ratio;
 
-Floor::~Floor()
+void Floor::Load(string file, int tileWidth, int tileHeight)
 {
-}
-
-void Floor::Load(string file)
-{
+    Floor::tileWidth = tileWidth;
+    Floor::tileHeight = tileHeight;
     ifstream input;
     string in;
     input.open(file.c_str(), ios::in);
@@ -43,15 +44,21 @@ void Floor::Load(string file)
     }
 
     input.close();
+    loaded = true;
 }
 
 bool Floor::AtAllowedArea(int x, int y, int z = 0)
 {
-    return floorMatrix[x + y * mapWidth + z * mapWidth * mapHeight];
+    if (x < 0 || y < 0 || x > mapWidth * Floor::tileWidth || y > mapHeight * Floor::tileHeight)
+        return false;
+    return floorMatrix[x / Floor::tileWidth + y / Floor::tileHeight * mapWidth + z * mapWidth * mapHeight];
 }
 
 void Floor::Update(float dt)
 {
+    pos = Camera::pos;
+    speed = Camera::speed;
+    ratio = Camera::ratio;
 }
 
 void Floor::Render()
@@ -61,6 +68,16 @@ void Floor::Render()
 bool Floor::Is(string type)
 {
     return !strcmp(type.c_str(), "Floor");
+}
+
+int Floor::GetWidth()
+{
+    return tileWidth;
+}
+
+int Floor::GetHeight()
+{
+    return tileHeight;
 }
 
 vector<int> Floor::GetMatrix()

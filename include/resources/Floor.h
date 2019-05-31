@@ -1,33 +1,37 @@
 #pragma once // Alows to initializate the header just once
 
-#include "Component.h"
-#include "Camera.h"
 #include "PenguinBody.h"
+#include "Camera.h"
 #include <vector>
 #include <fstream>
 #include <cstring>
 
 using namespace std;
 
-class Floor : public Component
+class Floor
 {
 private:
-    vector<int> floorMatrix;
-    int mapWidth;
-    int mapHeight;
-    int tileWidth;
-    int tileHeight;
+    static vector<int> floorMatrix;
+    static int mapWidth;
+    static int mapHeight;
+    static int tileWidth;
+    static int tileHeight;
 
 public:
-    Floor(GameObject &, int, int, string);
-    ~Floor();
+    static bool loaded;
+    static Vec2 pos;
+    static Vec2 speed;
+    static float ratio;
 
-    void Load(std::string);
-    bool AtAllowedArea(int, int, int);
+    static void Load(string, int, int);
+    static bool AtAllowedArea(int, int, int);
 
-    void Update(float dt);
-    void Render();
-    bool Is(string type);
+    static void Update(float);
+    static void Render();
+    static bool Is(string);
 
-    vector<int> GetMatrix();
+    static int GetWidth();
+    static int GetHeight();
+
+    static vector<int> GetMatrix();
 };
