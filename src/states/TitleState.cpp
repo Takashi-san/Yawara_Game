@@ -7,7 +7,7 @@
 #include "Text.h"
 #include "Timer.h"
 
-TitleState::TitleState() {
+TitleState::TitleState() : bgMusic("assets/audio/menu.mp3"){
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
@@ -102,6 +102,8 @@ void TitleState::Start(){
 	
 	StartArray();
 
+	bgMusic.Play();
+
 	started = true;
 }
 
@@ -112,4 +114,6 @@ void TitleState::Pause() {
 void TitleState::Resume() {
 	Camera::pos.x = 0;
 	Camera::pos.y = 0;
+
+	bgMusic.Play();
 }

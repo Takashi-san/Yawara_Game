@@ -1,6 +1,7 @@
 #pragma once // Alows to initializate the header just once
 
 #include "State.h"
+#include "Music.h"
 
 #include <string>
 #include <iostream>
@@ -13,6 +14,7 @@ private:
 	GameObject* selection;
 	enum Option { PLAY, QUIT };
 	Option opt;
+	Music bgMusic;
 
 public:
 
