@@ -188,7 +188,7 @@ void Game::Run() {
 
 void Game::CalculateDeltaTime() {
 	dt = (float)(SDL_GetTicks() - frameStart)/1000;
-	std::cout << "dt = " << dt << " seg.\n";
+	// std::cout << "dt = " << dt << " seg.\n";
 	frameStart = SDL_GetTicks();
 }
 

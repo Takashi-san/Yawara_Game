@@ -7,7 +7,7 @@
 #include "Text.h"
 #include "Timer.h"
 
-TitleState::TitleState() {
+TitleState::TitleState() : bgMusic("assets/audio/menu.mp3"){
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
@@ -101,6 +101,8 @@ void TitleState::Start(){
 	LoadAssets();
 	
 	StartArray();
+
+	bgMusic.Play();
 
 	started = true;
 }
