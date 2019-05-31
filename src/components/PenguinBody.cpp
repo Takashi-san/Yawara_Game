@@ -22,6 +22,7 @@ PenguinBody::PenguinBody(GameObject &associated) : Component(associated)
 	associated.AddComponent(cl);
 
 	sp->SetScale(0.5, 0.5);
+	cl->SetScale({0.5, 0.5});
 
 	linearSpeed = 0;
 	angle = 0;
@@ -52,8 +53,6 @@ void PenguinBody::Update(float dt)
 {
 	InputManager &input = InputManager::GetInstance();
 
-	Floor *theFloor = static_cast<Floor *>(associated.GetComponent("Floor"));
-
 	bool moveAllowed = 1;
 
 	if (input.IsKeyDown(W_KEY))
@@ -63,10 +62,10 @@ void PenguinBody::Update(float dt)
 		{
 			linearSpeed = PBODY_VEL_CAP;
 		}
-		if (theFloor != nullptr && !theFloor->AtAllowedArea(front.x, front.y, 0))
+		if (Floor::loaded && Floor::AtAllowedArea(front.x, front.y, 0))
 		{
 			//cout << theFloor->AtAllowedArea(front.x, front.y, 0) << "HIT THE WALL YOU DUMB DUMB WWWWWWWWWW at: " << front.x << '\t' << front.y << endl;
-			moveAllowed = 0;
+			// moveAllowed = 0;
 		}
 		else
 		{
@@ -81,10 +80,10 @@ void PenguinBody::Update(float dt)
 		{
 			linearSpeed = -PBODY_VEL_CAP;
 		}
-		if (!theFloor->AtAllowedArea(back.x, back.y, 0))
+		if (Floor::loaded && Floor::AtAllowedArea(back.x, back.y, 0))
 		{
 			//cout << theFloor->AtAllowedArea(front.x, front.y, 0) << "HIT THE WALL YOU DUMB DUMB" << back.x << '\t' << back.y << endl;
-			moveAllowed = 0;
+			// moveAllowed = 0;
 		}
 		else
 		{
@@ -134,8 +133,12 @@ void PenguinBody::Update(float dt)
 	}
 	associated.angleDeg = angle / 0.0174533;
 
-	front = {(associated.box.x + (2 * tileSize)) / tileSize, (associated.box.y - (2 * tileSize)) / tileSize};
-	back = {(associated.box.x - associated.box.w - (2 * tileSize)) / tileSize, (associated.box.y - (2 * tileSize)) / tileSize};
+	front = {2, 2};
+	back = {2, 2};
+	front.x += associated.box.x;
+	front.y += associated.box.y;
+	back.x = back.GetRotated(angle).x + associated.box.x - associated.box.w;
+	back.y = back.GetRotated(angle).y + associated.box.y;
 	if (front.x < 0)
 		front.x = 0;
 	if (front.y < 0)
@@ -144,8 +147,7 @@ void PenguinBody::Update(float dt)
 		back.x = 0;
 	if (back.y < 0)
 		back.y = 0;
-	// front.Rotate(angle);
-	// back.Rotate(angle);
+	cout << "Front: " << (int)(front.x / Floor::GetWidth()) << "  " << (int)(front.y / Floor::GetHeight()) << '\t' << "Back: " << (int)(back.x / Floor::GetWidth()) << "  " << (int)(back.y / Floor::GetHeight()) << "\t\t" << (int)(associated.box.x / Floor::GetWidth()) << '\t' << (int)(associated.box.y / Floor::GetHeight()) << endl;
 
 	if (associated.box.x > 1280)
 		associated.box.x = 1280;

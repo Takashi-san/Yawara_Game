@@ -62,11 +62,10 @@ StageState::StageState()
 	//TileMap *tlmp = new TileMap(*shared, 16, 16, "assets/map/mapa1_solo_cima.csv", tileset);
 	TileMap *tlmp = new TileMap(*shared, 16, 16, "assets/map/colisao.csv", tileset);
 	tlmp->SetParallax(1);
-	Floor *tlmp3 = new Floor(*shared, 16, 16, "assets/map/colisao.csv");
+	Floor::Load("assets/map/colisao.csv", 16, 16);
 	shared->box.x = -50;
 	shared->box.y = -50;
 	shared->AddComponent(tlmp);
-	shared->AddComponent(tlmp3);
 
 	// Alien
 	GameObject *goali1 = new GameObject();
@@ -116,7 +115,6 @@ StageState::StageState()
 	PenguinBody *penb = new PenguinBody(*ptr);
 	ptr->box.Centered({1150, 80});
 	ptr->AddComponent(penb);
-	ptr->AddComponent(tlmp3);
 
 	// Cursor
 	GameObject *gocur = new GameObject();
@@ -127,7 +125,6 @@ StageState::StageState()
 	spcur->SetScale(0.1, 0.1);
 	ptr->AddComponent(cur);
 	ptr->AddComponent(spcur);
-	ptr->AddComponent(tlmp3);
 
 	Camera::Follow(GetObjectPtr(gopen), weak_ptr);
 	Camera::ratio = 0.37;

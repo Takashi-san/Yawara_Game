@@ -14,7 +14,6 @@
 #define PBODY_VEL_CAP 150
 #define PBODY_VEL_ANG 2
 
-const int tileSize = 16;
 const float PI = 3.141592;
 
 class PenguinBody : public Component
