@@ -1,3 +1,5 @@
+#pragma once // Alows to initializate the header just once
+
 #define INCLUDE_SDL
 #include "SDL_include.h"
 #include "Music.h"
@@ -12,25 +14,21 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#ifndef STAGESTATE
-	#define STAGESTATE
+class StageState : public State
+{
+private:
+	Music bgMusic;
+	TileSet *tileset;
 
-	class StageState : public State{
-	private:
-		Music bgMusic;
-		TileSet* tileset;
-		
-	public:
-		StageState();
-		~StageState();
+public:
+	StageState();
+	~StageState();
 
-		void LoadAssets();
-		void Update(float dt);
-		void Render();
+	void LoadAssets();
+	void Update(float dt);
+	void Render();
 
-		void Start();
-		void Pause();
-		void Resume();
-	};
-
-#endif
+	void Start();
+	void Pause();
+	void Resume();
+};

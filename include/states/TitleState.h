@@ -1,3 +1,5 @@
+#pragma once // Alows to initializate the header just once
+
 #include "State.h"
 
 #include <string>
@@ -5,21 +7,23 @@
 #include <stdbool.h>
 #include <memory>
 
-#ifndef TITLESTATE
-	#define TITLESTATE
+class TitleState : public State
+{
+private:
+	GameObject* selection;
+	enum Option { PLAY, QUIT };
+	Option opt;
 
-	class TitleState : public State{
-	public:
-		TitleState();
-		~TitleState();
+public:
 
-		void LoadAssets();
-		void Update(float dt);
-		void Render();
+	TitleState();
+	~TitleState();
 
-		void Start();
-		void Pause();
-		void Resume();
-	};
+	void LoadAssets();
+	void Update(float dt);
+	void Render();
 
-#endif
+	void Start();
+	void Pause();
+	void Resume();
+};

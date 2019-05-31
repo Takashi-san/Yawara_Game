@@ -94,7 +94,20 @@ void Sprite::Render(int x, int y) {
 		return;
 	}
 
-	SDL_RenderCopyEx(instance.GetRenderer(), texture.get(), &clipRect, &dst, associated.angleDeg, nullptr, SDL_FLIP_NONE);
+	if(associated.angleDeg >= 360 || associated.angleDeg <= -360){
+		associated.angleDeg = 0;
+	}
+
+	if(associated.GetComponent("PenguinBody")){
+		if((associated.angleDeg > 90 && associated.angleDeg < 270) || (associated.angleDeg < -90 && associated.angleDeg > -270)) {
+			SDL_RenderCopyEx(instance.GetRenderer(), texture.get(), &clipRect, &dst, associated.angleDeg, nullptr, SDL_FLIP_VERTICAL);
+		}else {
+			SDL_RenderCopyEx(instance.GetRenderer(), texture.get(), &clipRect, &dst, associated.angleDeg, nullptr, SDL_FLIP_NONE);
+		}
+	} else {
+		SDL_RenderCopyEx(instance.GetRenderer(), texture.get(), &clipRect, &dst, associated.angleDeg, nullptr, SDL_FLIP_NONE);		/* code */
+	}
+	
 }
 
 int Sprite::GetWidth() {

@@ -5,3 +5,5 @@ dep/
 yawara
 
 *.swp
+
+.vscode

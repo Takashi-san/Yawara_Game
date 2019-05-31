@@ -1,20 +1,19 @@
+#pragma once // Alows to initializate the header just once
+
 #include <string>
 #include <iostream>
 #include <stdbool.h>
 #include <memory>
 
-#ifndef TIMER
-	#define TIMER
+class Timer
+{
+private:
+	float time;
 
-	class Timer {
-	private:
-		float time;
+public:
+	Timer();
 
-	public:
-		Timer();
-
-		void Update(float);
-		void Restart();
-		float Get();
-	};
-#endif
+	void Update(float);
+	void Restart();
+	float Get();
+};
