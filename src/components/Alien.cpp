@@ -162,12 +162,5 @@ bool Alien::Is(std::string type)
 void Alien::NotifyCollision(GameObject &other)
 {
 	if (other.GetComponent("Bullet") && !static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer)
-	{
 		hp -= static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
-	}
 }
-
-// Vec2 GetPos()
-// {
-// 	return associated.box.Center();
-// }
