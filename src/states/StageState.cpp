@@ -16,6 +16,7 @@
 #include "EndState.h"
 #include "Game.h"
 #include "Cursor.h"
+#include "Yawara.h"
 
 StageState::StageState() {
 	std::weak_ptr<GameObject> weak_ptr;
@@ -125,7 +126,7 @@ StageState::StageState() {
 	ptr->box.x = 212 - goali5->box.w/2;
 	ptr->box.y = 200 - goali5->box.h/2;
 	ptr->AddComponent(alien5);
-*/
+
 	// PenguinBody
 	GameObject *gopen = new GameObject();
 	weak_ptr = AddObject(gopen);
@@ -133,6 +134,14 @@ StageState::StageState() {
 	PenguinBody *penb = new PenguinBody(*ptr);
 	ptr->box.Centered({0, 0});
 	ptr->AddComponent(penb);
+*/
+	// Yawara
+	GameObject *goya = new GameObject();
+	weak_ptr = AddObject(goya);
+	ptr = weak_ptr.lock();
+	Yawara *yawara = new Yawara(*ptr);
+	ptr->box.Centered({0, 0});
+	ptr->AddComponent(yawara);
 
 	// Cursor
 	GameObject *gocur = new GameObject();
@@ -144,7 +153,7 @@ StageState::StageState() {
 	ptr->AddComponent(cur);
 	ptr->AddComponent(spcur);
 
-	Camera::Follow(GetObjectPtr(gopen), weak_ptr);
+	Camera::Follow(GetObjectPtr(goya), weak_ptr);
 	Camera::ratio = 0.37;
 
 	// BGM
@@ -165,7 +174,7 @@ void StageState::Update(float dt) {
 	}
 
 	// verifica condições de vitoria.
-	if (PenguinBody::player == nullptr) {
+	if (Yawara::player == nullptr) {
 		popRequested = true;
 		Data::playerVictory = false;
 		EndState *stage = new EndState();
