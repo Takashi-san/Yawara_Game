@@ -54,12 +54,24 @@ void PenguinBody::Update(float dt)
 
 	Floor *theFloor = static_cast<Floor *>(associated.GetComponent("Floor"));
 
+	bool moveAllowed = 1;
+
 	if (input.IsKeyDown(W_KEY))
 	{
 		linearSpeed += PBODY_ACCEL * dt;
 		if (linearSpeed > PBODY_VEL_CAP)
 		{
 			linearSpeed = PBODY_VEL_CAP;
+		}
+		if (theFloor != nullptr && !theFloor->AtAllowedArea(front.x, front.y, 0))
+		{
+			cout << theFloor->AtAllowedArea(front.x, front.y, 0) << "HIT THE WALL YOU DUMB DUMB WWWWWWWWWW at: " << front.x << '\t' << front.y << endl;
+			moveAllowed = 0;
+		}
+		else
+		{
+			cout << "Your safe " << front.x << '\t' << front.y << endl;
+			moveAllowed = 1;
 		}
 	}
 	else if (input.IsKeyDown(S_KEY))
@@ -69,35 +81,36 @@ void PenguinBody::Update(float dt)
 		{
 			linearSpeed = -PBODY_VEL_CAP;
 		}
+		if (!theFloor->AtAllowedArea(back.x, back.y, 0))
+		{
+			cout << theFloor->AtAllowedArea(front.x, front.y, 0) << "HIT THE WALL YOU DUMB DUMB" << back.x << '\t' << back.y << endl;
+			moveAllowed = 0;
+		}
+		else
+		{
+			cout << "Your safe " << front.x << '\t' << front.y << endl;
+			moveAllowed = 1;
+		}
 	}
 
 	else
-	{
-		if (linearSpeed <= 0.2 && linearSpeed >= -0.2)
-			linearSpeed = 0.0;
-		else
-		{
-			int speed_signal = linearSpeed / abs(linearSpeed);
+		linearSpeed = 0.0;
 
-			linearSpeed -= speed_signal * 2 * (PBODY_ACCEL * dt);
-		}
-	}
-
-	if (theFloor != nullptr)
-	{
-		if (!theFloor->AtAllowedArea(front.x, front.y, 0) && linearSpeed > 0.1)
-		{
-			cout << "HIT THE WALL YOU DUMB DUMB WWWWWWWWWW at: " << associated.box.Center().x + 2 << '\t' << associated.box.Center().y << endl;
-			// linearSpeed = -linearSpeed;
-		}
-		else if (!theFloor->AtAllowedArea(back.x, back.y, 0) && linearSpeed < -0.1)
-		{
-			cout << "HIT THE WALL YOU DUMB DUMB" << endl;
-			// linearSpeed = -linearSpeed;
-		}
-		else
-			cout << "Your safe " << associated.box.x << '\t' << associated.box.y << endl;
-	}
+	// if (theFloor != nullptr)
+	// {
+	// 	if (!theFloor->AtAllowedArea(front.x, front.y, 0))
+	// 	{
+	// 		// cout << theFloor->AtAllowedArea(front.x, front.y, 0) << "HIT THE WALL YOU DUMB DUMB WWWWWWWWWW at: " << front.x << '\t' << front.y << endl;
+	// 		// linearSpeed = -linearSpeed / 2;
+	// 	}
+	// 	else if (!theFloor->AtAllowedArea(back.x, back.y, 0))
+	// 	{
+	// 		// cout << theFloor->AtAllowedArea(front.x, front.y, 0) << "HIT THE WALL YOU DUMB DUMB" << back.x << '\t' << back.y << endl;
+	// 		// linearSpeed = -linearSpeed / 2;
+	// 	}
+	// 	else
+	// 		cout << theFloor->AtAllowedArea(back.x, back.y, 0) << "Your safe " << associated.box.x << '\t' << associated.box.y << endl;
+	// }
 
 	if (input.KeyPress(A_KEY))
 	{
@@ -114,14 +127,25 @@ void PenguinBody::Update(float dt)
 	speed.x = linearSpeed;
 	speed.y = 0;
 	speed.Rotate(angle);
-	associated.box.x += speed.x * dt;
-	associated.box.y += speed.y * dt;
+	if (moveAllowed)
+	{
+		associated.box.x += speed.x * dt;
+		associated.box.y += speed.y * dt;
+	}
 	associated.angleDeg = angle / 0.0174533;
 
-	front = {(associated.box.Center().x + (5 * tileSize)) / tileSize, (associated.box.Center().y - (5 * tileSize)) / tileSize};
-	back = {(associated.box.Center().x - associated.box.w - (5 * tileSize)) / tileSize, (associated.box.Center().y - (5 * tileSize)) / tileSize};
-	front.GetRotated(associated.angleDeg);
-	back.GetRotated(associated.angleDeg - PI);
+	front = {(associated.box.x + (2 * tileSize)) / tileSize, (associated.box.y - (2 * tileSize)) / tileSize};
+	back = {(associated.box.x - associated.box.w - (2 * tileSize)) / tileSize, (associated.box.y - (2 * tileSize)) / tileSize};
+	if (front.x < 0)
+		front.x = 0;
+	if (front.y < 0)
+		front.y = 0;
+	if (back.x < 0)
+		back.x = 0;
+	if (back.y < 0)
+		back.y = 0;
+	// front.Rotate(angle);
+	// back.Rotate(angle);
 
 	if (associated.box.x > 1280)
 		associated.box.x = 1280;

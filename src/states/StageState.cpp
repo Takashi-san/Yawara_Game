@@ -62,8 +62,8 @@ StageState::StageState()
 	TileMap *tlmp = new TileMap(*shared, 16, 16, "assets/map/mapa1_solo_cima.csv", tileset);
 	tlmp->SetParallax(1);
 	Floor *tlmp3 = new Floor(*shared, 16, 16, "assets/map/colisao.csv");
-	shared->box.x = 0;
-	shared->box.y = 0;
+	shared->box.x = -50;
+	shared->box.y = -50;
 	shared->AddComponent(tlmp);
 	shared->AddComponent(tlmp3);
 
@@ -113,7 +113,7 @@ StageState::StageState()
 	weak_ptr = AddObject(gopen);
 	ptr = weak_ptr.lock();
 	PenguinBody *penb = new PenguinBody(*ptr);
-	ptr->box.Centered({1100, 50});
+	ptr->box.Centered({1150, 80});
 	ptr->AddComponent(penb);
 	ptr->AddComponent(tlmp3);
 
