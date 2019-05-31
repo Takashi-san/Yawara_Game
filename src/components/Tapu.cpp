@@ -9,7 +9,7 @@
 
 Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component(associated) {
 
-	Sprite* sp = new Sprite(associated, "assets/img/spirit_r2.png", 9, 0.12);
+	Sprite* sp = new Sprite(associated, "assets/img/spirit_r.png", 9, 0.12);
 	associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
@@ -89,11 +89,11 @@ void Tapu::Render() {
 		switch (dir)
 		{
 			case LEFT:
-				sp->Open("assets/img/spirit_l2.png");
+				sp->Open("assets/img/spirit_l.png");
 				break;
 			
 			case RIGHT:
-				sp->Open("assets/img/spirit_r2.png");
+				sp->Open("assets/img/spirit_r.png");
 				break;
 		}		
 	}
