@@ -16,8 +16,10 @@
 #include "EndState.h"
 #include "Game.h"
 #include "Cursor.h"
+#include "Floor.h"
 
-StageState::StageState() {
+StageState::StageState()
+{
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
@@ -31,7 +33,7 @@ StageState::StageState() {
 	CameraFollower *cmfl = new CameraFollower(*ptr);
 	ptr->AddComponent(sp);
 	ptr->AddComponent(cmfl);
-	
+
 	// TileMap
 	GameObject *gomp2 = new GameObject();
 	weak_ptr = AddObject(gomp2);
@@ -54,34 +56,26 @@ StageState::StageState() {
 	ptr->AddComponent(tlmp1);
 
 	// TileMap
-	GameObject *gomp = new GameObject();
-	weak_ptr = AddObject(gomp);
-	ptr = weak_ptr.lock();
-	TileMap *tlmp = new TileMap(*ptr, 16, 16, "assets/map/mapa1_solo_cima.csv", tileset);
-	tlmp->SetParallax(1);
-	ptr->box.x = 0;
-	ptr->box.y = 0;
-	ptr->AddComponent(tlmp);
-/*
-	// Colision Visível
 	GameObject *gomp3 = new GameObject();
 	weak_ptr = AddObject(gomp3);
-	ptr = weak_ptr.lock();
-	TileMap *tlmp3 = new TileMap(*ptr, 16, 16, "assets/map/colisao.csv", tileset);
-	tlmp3->SetParallax(1);
-	ptr->box.x = 0;
-	ptr->box.y = 0;
-	ptr->AddComponent(tlmp3);
-*/
+	shared_ptr<GameObject> shared = weak_ptr.lock();
+	TileMap *tlmp = new TileMap(*shared, 16, 16, "assets/map/mapa1_solo_cima.csv", tileset);
+	tlmp->SetParallax(1);
+	Floor *tlmp3 = new Floor(*shared, 16, 16, "assets/map/colisao.csv");
+	shared->box.x = 0;
+	shared->box.y = 0;
+	shared->AddComponent(tlmp);
+	shared->AddComponent(tlmp3);
+
 	// Alien
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
 	ptr = weak_ptr.lock();
 	Alien *alien1 = new Alien(*ptr, 5, 0.5);
-	ptr->box.x = 512 - goali1->box.w/2;
-	ptr->box.y = 300 - goali1->box.h/2;
+	ptr->box.x = 512 - goali1->box.w / 2;
+	ptr->box.y = 300 - goali1->box.h / 2;
 	ptr->AddComponent(alien1);
-/*
+	/*
 	GameObject *goali2 = new GameObject();
 	weak_ptr = AddObject(goali2);
 	ptr = weak_ptr.lock();
@@ -119,8 +113,9 @@ StageState::StageState() {
 	weak_ptr = AddObject(gopen);
 	ptr = weak_ptr.lock();
 	PenguinBody *penb = new PenguinBody(*ptr);
-	ptr->box.Centered({0, 0});
+	ptr->box.Centered({1100, 50});
 	ptr->AddComponent(penb);
+	ptr->AddComponent(tlmp3);
 
 	// Cursor
 	GameObject *gocur = new GameObject();
@@ -140,49 +135,62 @@ StageState::StageState() {
 	bgMusic.Play(-1);
 }
 
-StageState::~StageState() {
+StageState::~StageState()
+{
 	objectArray.clear();
 }
 
-void StageState::Update(float dt) {
-	InputManager& input = InputManager::GetInstance();
+void StageState::Update(float dt)
+{
+	InputManager &input = InputManager::GetInstance();
 
 	// verifica fechamento do jogo.
-	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY)) {
+	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY))
+	{
 		popRequested = true;
 	}
 
 	// verifica condições de vitoria.
-	if (PenguinBody::player == nullptr) {
+	if (PenguinBody::player == nullptr)
+	{
 		popRequested = true;
 		Data::playerVictory = false;
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
-	} else if (Alien::alienCount == 0) {
+	}
+	else if (Alien::alienCount == 0)
+	{
 		popRequested = true;
 		Data::playerVictory = true;
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
 	}
-	
+
 	UpdateArray(dt);
 
 	// update dos colliders.
-	for (unsigned int i = 0; i < objectArray.size(); i++) {
-		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("Collider"));
-		if (coli != nullptr) {
+	for (unsigned int i = 0; i < objectArray.size(); i++)
+	{
+		Collider *coli = static_cast<Collider *>(objectArray[i]->GetComponent("Collider"));
+		if (coli != nullptr)
+		{
 			coli->Update(dt);
 		}
 	}
 
 	// verifica colisão dos objetos.
-	for (unsigned int i = 0; i < objectArray.size(); i++) {
-		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("Collider"));
-		if (coli != nullptr) {
-			for (unsigned int j = i+1; j < objectArray.size(); j++) {
-				Collider *colj = static_cast<Collider*>(objectArray[j]->GetComponent("Collider"));
-				if (colj != nullptr) {
-					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg/0.0174533, objectArray[j]->angleDeg/0.0174533)) {
+	for (unsigned int i = 0; i < objectArray.size(); i++)
+	{
+		Collider *coli = static_cast<Collider *>(objectArray[i]->GetComponent("Collider"));
+		if (coli != nullptr)
+		{
+			for (unsigned int j = i + 1; j < objectArray.size(); j++)
+			{
+				Collider *colj = static_cast<Collider *>(objectArray[j]->GetComponent("Collider"));
+				if (colj != nullptr)
+				{
+					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg / 0.0174533, objectArray[j]->angleDeg / 0.0174533))
+					{
 						objectArray[i]->NotifyCollision(*(objectArray[j]));
 						objectArray[j]->NotifyCollision(*(objectArray[i]));
 					}
@@ -195,44 +203,50 @@ void StageState::Update(float dt) {
 
 	// Componentes dependentes de Camera.
 	// update dos CameraFollower.
-	for (unsigned int i = 0; i < objectArray.size(); i++) {
-		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("CameraFollower"));
-		if (coli != nullptr) {
+	for (unsigned int i = 0; i < objectArray.size(); i++)
+	{
+		Collider *coli = static_cast<Collider *>(objectArray[i]->GetComponent("CameraFollower"));
+		if (coli != nullptr)
+		{
 			coli->Update(dt);
 			break;
 		}
 	}
 
 	// update dos Cursor.
-	for (unsigned int i = 0; i < objectArray.size(); i++) {
-		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("Cursor"));
-		if (coli != nullptr) {
+	for (unsigned int i = 0; i < objectArray.size(); i++)
+	{
+		Collider *coli = static_cast<Collider *>(objectArray[i]->GetComponent("Cursor"));
+		if (coli != nullptr)
+		{
 			coli->Update(dt);
 			break;
 		}
 	}
 }
 
-void StageState::Render() {
+void StageState::Render()
+{
 	RenderArray();
 }
 
-void StageState::LoadAssets() {
-
+void StageState::LoadAssets()
+{
 }
 
-void StageState::Start(){
+void StageState::Start()
+{
 	LoadAssets();
-	
+
 	StartArray();
 
 	started = true;
 }
 
-void StageState::Pause() {
-
+void StageState::Pause()
+{
 }
 
-void StageState::Resume() {
-
+void StageState::Resume()
+{
 }
