@@ -59,7 +59,8 @@ StageState::StageState()
 	GameObject *gomp3 = new GameObject();
 	weak_ptr = AddObject(gomp3);
 	shared_ptr<GameObject> shared = weak_ptr.lock();
-	TileMap *tlmp = new TileMap(*shared, 16, 16, "assets/map/mapa1_solo_cima.csv", tileset);
+	//TileMap *tlmp = new TileMap(*shared, 16, 16, "assets/map/mapa1_solo_cima.csv", tileset);
+	TileMap *tlmp = new TileMap(*shared, 16, 16, "assets/map/colisao.csv", tileset);
 	tlmp->SetParallax(1);
 	Floor *tlmp3 = new Floor(*shared, 16, 16, "assets/map/colisao.csv");
 	shared->box.x = -50;
@@ -126,6 +127,7 @@ StageState::StageState()
 	spcur->SetScale(0.1, 0.1);
 	ptr->AddComponent(cur);
 	ptr->AddComponent(spcur);
+	ptr->AddComponent(tlmp3);
 
 	Camera::Follow(GetObjectPtr(gopen), weak_ptr);
 	Camera::ratio = 0.37;

@@ -65,12 +65,12 @@ void PenguinBody::Update(float dt)
 		}
 		if (theFloor != nullptr && !theFloor->AtAllowedArea(front.x, front.y, 0))
 		{
-			cout << theFloor->AtAllowedArea(front.x, front.y, 0) << "HIT THE WALL YOU DUMB DUMB WWWWWWWWWW at: " << front.x << '\t' << front.y << endl;
+			//cout << theFloor->AtAllowedArea(front.x, front.y, 0) << "HIT THE WALL YOU DUMB DUMB WWWWWWWWWW at: " << front.x << '\t' << front.y << endl;
 			moveAllowed = 0;
 		}
 		else
 		{
-			cout << "Your safe " << front.x << '\t' << front.y << endl;
+			//cout << "Your safe " << front.x << '\t' << front.y << endl;
 			moveAllowed = 1;
 		}
 	}
@@ -83,12 +83,12 @@ void PenguinBody::Update(float dt)
 		}
 		if (!theFloor->AtAllowedArea(back.x, back.y, 0))
 		{
-			cout << theFloor->AtAllowedArea(front.x, front.y, 0) << "HIT THE WALL YOU DUMB DUMB" << back.x << '\t' << back.y << endl;
+			//cout << theFloor->AtAllowedArea(front.x, front.y, 0) << "HIT THE WALL YOU DUMB DUMB" << back.x << '\t' << back.y << endl;
 			moveAllowed = 0;
 		}
 		else
 		{
-			cout << "Your safe " << front.x << '\t' << front.y << endl;
+			//cout << "Your safe " << front.x << '\t' << front.y << endl;
 			moveAllowed = 1;
 		}
 	}
