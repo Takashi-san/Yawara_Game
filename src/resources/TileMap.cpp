@@ -1,5 +1,6 @@
 #include "TileMap.h"
 #include "Camera.h"
+#include <sstream>
 
 TileMap::TileMap(GameObject& associated, int tileWidth, int tileHeight, std::string file, TileSet* tileSet): Component(associated) {
 	this->tileSet = tileSet;
@@ -11,7 +12,7 @@ TileMap::TileMap(GameObject& associated, int tileWidth, int tileHeight, std::str
 
 void TileMap::Load(std::string file){
 	std::ifstream input;
-	std::string in;
+	std::string in, num;
 	input.open(file.c_str(), std::ios::in);
 
 	if (!input.fail()) {
@@ -26,11 +27,12 @@ void TileMap::Load(std::string file){
 		for(int k = 0; k < mapDepth; k++){
 			std::getline(input, in);
 			for(int i = 0; i < mapHeight; i++){
-				for(int j = 0; j < mapWidth; j++){
-					std::getline(input, in, ',');
-					tileMatrix.push_back(std::stoi(in));
-				}
 				std::getline(input, in);
+				std::stringstream line(in);
+				for(int j = 0; j < mapWidth; j++){
+					std::getline(line, num, ',');
+					tileMatrix.push_back(std::stoi(num));
+				}
 			}
 		}
 	} else {
