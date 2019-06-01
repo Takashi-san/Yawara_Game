@@ -19,7 +19,7 @@ Alien::Alien(GameObject& associated, int nMinions, float restOffset) : Component
 	this->nMinions = nMinions;
 	this->restOffset = restOffset;
 	//Sprite *sp = new Sprite(associated, "assets/img/alien.png");
-	Sprite *sp = new Sprite(associated, "assets/img/boss.png");
+	Sprite *sp = new Sprite(associated, "assets/img/capelobo.png", 8, 0.150);
 	//Sprite* sp = new Sprite(associated, "assets/img/guara_r.png", 12, 0.140);
 	Collider *cl = new Collider(associated, {0.85, 0.85});
 	associated.AddComponent(sp);
@@ -34,6 +34,7 @@ void Alien::Start() {
 	std::shared_ptr<GameObject> ptr;
 	float offset;
 
+	/*
 	for (int i = 0; i < nMinions; i++){
 		offset = (360/nMinions)*i;
 
@@ -47,7 +48,7 @@ void Alien::Start() {
 		ptr->box.y = 0;
 		ptr->AddComponent(mini);
 	}
-
+	*/
 }
 
 Alien::~Alien() {

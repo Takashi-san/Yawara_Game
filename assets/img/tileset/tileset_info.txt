@@ -1,0 +1,8 @@
+tile => 16x16 px
+
+solo	1x1 tile;
+arvore	23x19 tile;
+planta	9x10 tile;
+pedra	9x10 tile;
+luz	8x28 tile;
+simbolo	11x18 tile;
