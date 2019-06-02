@@ -18,8 +18,8 @@ public:
 	Music();
 	Music(std::string);
 	~Music();
-	void Play(int);
-	void Stop(int);
+	void Play(int = -1);
+	void Stop(int = 1500);
 	void Open(std::string);
 	bool IsOpen();
 };

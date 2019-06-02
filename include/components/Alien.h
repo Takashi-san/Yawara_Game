@@ -14,7 +14,7 @@
 #include <queue>
 #include <cmath>
 
-#define ALIEN_VEL_ANG -0.2
+#define ALIEN_VEL_ANG 0
 #define ALIEN_SPEED 0
 #define ALIEN_REST_BASE 0.5
 

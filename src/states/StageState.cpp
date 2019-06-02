@@ -8,18 +8,24 @@
 #include "Camera.h"
 #include "CameraFollower.h"
 #include "Alien.h"
-#include "Minion.h"
-#include "PenguinBody.h"
 #include "Collision.h"
 #include "Collider.h"
 #include "Data.h"
 #include "EndState.h"
 #include "Game.h"
 #include "Cursor.h"
+#include "Yawara.h"
 #include "Floor.h"
 
-StageState::StageState()
-{
+#include "Tilesets.h"
+#include "Tilemaps.h"
+
+#define STAGE_STT_BG			"assets/penguin/img/ocean.jpg"
+#define STAGE_STT_BGM			"assets/penguin/audio/stageState.ogg"
+#define STAGE_STT_CURSOR_SPRITE	"assets/penguin/img/penguinface.png"
+#define STAGE_STT_CAMERA_RATIO	0.37
+
+StageState::StageState() {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
@@ -29,43 +35,61 @@ StageState::StageState()
 	ptr = weak_ptr.lock();
 	ptr->box.x = 0;
 	ptr->box.y = 0;
-	Sprite *sp = new Sprite(*ptr, "assets/img/ocean.jpg");
+	Sprite *sp = new Sprite(*ptr, STAGE_STT_BG);
 	CameraFollower *cmfl = new CameraFollower(*ptr);
 	ptr->AddComponent(sp);
 	ptr->AddComponent(cmfl);
 
 	// TileMap
-	GameObject *gomp2 = new GameObject();
-	weak_ptr = AddObject(gomp2);
-	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, 16, 16, "assets/img/solo.png");
-	TileMap *tlmp2 = new TileMap(*ptr, 16, 16, "assets/map/mapa1_solo_base.csv", tileset);
-	tlmp2->SetParallax(1);
-	ptr->box.x = 0;
-	ptr->box.y = 0;
-	ptr->AddComponent(tlmp2);
-
-	// TileMap
 	GameObject *gomp1 = new GameObject();
 	weak_ptr = AddObject(gomp1);
 	ptr = weak_ptr.lock();
-	TileMap *tlmp1 = new TileMap(*ptr, 16, 16, "assets/map/mapa1_rochedo.csv", tileset);
+	tileset = new TileSet(*ptr, TS_SOLO_W, TS_SOLO_H, TS_SOLO);
+	TileMap *tlmp1 = new TileMap(*ptr, TILE, TILE, TM_MAP1_1, tileset);
 	tlmp1->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp1);
 
-	// TileMap
+	GameObject *gomp2 = new GameObject();
+	weak_ptr = AddObject(gomp2);
+	ptr = weak_ptr.lock();
+	tileset = new TileSet(*ptr, TS_SOLO_W, TS_SOLO_H, TS_SOLO);
+	TileMap *tlmp2 = new TileMap(*ptr, TILE, TILE, TM_MAP1_2, tileset);
+	tlmp2->SetParallax(1);
+	ptr->box.x = 0;
+	ptr->box.y = 0;
+	ptr->AddComponent(tlmp2);
+
 	GameObject *gomp3 = new GameObject();
 	weak_ptr = AddObject(gomp3);
-	shared_ptr<GameObject> shared = weak_ptr.lock();
-	//TileMap *tlmp = new TileMap(*shared, 16, 16, "assets/map/mapa1_solo_cima.csv", tileset);
-	TileMap *tlmp = new TileMap(*shared, 16, 16, "assets/map/colisao.csv", tileset);
-	tlmp->SetParallax(1);
-	Floor::Load("assets/map/colisao.csv", 16, 16);
-	shared->box.x = -50;
-	shared->box.y = -50;
-	shared->AddComponent(tlmp);
+	ptr = weak_ptr.lock();
+	tileset = new TileSet(*ptr, TS_SOLO_W, TS_SOLO_H, TS_SOLO);
+	TileMap *tlmp3 = new TileMap(*ptr, TILE, TILE, TM_MAP1_3, tileset);
+	tlmp3->SetParallax(1);
+	ptr->box.x = 0;
+	ptr->box.y = 0;
+	ptr->AddComponent(tlmp3);
+
+	GameObject *gomp4 = new GameObject();
+	weak_ptr = AddObject(gomp4);
+	ptr = weak_ptr.lock();
+	tileset = new TileSet(*ptr, TS_TREE_W, TS_TREE_H, TS_TREE);
+	TileMap *tlmp4 = new TileMap(*ptr, TILE, TILE, TM_MAP1_4, tileset);
+	tlmp4->SetParallax(1);
+	ptr->box.x = 0;
+	ptr->box.y = 0;
+	ptr->AddComponent(tlmp4);
+
+	GameObject *gomp5 = new GameObject();
+	weak_ptr = AddObject(gomp5);
+	ptr = weak_ptr.lock();
+	tileset = new TileSet(*ptr, TS_PLANT_ROCK_W, TS_PLANT_ROCK_H, TS_PLANT_ROCK);
+	TileMap *tlmp5 = new TileMap(*ptr, TILE, TILE, TM_MAP1_5, tileset);
+	tlmp5->SetParallax(1);
+	ptr->box.x = 0;
+	ptr->box.y = 0;
+	ptr->AddComponent(tlmp5);
 
 	// Alien
 	GameObject *goali1 = new GameObject();
@@ -75,63 +99,31 @@ StageState::StageState()
 	ptr->box.x = 512 - goali1->box.w / 2;
 	ptr->box.y = 300 - goali1->box.h / 2;
 	ptr->AddComponent(alien1);
-	/*
-	GameObject *goali2 = new GameObject();
-	weak_ptr = AddObject(goali2);
-	ptr = weak_ptr.lock();
-	Alien *alien2 = new Alien(*ptr, 5, 1);
-	ptr->box.x = 100 - goali2->box.w/2;
-	ptr->box.y = 550 - goali2->box.h/2;
-	ptr->AddComponent(alien2);
 
-	GameObject *goali3 = new GameObject();
-	weak_ptr = AddObject(goali3);
+	// Yawara
+	GameObject *goya = new GameObject();
+	weak_ptr = AddObject(goya);
 	ptr = weak_ptr.lock();
-	Alien *alien3 = new Alien(*ptr, 5, 1.5);
-	ptr->box.x = 1000 - goali3->box.w/2;
-	ptr->box.y = 450 - goali3->box.h/2;
-	ptr->AddComponent(alien3);
-
-	GameObject *goali4 = new GameObject();
-	weak_ptr = AddObject(goali4);
-	ptr = weak_ptr.lock();
-	Alien *alien4 = new Alien(*ptr, 5, 3.5);
-	ptr->box.x = 700 - goali4->box.w/2;
-	ptr->box.y = 150 - goali4->box.h/2;
-	ptr->AddComponent(alien4);
-
-	GameObject *goali5 = new GameObject();
-	weak_ptr = AddObject(goali5);
-	ptr = weak_ptr.lock();
-	Alien *alien5 = new Alien(*ptr, 5, 4.5);
-	ptr->box.x = 212 - goali5->box.w/2;
-	ptr->box.y = 200 - goali5->box.h/2;
-	ptr->AddComponent(alien5);
-*/
-	// PenguinBody
-	GameObject *gopen = new GameObject();
-	weak_ptr = AddObject(gopen);
-	ptr = weak_ptr.lock();
-	PenguinBody *penb = new PenguinBody(*ptr);
-	ptr->box.Centered({1150, 80});
-	ptr->AddComponent(penb);
+	Yawara *yawara = new Yawara(*ptr);
+	ptr->box.Centered({0, 0});
+	ptr->AddComponent(yawara);
 
 	// Cursor
 	GameObject *gocur = new GameObject();
 	weak_ptr = AddObject(gocur);
 	ptr = weak_ptr.lock();
 	Cursor *cur = new Cursor(*ptr);
-	Sprite *spcur = new Sprite(*ptr, "assets/img/penguinface.png");
+	Sprite *spcur = new Sprite(*ptr, STAGE_STT_CURSOR_SPRITE);
 	spcur->SetScale(0.1, 0.1);
 	ptr->AddComponent(cur);
 	ptr->AddComponent(spcur);
 
-	Camera::Follow(GetObjectPtr(gopen), weak_ptr);
-	Camera::ratio = 0.37;
+	Camera::Follow(GetObjectPtr(goya), weak_ptr);
+	Camera::ratio = STAGE_STT_CAMERA_RATIO;
 
 	// BGM
-	bgMusic.Open("assets/audio/stageState.ogg");
-	bgMusic.Play(-1);
+	bgMusic.Open(STAGE_STT_BGM);
+	bgMusic.Play();
 }
 
 StageState::~StageState()
@@ -150,8 +142,7 @@ void StageState::Update(float dt)
 	}
 
 	// verifica condições de vitoria.
-	if (PenguinBody::player == nullptr)
-	{
+	if (Yawara::player == nullptr) {
 		popRequested = true;
 		Data::playerVictory = false;
 		EndState *stage = new EndState();

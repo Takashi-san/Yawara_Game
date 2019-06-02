@@ -2,7 +2,7 @@ bin/
 
 dep/
 
-yawara
+/yawara
 
 *.swp
 

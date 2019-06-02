@@ -208,9 +208,9 @@ void Game::Run()
 	Resources::ClearFonts();
 }
 
-void Game::CalculateDeltaTime()
-{
-	dt = (float)(SDL_GetTicks() - frameStart) / 1000;
+void Game::CalculateDeltaTime() {
+	dt = (float)(SDL_GetTicks() - frameStart)/1000;
+	// std::cout << "dt = " << dt << " seg.\n";
 	frameStart = SDL_GetTicks();
 }
 
