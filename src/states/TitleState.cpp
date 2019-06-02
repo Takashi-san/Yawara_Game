@@ -7,7 +7,12 @@
 #include "Text.h"
 #include "Timer.h"
 
-TitleState::TitleState() : bgMusic("assets/audio/menu.mp3"){
+#include "Fonts.h"
+
+#define TITLE_STT_BG	"assets/img/background/main_menu.png"
+#define TITLE_STT_BGM	"assets/audio/musica/main_menu.mp3"
+
+TitleState::TitleState() {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
@@ -17,7 +22,7 @@ TitleState::TitleState() : bgMusic("assets/audio/menu.mp3"){
 	ptr = weak_ptr.lock();
 	ptr->box.x = 0;
 	ptr->box.y = 0;
-	Sprite *sp = new Sprite(*ptr, "assets/img/menu.png");
+	Sprite *sp = new Sprite(*ptr, TITLE_STT_BG);
 	CameraFollower *cmfl = new CameraFollower(*ptr);
 	ptr->AddComponent(sp);
 	ptr->AddComponent(cmfl);
@@ -26,14 +31,14 @@ TitleState::TitleState() : bgMusic("assets/audio/menu.mp3"){
 	GameObject *t1go = new GameObject();
 	weak_ptr = AddObject(t1go);
 	ptr = weak_ptr.lock();
-	Text* tx1 = new Text(*ptr, "assets/font/tempsitc.ttf", 50, Text::BLENDED, "Play", {255, 255, 255, 255});
+	Text* tx1 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Play", {255, 255, 255, 255});
 	ptr->box.Centered({341, 500});
 	ptr->AddComponent(tx1);
 
 	GameObject *t2go = new GameObject();
 	weak_ptr = AddObject(t2go);
 	ptr = weak_ptr.lock();
-	Text* tx2 = new Text(*ptr, "assets/font/tempsitc.ttf", 50, Text::BLENDED, "Quit", {255, 255, 255, 255});
+	Text* tx2 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Quit", {255, 255, 255, 255});
 	ptr->box.Centered({683, 500});
 	ptr->AddComponent(tx2);
 
@@ -42,9 +47,13 @@ TitleState::TitleState() : bgMusic("assets/audio/menu.mp3"){
 	weak_ptr = AddObject(sgo);
 	ptr = weak_ptr.lock();
 	selection = sgo;
-	Text* txs = new Text(*ptr, "assets/font/tempsitc.ttf", 50, Text::BLENDED, ">>", {255, 255, 255, 255}, 0.3);
+	Text* txs = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, ">>", {255, 255, 255, 255}, 0.3);
 	ptr->box.Centered({280, 500});
 	ptr->AddComponent(txs);
+
+	// BGM
+	bgMusic.Open(TITLE_STT_BGM);
+	bgMusic.Play();
 
 	opt = PLAY;
 }

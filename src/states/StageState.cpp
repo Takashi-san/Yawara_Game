@@ -8,8 +8,6 @@
 #include "Camera.h"
 #include "CameraFollower.h"
 #include "Alien.h"
-#include "Minion.h"
-#include "PenguinBody.h"
 #include "Collision.h"
 #include "Collider.h"
 #include "Data.h"
@@ -18,27 +16,13 @@
 #include "Cursor.h"
 #include "Yawara.h"
 
-#define STAGE_STATE_BG				"assets/penguin/img/ocean.jpg"
-#define STAGE_STATE_BGM				"assets/penguin/audio/stageState.ogg"
-#define STAGE_STATE_CURSOR_SPRITE	"assets/penguin/img/penguinface.png"
-#define STAGE_STATE_CAMERA_RATIO	0.37
+#include "Tilesets.h"
+#include "Tilemaps.h"
 
-#define STAGE_STATE_MAP1_TM1		"assets/tilemap/cerrado_dark/mapa1/mapa1_solo_base.csv"
-#define STAGE_STATE_MAP1_TM2		"assets/tilemap/cerrado_dark/mapa1/mapa1_rochedo.csv"
-#define STAGE_STATE_MAP1_TM3		"assets/tilemap/cerrado_dark/mapa1/mapa1_solo_cima.csv"
-#define STAGE_STATE_MAP1_TM4		"assets/tilemap/cerrado_dark/mapa1/mapa1_arvore.csv"
-#define STAGE_STATE_MAP1_TM5		"assets/tilemap/cerrado_dark/mapa1/mapa1_plantas_e_rochas.csv"
-#define STAGE_STATE_MAP_TILE		16
-
-#define STAGE_STATE_SOLO_TS			"assets/img/tileset/solo.png"
-#define STAGE_STATE_SOLO_W			16
-#define STAGE_STATE_SOLO_H			16
-#define STAGE_STATE_PLANT_ROCK_TS	"assets/img/tileset/planta_rocha.png"
-#define STAGE_STATE_PLANT_ROCK_W	144
-#define STAGE_STATE_PLANT_ROCK_H	160
-#define STAGE_STATE_TREE_TS			"assets/img/tileset/arvore.png"
-#define STAGE_STATE_TREE_W			368
-#define STAGE_STATE_TREE_H			304
+#define STAGE_STT_BG			"assets/penguin/img/ocean.jpg"
+#define STAGE_STT_BGM			"assets/penguin/audio/stageState.ogg"
+#define STAGE_STT_CURSOR_SPRITE	"assets/penguin/img/penguinface.png"
+#define STAGE_STT_CAMERA_RATIO	0.37
 
 StageState::StageState() {
 	std::weak_ptr<GameObject> weak_ptr;
@@ -50,7 +34,7 @@ StageState::StageState() {
 	ptr = weak_ptr.lock();
 	ptr->box.x = 0;
 	ptr->box.y = 0;
-	Sprite *sp = new Sprite(*ptr, STAGE_STATE_BG);
+	Sprite *sp = new Sprite(*ptr, STAGE_STT_BG);
 	CameraFollower *cmfl = new CameraFollower(*ptr);
 	ptr->AddComponent(sp);
 	ptr->AddComponent(cmfl);
@@ -59,8 +43,8 @@ StageState::StageState() {
 	GameObject *gomp1 = new GameObject();
 	weak_ptr = AddObject(gomp1);
 	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, STAGE_STATE_SOLO_W, STAGE_STATE_SOLO_H, STAGE_STATE_SOLO_TS);
-	TileMap *tlmp1 = new TileMap(*ptr, STAGE_STATE_MAP_TILE, STAGE_STATE_MAP_TILE, STAGE_STATE_MAP1_TM1, tileset);
+	tileset = new TileSet(*ptr, TS_SOLO_W, TS_SOLO_H, TS_SOLO);
+	TileMap *tlmp1 = new TileMap(*ptr, TILE, TILE, TM_MAP1_1, tileset);
 	tlmp1->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
@@ -69,8 +53,8 @@ StageState::StageState() {
 	GameObject *gomp2 = new GameObject();
 	weak_ptr = AddObject(gomp2);
 	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, STAGE_STATE_SOLO_W, STAGE_STATE_SOLO_H, STAGE_STATE_SOLO_TS);
-	TileMap *tlmp2 = new TileMap(*ptr, STAGE_STATE_MAP_TILE, STAGE_STATE_MAP_TILE, STAGE_STATE_MAP1_TM2, tileset);
+	tileset = new TileSet(*ptr, TS_SOLO_W, TS_SOLO_H, TS_SOLO);
+	TileMap *tlmp2 = new TileMap(*ptr, TILE, TILE, TM_MAP1_2, tileset);
 	tlmp2->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
@@ -79,8 +63,8 @@ StageState::StageState() {
 	GameObject *gomp3 = new GameObject();
 	weak_ptr = AddObject(gomp3);
 	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, STAGE_STATE_SOLO_W, STAGE_STATE_SOLO_H, STAGE_STATE_SOLO_TS);
-	TileMap *tlmp3 = new TileMap(*ptr, STAGE_STATE_MAP_TILE, STAGE_STATE_MAP_TILE, STAGE_STATE_MAP1_TM3, tileset);
+	tileset = new TileSet(*ptr, TS_SOLO_W, TS_SOLO_H, TS_SOLO);
+	TileMap *tlmp3 = new TileMap(*ptr, TILE, TILE, TM_MAP1_3, tileset);
 	tlmp3->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
@@ -89,8 +73,8 @@ StageState::StageState() {
 	GameObject *gomp4 = new GameObject();
 	weak_ptr = AddObject(gomp4);
 	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, STAGE_STATE_TREE_W, STAGE_STATE_TREE_H, STAGE_STATE_TREE_TS);
-	TileMap *tlmp4 = new TileMap(*ptr, STAGE_STATE_MAP_TILE, STAGE_STATE_MAP_TILE, STAGE_STATE_MAP1_TM4, tileset);
+	tileset = new TileSet(*ptr, TS_TREE_W, TS_TREE_H, TS_TREE);
+	TileMap *tlmp4 = new TileMap(*ptr, TILE, TILE, TM_MAP1_4, tileset);
 	tlmp4->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
@@ -99,8 +83,8 @@ StageState::StageState() {
 	GameObject *gomp5 = new GameObject();
 	weak_ptr = AddObject(gomp5);
 	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, STAGE_STATE_PLANT_ROCK_W, STAGE_STATE_PLANT_ROCK_H, STAGE_STATE_PLANT_ROCK_TS);
-	TileMap *tlmp5 = new TileMap(*ptr, STAGE_STATE_MAP_TILE, STAGE_STATE_MAP_TILE, STAGE_STATE_MAP1_TM5, tileset);
+	tileset = new TileSet(*ptr, TS_PLANT_ROCK_W, TS_PLANT_ROCK_H, TS_PLANT_ROCK);
+	TileMap *tlmp5 = new TileMap(*ptr, TILE, TILE, TM_MAP1_5, tileset);
 	tlmp5->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
@@ -128,17 +112,17 @@ StageState::StageState() {
 	weak_ptr = AddObject(gocur);
 	ptr = weak_ptr.lock();
 	Cursor *cur = new Cursor(*ptr);
-	Sprite *spcur = new Sprite(*ptr, STAGE_STATE_CURSOR_SPRITE);
+	Sprite *spcur = new Sprite(*ptr, STAGE_STT_CURSOR_SPRITE);
 	spcur->SetScale(0.1, 0.1);
 	ptr->AddComponent(cur);
 	ptr->AddComponent(spcur);
 
 	Camera::Follow(GetObjectPtr(goya), weak_ptr);
-	Camera::ratio = STAGE_STATE_CAMERA_RATIO;
+	Camera::ratio = STAGE_STT_CAMERA_RATIO;
 
 	// BGM
-	bgMusic.Open(STAGE_STATE_BGM);
-	bgMusic.Play(-1);
+	bgMusic.Open(STAGE_STT_BGM);
+	bgMusic.Play();
 }
 
 StageState::~StageState() {
