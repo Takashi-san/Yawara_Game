@@ -2,6 +2,9 @@
 #include "Resources.h"
 #include "InputManager.h"
 
+#define GAME_SIZE_W	1024
+#define GAME_SIZE_H	600
+
 Game* Game::instance;
 
 Game::Game(std::string title, int width, int height) {
@@ -110,7 +113,7 @@ Game& Game::GetInstance() {
 	// Verifica se ja existe um objeto da classe.
 	if(instance == nullptr){
 		// Se não existir, o cria.
-		instance = new Game("BrunoTakashiTengan120167263", 1024, 600);
+		instance = new Game("Yawara", GAME_SIZE_W, GAME_SIZE_H);
 	}
 
 	// Retorna objeto da classe existente.
