@@ -9,11 +9,6 @@
 #include <stdbool.h>
 #include <memory>
 
-#define TAPU_BULLET_SPEED 750
-#define TAPU_BULLET_DAMAGE 10
-#define TAPU_BULLET_RANGE 1000
-#define TAPU_SHOOT_CD 0.4
-
 class Tapu : public Component
 {
     private:

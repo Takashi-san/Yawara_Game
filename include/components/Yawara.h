@@ -9,8 +9,6 @@
 #include <stdbool.h>
 #include <memory>
 
-#define YAWARA_SPEED 500
-
 class Yawara : public Component{
 private:
 	Vec2 speed;

@@ -9,17 +9,60 @@
 #include "Sound.h"
 #include "Tapu.h"
 
+#define YWR_SPEED		500
+#define YWR_HP			100
+
+#define YWR_ANI_TIME	0.100
+
+#define YWR_IDLE_D			"assets/img/yawara/yawara_idle_down.png"
+#define YWR_IDLE_D_FRAME	1
+#define YWR_IDLE_U			"assets/img/yawara/yawara_idle_up.png"
+#define YWR_IDLE_U_FRAME	1
+#define YWR_IDLE_L			"assets/img/yawara/yawara_walk_left.png"
+#define YWR_IDLE_L_FRAME	12
+#define YWR_IDLE_R			"assets/img/yawara/yawara_walk_right.png"
+#define YWR_IDLE_R_FRAME	12
+#define YWR_IDLE_DL			"assets/img/yawara/yawara_idle_down_left.png"
+#define YWR_IDLE_DL_FRAME	1
+#define YWR_IDLE_DR			"assets/img/yawara/yawara_idle_down_right.png"
+#define YWR_IDLE_DR_FRAME	1
+#define YWR_IDLE_UL			"assets/img/yawara/yawara_idle_up_left.png"
+#define YWR_IDLE_UL_FRAME	1
+#define YWR_IDLE_UR			"assets/img/yawara/yawara_idle_up_right.png"
+#define YWR_IDLE_UR_FRAME	1
+
+#define YWR_RUN_D			"assets/img/yawara/yawara_run_down.png"
+#define YWR_RUN_D_FRAME		9
+#define YWR_RUN_U			"assets/img/yawara/yawara_run_up.png"
+#define YWR_RUN_U_FRAME		9
+#define YWR_RUN_L			"assets/img/yawara/yawara_run_left.png"
+#define YWR_RUN_L_FRAME		10
+#define YWR_RUN_R			"assets/img/yawara/yawara_walk_right.png"
+#define YWR_RUN_R_FRAME		12
+#define YWR_RUN_DL			"assets/img/yawara/yawara_run_down_left.png"
+#define YWR_RUN_DL_FRAME	9
+#define YWR_RUN_DR			"assets/img/yawara/yawara_idle_down_right.png"
+#define YWR_RUN_DR_FRAME	1
+#define YWR_RUN_UL			"assets/img/yawara/yawara_run_up_left.png"
+#define YWR_RUN_UL_FRAME	9
+#define YWR_RUN_UR			"assets/img/yawara/yawara_idle_up_right.png"
+#define YWR_RUN_UR_FRAME	1
+
+#define YWR_DEATH		"assets/penguin/img/penguindeath.png"
+#define YWR_DEATH_FRAME	5
+#define YWR_DEATH_SOUND	"assets/penguin/audio/boom.wav"
+
 Yawara* Yawara::player;
 
 Yawara::Yawara(GameObject& associated) : Component(associated) {
 	player = this;
 
-	Sprite* sp = new Sprite(associated, "assets/img/yawara_r.png", 12, 0.100);
+	Sprite* sp = new Sprite(associated, YWR_IDLE_R, YWR_IDLE_R_FRAME, YWR_ANI_TIME);
 	associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 
-	hp = 100;
+	hp = YWR_HP;
 	speed = {0, 0};
 	dir = RIGHT;
 	idle = true;
@@ -48,19 +91,19 @@ void Yawara::Update(float dt) {
 
 	if (input.IsKeyDown(W_KEY)) {
 		if (input.IsKeyDown(A_KEY)) {
-			speed = {-YAWARA_SPEED/2, -YAWARA_SPEED/2};
+			speed = {-YWR_SPEED/2, -YWR_SPEED/2};
 			if (dir != LEFT_UP) {
 				change_sprite = true;
 			}
 			dir = LEFT_UP;
 		} else if (input.IsKeyDown(D_KEY)) {
-			speed = {YAWARA_SPEED/2, -YAWARA_SPEED/2};
+			speed = {YWR_SPEED/2, -YWR_SPEED/2};
 			if (dir != RIGHT_UP) {
 				change_sprite = true;
 			}
 			dir = RIGHT_UP;
 		} else {
-			speed = {0, -YAWARA_SPEED};
+			speed = {0, -YWR_SPEED};
 			if (dir != UP) {
 				change_sprite = true;
 			}
@@ -73,19 +116,19 @@ void Yawara::Update(float dt) {
 		idle = false;
 	} else if (input.IsKeyDown(S_KEY)) {
 		if (input.IsKeyDown(A_KEY)) {
-			speed = {-YAWARA_SPEED/2, YAWARA_SPEED/2};
+			speed = {-YWR_SPEED/2, YWR_SPEED/2};
 			if (dir != LEFT_DOWN) {
 				change_sprite = true;
 			}
 			dir = LEFT_DOWN;
 		} else if (input.IsKeyDown(D_KEY)) {
-			speed = {YAWARA_SPEED/2, YAWARA_SPEED/2};
+			speed = {YWR_SPEED/2, YWR_SPEED/2};
 			if (dir != RIGHT_DOWN) {
 				change_sprite = true;
 			}
 			dir = RIGHT_DOWN;
 		} else {
-			speed = {0, YAWARA_SPEED};
+			speed = {0, YWR_SPEED};
 			if (dir != DOWN) {
 				change_sprite = true;
 			}
@@ -97,7 +140,7 @@ void Yawara::Update(float dt) {
 		}
 		idle = false;
 	} else if (input.IsKeyDown(A_KEY)) {
-		speed = {-YAWARA_SPEED, 0};
+		speed = {-YWR_SPEED, 0};
 		if (dir != LEFT) {
 			change_sprite = true;
 		}
@@ -108,7 +151,7 @@ void Yawara::Update(float dt) {
 		}
 		idle = false;
 	} else if (input.IsKeyDown(D_KEY)) {
-		speed = {YAWARA_SPEED, 0};
+		speed = {YWR_SPEED, 0};
 		if (dir != RIGHT) {
 			change_sprite = true;
 		}
@@ -135,43 +178,43 @@ void Yawara::Update(float dt) {
 			if (sp) {
 				switch (dir) {
 					case RIGHT:
-						sp->Open("assets/img/yawara_r.png");
-						sp->SetFrameCount(12);
+						sp->Open(YWR_IDLE_R);
+						sp->SetFrameCount(YWR_IDLE_R_FRAME);
 					break;
 
 					case LEFT:
-						sp->Open("assets/img/yawara_l.png");
-						sp->SetFrameCount(12);
+						sp->Open(YWR_IDLE_L);
+						sp->SetFrameCount(YWR_IDLE_L_FRAME);
 					break;
 
 					case UP:
-						sp->Open("assets/img/yawara_u2.png");
-						sp->SetFrameCount(1);
+						sp->Open(YWR_IDLE_U);
+						sp->SetFrameCount(YWR_IDLE_U_FRAME);
 					break;
 
 					case DOWN:
-						sp->Open("assets/img/yawara_d2.png");
-						sp->SetFrameCount(1);
+						sp->Open(YWR_IDLE_D);
+						sp->SetFrameCount(YWR_IDLE_D_FRAME);
 					break;
 
 					case RIGHT_UP:
-						sp->Open("assets/img/yawara_ur.png");
-						sp->SetFrameCount(1);
+						sp->Open(YWR_IDLE_UR);
+						sp->SetFrameCount(YWR_IDLE_UR_FRAME);
 					break;
 
 					case RIGHT_DOWN:
-						sp->Open("assets/img/yawara_dr.png");
-						sp->SetFrameCount(1);
+						sp->Open(YWR_IDLE_DR);
+						sp->SetFrameCount(YWR_IDLE_DR_FRAME);
 					break;
 
 					case LEFT_UP:
-						sp->Open("assets/img/yawara_ul.png");
-						sp->SetFrameCount(1);
+						sp->Open(YWR_IDLE_UL);
+						sp->SetFrameCount(YWR_IDLE_UL_FRAME);
 					break;
 
 					case LEFT_DOWN:
-						sp->Open("assets/img/yawara_dl.png");
-						sp->SetFrameCount(1);
+						sp->Open(YWR_IDLE_DL);
+						sp->SetFrameCount(YWR_IDLE_DL_FRAME);
 					break;
 
 					default:
@@ -183,43 +226,43 @@ void Yawara::Update(float dt) {
 			if (sp) {
 				switch (dir) {
 					case RIGHT:
-						sp->Open("assets/img/yawara_r.png");
-						sp->SetFrameCount(12);
+						sp->Open(YWR_RUN_R);
+						sp->SetFrameCount(YWR_RUN_R_FRAME);
 					break;
 
 					case LEFT:
-						sp->Open("assets/img/yawara_run_l.png");
-						sp->SetFrameCount(10);
+						sp->Open(YWR_RUN_L);
+						sp->SetFrameCount(YWR_RUN_L_FRAME);
 					break;
 
 					case UP:
-						sp->Open("assets/img/yawara_run_u.png");
-						sp->SetFrameCount(9);
+						sp->Open(YWR_RUN_U);
+						sp->SetFrameCount(YWR_RUN_U_FRAME);
 					break;
 
 					case DOWN:
-						sp->Open("assets/img/yawara_run_d.png");
-						sp->SetFrameCount(9);
+						sp->Open(YWR_RUN_D);
+						sp->SetFrameCount(YWR_RUN_D_FRAME);
 					break;
 
 					case RIGHT_UP:
-						sp->Open("assets/img/yawara_ur.png");
-						sp->SetFrameCount(1);
+						sp->Open(YWR_RUN_UR);
+						sp->SetFrameCount(YWR_RUN_UR_FRAME);
 					break;
 
 					case RIGHT_DOWN:
-						sp->Open("assets/img/yawara_dr.png");
-						sp->SetFrameCount(1);
+						sp->Open(YWR_RUN_DR);
+						sp->SetFrameCount(YWR_RUN_DR_FRAME);
 					break;
 
 					case LEFT_UP:
-						sp->Open("assets/img/yawara_run_ul.png");
-						sp->SetFrameCount(9);
+						sp->Open(YWR_RUN_UL);
+						sp->SetFrameCount(YWR_RUN_UL_FRAME);
 					break;
 
 					case LEFT_DOWN:
-						sp->Open("assets/img/yawara_run_dl.png");
-						sp->SetFrameCount(9);
+						sp->Open(YWR_RUN_DL);
+						sp->SetFrameCount(YWR_RUN_DL_FRAME);
 					break;
 
 					default:
@@ -241,8 +284,8 @@ void Yawara::Update(float dt) {
 		std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 		std::shared_ptr<GameObject> ptr = weak_ptr.lock();
 		
-		Sprite* sp = new Sprite(*ptr, "assets/img/penguindeath.png", 5, 0.1, 5*0.1);
-		Sound *so = new Sound(*ptr, "assets/audio/boom.wav");
+		Sprite* sp = new Sprite(*ptr, YWR_DEATH, YWR_DEATH_FRAME, YWR_ANI_TIME, YWR_DEATH_FRAME * YWR_ANI_TIME);
+		Sound *so = new Sound(*ptr, YWR_DEATH_SOUND);
 		ptr->box.Centered(associated.box.Center());
 		ptr->AddComponent(sp);
 		ptr->AddComponent(so);

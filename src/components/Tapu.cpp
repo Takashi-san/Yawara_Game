@@ -7,16 +7,32 @@
 #include "Collider.h"
 #include "Timer.h"
 
+#define TAPU_BULLET_SPEED	750
+#define TAPU_BULLET_DAMAGE	10
+#define TAPU_BULLET_RANGE	1000
+#define TAPU_SHOOT_CD		0.4
+#define TAPU_RAIO			100
+
+#define TAPU_ANI_TIME	0.12
+#define TAPU_R			"assets/img/tapu/tapu_right.png"
+#define TAPU_R_FRAME	9
+#define TAPU_L			"assets/img/tapu/tapu_left.png"
+#define TAPU_L_FRAME	9
+
+#define TAPU_BULLET			"assets/penguin/img/minionbullet2.png"
+#define TAPU_BULLET_FRAME	3
+#define TAPU_BULLET_TIME	0.04
+
 Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component(associated) {
 
-	Sprite* sp = new Sprite(associated, "assets/img/spirit_r.png", 9, 0.12);
+	Sprite* sp = new Sprite(associated, TAPU_R, TAPU_R_FRAME, TAPU_ANI_TIME);
 	associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 
 	angle = 0;
 	this->yawara = Yawara;
-    radius = 100;
+    radius = TAPU_RAIO;
 	dir = LEFT;
 	changedDir = false;
 }
@@ -89,11 +105,11 @@ void Tapu::Render() {
 		switch (dir)
 		{
 			case LEFT:
-				sp->Open("assets/img/spirit_l.png");
+				sp->Open(TAPU_L);
 				break;
 			
 			case RIGHT:
-				sp->Open("assets/img/spirit_r.png");
+				sp->Open(TAPU_R);
 				break;
 		}		
 	}
@@ -111,7 +127,7 @@ void Tapu::Shoot() {
 	weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 	ptr = weak_ptr.lock();
 	
-	Bullet *bam = new Bullet(*ptr, angle, TAPU_BULLET_SPEED, TAPU_BULLET_DAMAGE, TAPU_BULLET_RANGE, "assets/img/minionbullet2.png", 3, 0.04, false);
+	Bullet *bam = new Bullet(*ptr, angle, TAPU_BULLET_SPEED, TAPU_BULLET_DAMAGE, TAPU_BULLET_RANGE, TAPU_BULLET, TAPU_BULLET_FRAME, TAPU_BULLET_TIME, false);
 	ptr->box.Centered(associated.box.Center());
 	Vec2 offset(associated.box.w/2, 0);
 	offset.Rotate(angle);

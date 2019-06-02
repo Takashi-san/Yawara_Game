@@ -90,15 +90,6 @@ StageState::StageState() {
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp5);
 
-	// Alien
-	GameObject *goali1 = new GameObject();
-	weak_ptr = AddObject(goali1);
-	ptr = weak_ptr.lock();
-	Alien *alien1 = new Alien(*ptr, 5, 0.5);
-	ptr->box.x = 512 - goali1->box.w/2;
-	ptr->box.y = 300 - goali1->box.h/2;
-	ptr->AddComponent(alien1);
-
 	// Yawara
 	GameObject *goya = new GameObject();
 	weak_ptr = AddObject(goya);
@@ -137,6 +128,7 @@ void StageState::Update(float dt) {
 		popRequested = true;
 	}
 
+	/*
 	// verifica condições de vitoria.
 	if (Yawara::player == nullptr) {
 		popRequested = true;
@@ -149,6 +141,7 @@ void StageState::Update(float dt) {
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
 	}
+	*/
 	
 	UpdateArray(dt);
 
