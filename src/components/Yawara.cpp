@@ -12,9 +12,6 @@
 
 Yawara *Yawara::player;
 
-int safeX;
-int safeY;
-
 Yawara::Yawara(GameObject &associated) : Component(associated)
 {
 	player = this;

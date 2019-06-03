@@ -32,6 +32,9 @@ private:
 	};
 	Direction dir;
 
+	int safeX;
+	int safeY;
+
 	std::weak_ptr<GameObject> tapu;
 
 public:
