@@ -16,7 +16,7 @@ class Tapu : public Component
         float angle;
         int radius;
 
-        enum Direction {LEFT, RIGHT};
+        enum Direction {LEFT, RIGHT, UP, DOWN, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT};
         Direction dir;
         bool changedDir;
 
