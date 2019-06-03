@@ -20,12 +20,13 @@
 #include "Tilesets.h"
 #include "Tilemaps.h"
 
-#define STAGE_STT_BG			"assets/penguin/img/ocean.jpg"
-#define STAGE_STT_BGM			"assets/penguin/audio/stageState.ogg"
-#define STAGE_STT_CURSOR_SPRITE	"assets/penguin/img/penguinface.png"
-#define STAGE_STT_CAMERA_RATIO	0.37
+#define STAGE_STT_BG "assets/penguin/img/ocean.jpg"
+#define STAGE_STT_BGM "assets/penguin/audio/stageState.ogg"
+#define STAGE_STT_CURSOR_SPRITE "assets/penguin/img/penguinface.png"
+#define STAGE_STT_CAMERA_RATIO 0.37
 
-StageState::StageState() {
+StageState::StageState()
+{
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
@@ -66,6 +67,7 @@ StageState::StageState() {
 	ptr = weak_ptr.lock();
 	tileset = new TileSet(*ptr, TS_SOLO_W, TS_SOLO_H, TS_SOLO);
 	TileMap *tlmp3 = new TileMap(*ptr, TILE, TILE, TM_MAP1_3, tileset);
+	// TileMap *tlmp3 = new TileMap(*ptr, TILE, TILE, CL_MAP1, tileset);
 	tlmp3->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
@@ -91,6 +93,8 @@ StageState::StageState() {
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp5);
 
+	Floor::Load(CL_MAP1, TILE, TILE);
+
 	// Alien
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
@@ -105,7 +109,7 @@ StageState::StageState() {
 	weak_ptr = AddObject(goya);
 	ptr = weak_ptr.lock();
 	Yawara *yawara = new Yawara(*ptr);
-	ptr->box.Centered({0, 0});
+	ptr->box.Centered({1150, 30});
 	ptr->AddComponent(yawara);
 
 	// Cursor
@@ -142,7 +146,8 @@ void StageState::Update(float dt)
 	}
 
 	// verifica condições de vitoria.
-	if (Yawara::player == nullptr) {
+	if (Yawara::player == nullptr)
+	{
 		popRequested = true;
 		Data::playerVictory = false;
 		EndState *stage = new EndState();
