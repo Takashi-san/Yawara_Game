@@ -10,21 +10,34 @@
 #include <memory>
 
 #define YAWARA_SPEED 500
+#define SAFE_DISTANCE_UP 16 * 0.7
+#define SAFE_DISTANCE_DOWN 48 * 0.7
 
-class Yawara : public Component{
+class Yawara : public Component
+{
 private:
 	Vec2 speed;
 	int hp;
 	bool idle, change_sprite;
-	enum Direction { RIGHT, UP, LEFT, DOWN, LEFT_DOWN, LEFT_UP, RIGHT_DOWN, RIGHT_UP };
+	enum Direction
+	{
+		RIGHT,
+		UP,
+		LEFT,
+		DOWN,
+		LEFT_DOWN,
+		LEFT_UP,
+		RIGHT_DOWN,
+		RIGHT_UP
+	};
 	Direction dir;
 
 	std::weak_ptr<GameObject> tapu;
 
 public:
-	static Yawara* player;
-	
-	Yawara(GameObject&);
+	static Yawara *player;
+
+	Yawara(GameObject &);
 	~Yawara();
 
 	void Start();
@@ -32,7 +45,7 @@ public:
 	void Render();
 	bool Is(std::string);
 
-	void NotifyCollision(GameObject&);
+	void NotifyCollision(GameObject &);
 
 	Vec2 GetPos();
 };
