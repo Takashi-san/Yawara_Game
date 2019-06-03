@@ -1,6 +1,5 @@
 #pragma once // Alows to initializate the header just once
 
-#include "PenguinBody.h"
 #include "Camera.h"
 #include <vector>
 #include <fstream>

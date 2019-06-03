@@ -8,7 +8,7 @@
 #include "Collider.h"
 #include "Bullet.h"
 #include "Sound.h"
-#include "PenguinBody.h"
+#include "Yawara.h"
 
 int Alien::alienCount;
 
@@ -20,7 +20,7 @@ Alien::Alien(GameObject &associated, int nMinions, float restOffset) : Component
 	this->nMinions = nMinions;
 	this->restOffset = restOffset;
 	//Sprite *sp = new Sprite(associated, "assets/img/alien.png");
-	Sprite *sp = new Sprite(associated, "assets/img/capelobo.png", 8, 0.150);
+	Sprite *sp = new Sprite(associated, "assets/img/capelobo/capelobo.png", 8, 0.150);
 	//Sprite* sp = new Sprite(associated, "assets/img/guara_r.png", 12, 0.140);
 	Collider *cl = new Collider(associated, {0.85, 0.85});
 	associated.AddComponent(sp);
@@ -66,7 +66,7 @@ void Alien::Update(float dt)
 
 	associated.angleDeg += (ALIEN_VEL_ANG / 0.0174533) * dt;
 
-	if (PenguinBody::player != nullptr)
+	if (Yawara::player != nullptr)
 	{
 		int j;
 		switch (state)
@@ -82,7 +82,7 @@ void Alien::Update(float dt)
 				speed.y = 0;
 
 				// Comanda o minion atirar.
-				destination = PenguinBody::player->GetPos();
+				destination = Yawara::player->GetPos();
 				for (unsigned int i = 0; i < minionArray.size(); i++)
 				{
 					std::shared_ptr<GameObject> ptr = minionArray[i].lock();
@@ -117,7 +117,7 @@ void Alien::Update(float dt)
 			restTimer.Update(dt);
 			if (restTimer.Get() > ALIEN_REST_BASE + restOffset)
 			{
-				destination = PenguinBody::player->GetPos();
+				destination = Yawara::player->GetPos();
 				if ((destination - associated.box.Center()).Modulo() != 0)
 				{
 					speed = ((destination - associated.box.Center()) / ((destination - associated.box.Center()).Modulo())) * ALIEN_SPEED;
