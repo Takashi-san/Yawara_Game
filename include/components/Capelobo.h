@@ -15,32 +15,39 @@
 #include <cmath>
 
 #define ALIEN_VEL_ANG 0
-#define ALIEN_SPEED 0
+#define ALIEN_SPEED 300
 #define ALIEN_REST_BASE 0.5
 
-class Alien : public Component
+#define SAFE_UP 16
+#define SAFE_DOWN 64
+#define SAFE_SIDE 128
+
+class Capelobo : public Component
 {
 private:
-	enum AlienState
+	enum CapeloboState
 	{
 		MOVING,
-		RESTING
+		RESTING,
+		BASIC_ATTACK,
+		LOAD_ATTACK
 	};
-	AlienState state;
+	CapeloboState state;
 	Timer restTimer;
 	float restOffset;
 	Vec2 destination;
 
 	Vec2 speed;
 	int hp;
-	int nMinions;
-	std::vector<std::weak_ptr<GameObject>> minionArray;
+
+	int safeX;
+	int safeY;
 
 public:
-	static int alienCount;
+	static Capelobo *boss;
 
-	Alien(GameObject &, int, float = 0);
-	~Alien();
+	Capelobo(GameObject &, float = 0);
+	~Capelobo();
 
 	void Start();
 	void Update(float);

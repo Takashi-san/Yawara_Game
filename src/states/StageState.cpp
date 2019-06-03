@@ -7,7 +7,7 @@
 #include "InputManager.h"
 #include "Camera.h"
 #include "CameraFollower.h"
-#include "Alien.h"
+#include "Capelobo.h"
 #include "Collision.h"
 #include "Collider.h"
 #include "Data.h"
@@ -95,14 +95,13 @@ StageState::StageState()
 
 	Floor::Load(CL_MAP1, TILE, TILE);
 
-	// Alien
+	// Capelobo
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
 	ptr = weak_ptr.lock();
-	Alien *alien1 = new Alien(*ptr, 5, 0.5);
-	ptr->box.x = 512 - goali1->box.w / 2;
-	ptr->box.y = 300 - goali1->box.h / 2;
-	ptr->AddComponent(alien1);
+	Capelobo *cape = new Capelobo(*ptr, 0.5);
+	ptr->box.Centered({512, 300});
+	ptr->AddComponent(cape);
 
 	// Yawara
 	GameObject *goya = new GameObject();
@@ -153,7 +152,7 @@ void StageState::Update(float dt)
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
 	}
-	else if (Alien::alienCount == 0)
+	else if (Capelobo::boss == nullptr)
 	{
 		popRequested = true;
 		Data::playerVictory = true;
