@@ -92,15 +92,47 @@ void Capelobo::Update(float dt)
 					int signalY = speed.y / abs(speed.y);
 					int signalX = speed.x / abs(speed.x);
 					speed = {speed.x, signalY * signalX * speed.x};
+					change_sprite = true;
 				}
 				else if (abs(speed.x) < abs(speed.y) && (speed.x < -10 || speed.x > 10))
 				{
 					int signalY = speed.y / abs(speed.y);
 					int signalX = speed.x / abs(speed.x);
 					speed = {signalY * signalX * speed.y, speed.y};
+					change_sprite = true;
+				}
+				else
+					change_sprite = true;
+
+				// Seta direção para sprite
+
+				if (speed.y > 10)
+				{
+					if (speed.x > 10)
+						dir = RIGHT_DOWN;
+					else if (speed.x < -10)
+						dir = LEFT_DOWN;
+					else
+						dir = DOWN;
+				}
+				else if (speed.y < -10)
+				{
+					if (speed.x > 10)
+						dir = RIGHT_UP;
+					else if (speed.x < -10)
+						dir = LEFT_UP;
+					else
+						dir = UP;
+				}
+				else
+				{
+					if (speed.x > 10)
+						dir = RIGHT;
+					else if (speed.x < -10)
+						dir = LEFT;
 				}
 
-				// Anda.
+				// Verifica se pode andar
 
 				// if (speed.y > 100)
 				// {
@@ -125,6 +157,75 @@ void Capelobo::Update(float dt)
 				// 	state = RESTING;
 				// 	// cout << "move to : " << safeX << ' ' << safeY << '\t' << speed.x << ' ' << speed.y << "\t\t" << associated.box.Center().x << ' ' << associated.box.Center().y << endl;
 				// }
+
+				// Muda Sprite
+
+				if (change_sprite)
+				{
+					Vec2 position = associated.box.Center();
+					change_sprite = false;
+
+					Sprite *sp = static_cast<Sprite *>(associated.GetComponent("Sprite"));
+					if (sp)
+					{
+						switch (dir)
+						{
+						case RIGHT:
+							cout << "RIGHT" << dir << endl;
+							// sp->Open("assets/img/yawara/yawara_idle_right.png");
+							// sp->SetFrameCount(12);
+							break;
+
+						case LEFT:
+							cout << "LEFT" << endl;
+							// sp->Open("assets/img/yawara/yawara_idle_left.png");
+							// sp->SetFrameCount(12);
+							break;
+
+						case UP:
+							cout << "UP" << endl;
+							// sp->Open("assets/img/yawara/yawara_idle_up.png");
+							// sp->SetFrameCount(1);
+							break;
+
+						case DOWN:
+							cout << "DOWN" << endl;
+							// sp->Open("assets/img/yawara/yawara_idle_down.png");
+							// sp->SetFrameCount(1);
+							break;
+
+						case RIGHT_UP:
+							cout << "RIGHT_UP" << dir << endl;
+							// sp->Open("assets/img/yawara/yawara_idle_up_right.png");
+							// sp->SetFrameCount(1);
+							break;
+
+						case RIGHT_DOWN:
+							cout << "RIGHT_DOWN" << endl;
+							// sp->Open("assets/img/yawara/yawara_idle_down_right.png");
+							// sp->SetFrameCount(1);
+							break;
+
+						case LEFT_UP:
+							cout << "LEFT_UP" << endl;
+							// sp->Open("assets/img/yawara/yawara_idle_up_left.png");
+							// sp->SetFrameCount(1);
+							break;
+
+						case LEFT_DOWN:
+							cout << "LEFT_DOWN" << endl;
+							// sp->Open("assets/img/yawara/yawara_idle_down_left.png");
+							// sp->SetFrameCount(1);
+							break;
+
+						default:
+							break;
+						}
+					}
+					associated.box.Centered(position);
+				}
+
+				// Anda.
 
 				associated.box.x += speed.x * dt;
 				associated.box.y += speed.y * dt;

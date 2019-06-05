@@ -59,6 +59,8 @@ private:
 	int safeX;
 	int safeY;
 
+	bool change_sprite;
+
 public:
 	static Capelobo *boss;
 
