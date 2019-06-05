@@ -273,7 +273,7 @@ void Yawara::Update(float dt)
 
 				case LEFT:
 					sp->Open("assets/img/yawara/yawara_walk_left.png");
-					sp->SetFrameCount(10);
+					sp->SetFrameCount(12);
 					break;
 
 				case UP:
