@@ -144,6 +144,7 @@ void StageState::Update(float dt)
 		popRequested = true;
 	}
 
+	/*
 	// verifica condições de vitoria.
 	if (Yawara::player == nullptr)
 	{
