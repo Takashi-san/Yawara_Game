@@ -50,7 +50,12 @@ Vec2 Vec2::operator/(const float a)
 	return Vec2(x / a, y / a);
 }
 
-// Vec2 Vec2::operator+(const Rect &rect)
-// {
-// 	return Vec2(x + rect.x, y + rect.y);
-// }
+Vec2 Vec2::operator-=(const Vec2 &arg)
+{
+	return Vec2(x - arg.x, y - arg.y);
+}
+
+bool Vec2::operator==(const Vec2 &arg)
+{
+	return (x == arg.x && y == arg.y);
+}
