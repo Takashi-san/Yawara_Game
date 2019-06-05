@@ -17,6 +17,7 @@
 #define ALIEN_VEL_ANG 0
 #define ALIEN_SPEED 300
 #define ALIEN_REST_BASE 0.5
+#define BOSS_MOVEMENT 2
 
 #define SAFE_UP 16
 #define SAFE_DOWN 64
@@ -33,7 +34,22 @@ private:
 		LOAD_ATTACK
 	};
 	CapeloboState state;
+
+	enum Direction
+	{
+		RIGHT,
+		UP,
+		LEFT,
+		DOWN,
+		LEFT_DOWN,
+		LEFT_UP,
+		RIGHT_DOWN,
+		RIGHT_UP
+	};
+	Direction dir;
+
 	Timer restTimer;
+	Timer moveTimer;
 	float restOffset;
 	Vec2 destination;
 
