@@ -160,71 +160,6 @@ void Capelobo::Update(float dt)
 
 				// Muda Sprite
 
-				if (change_sprite)
-				{
-					Vec2 position = associated.box.Center();
-					change_sprite = false;
-
-					Sprite *sp = static_cast<Sprite *>(associated.GetComponent("Sprite"));
-					if (sp)
-					{
-						switch (dir)
-						{
-						case RIGHT:
-							cout << "RIGHT" << dir << endl;
-							// sp->Open("assets/img/yawara/yawara_idle_right.png");
-							// sp->SetFrameCount(12);
-							break;
-
-						case LEFT:
-							cout << "LEFT" << endl;
-							// sp->Open("assets/img/yawara/yawara_idle_left.png");
-							// sp->SetFrameCount(12);
-							break;
-
-						case UP:
-							cout << "UP" << endl;
-							// sp->Open("assets/img/yawara/yawara_idle_up.png");
-							// sp->SetFrameCount(1);
-							break;
-
-						case DOWN:
-							cout << "DOWN" << endl;
-							// sp->Open("assets/img/yawara/yawara_idle_down.png");
-							// sp->SetFrameCount(1);
-							break;
-
-						case RIGHT_UP:
-							cout << "RIGHT_UP" << dir << endl;
-							// sp->Open("assets/img/yawara/yawara_idle_up_right.png");
-							// sp->SetFrameCount(1);
-							break;
-
-						case RIGHT_DOWN:
-							cout << "RIGHT_DOWN" << endl;
-							// sp->Open("assets/img/yawara/yawara_idle_down_right.png");
-							// sp->SetFrameCount(1);
-							break;
-
-						case LEFT_UP:
-							cout << "LEFT_UP" << endl;
-							// sp->Open("assets/img/yawara/yawara_idle_up_left.png");
-							// sp->SetFrameCount(1);
-							break;
-
-						case LEFT_DOWN:
-							cout << "LEFT_DOWN" << endl;
-							// sp->Open("assets/img/yawara/yawara_idle_down_left.png");
-							// sp->SetFrameCount(1);
-							break;
-
-						default:
-							break;
-						}
-					}
-					associated.box.Centered(position);
-				}
-
 				// Anda.
 
 				associated.box.x += speed.x * dt;
@@ -288,6 +223,126 @@ void Capelobo::Update(float dt)
 
 void Capelobo::Render()
 {
+	Vec2 position = associated.box.Center();
+
+	Sprite *sp = static_cast<Sprite *>(associated.GetComponent("Sprite"));
+	if (change_sprite && sp)
+	{
+		change_sprite = false;
+		if (state == MOVING)
+		{
+			switch (dir)
+			{
+			case RIGHT:
+				cout << "RIGHT" << dir << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_right.png");
+				// sp->SetFrameCount(12);
+				break;
+
+			case LEFT:
+				cout << "LEFT" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_left.png");
+				// sp->SetFrameCount(12);
+				break;
+
+			case UP:
+				cout << "UP" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_up.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			case DOWN:
+				cout << "DOWN" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_down.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			case RIGHT_UP:
+				cout << "RIGHT_UP" << dir << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_up_right.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			case RIGHT_DOWN:
+				cout << "RIGHT_DOWN" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_down_right.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			case LEFT_UP:
+				cout << "LEFT_UP" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_up_left.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			case LEFT_DOWN:
+				cout << "LEFT_DOWN" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_down_left.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			default:
+				break;
+			}
+		}
+		else if (state == RESTING)
+		{
+			switch (dir)
+			{
+			case RIGHT:
+				cout << "RIGHT" << dir << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_right.png");
+				// sp->SetFrameCount(12);
+				break;
+
+			case LEFT:
+				cout << "LEFT" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_left.png");
+				// sp->SetFrameCount(12);
+				break;
+
+			case UP:
+				cout << "UP" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_up.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			case DOWN:
+				cout << "DOWN" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_down.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			case RIGHT_UP:
+				cout << "RIGHT_UP" << dir << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_up_right.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			case RIGHT_DOWN:
+				cout << "RIGHT_DOWN" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_down_right.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			case LEFT_UP:
+				cout << "LEFT_UP" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_up_left.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			case LEFT_DOWN:
+				cout << "LEFT_DOWN" << endl;
+				// sp->Open("assets/img/yawara/yawara_idle_down_left.png");
+				// sp->SetFrameCount(1);
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+	associated.box.Centered(position);
 }
 
 bool Capelobo::Is(std::string type)

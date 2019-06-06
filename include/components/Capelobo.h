@@ -17,7 +17,7 @@
 #define ALIEN_VEL_ANG 0
 #define ALIEN_SPEED 300
 #define ALIEN_REST_BASE 0.5
-#define BOSS_MOVEMENT 2
+#define BOSS_MOVEMENT 1.5
 
 #define SAFE_UP 16
 #define SAFE_DOWN 64

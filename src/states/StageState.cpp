@@ -99,7 +99,7 @@ StageState::StageState()
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
 	ptr = weak_ptr.lock();
-	Capelobo *cape = new Capelobo(*ptr, 0.5);
+	Capelobo *cape = new Capelobo(*ptr, 1);
 	ptr->box.Centered({512, 300});
 	ptr->AddComponent(cape);
 
@@ -144,7 +144,6 @@ void StageState::Update(float dt)
 		popRequested = true;
 	}
 
-	/*
 	// verifica condições de vitoria.
 	if (Yawara::player == nullptr)
 	{
