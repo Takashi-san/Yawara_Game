@@ -14,10 +14,16 @@ private:
 	Vec2 speed;
 	int hp;
 	bool idle, change_sprite;
-	enum Direction { RIGHT, UP, LEFT, DOWN, LEFT_DOWN, LEFT_UP, RIGHT_DOWN, RIGHT_UP };
+	enum Direction { RIGHT, LEFT, DOWN, DOWN_LEFT, DOWN_RIGHT, UP, UP_LEFT, UP_RIGHT };
+	enum Action { MOV, ATK, DGE };
 	Direction dir;
+	Action act;
 
 	std::weak_ptr<GameObject> tapu;
+
+	void CheckInput();
+	void DoAction(float);
+	void SetMov();
 
 public:
 	static Yawara* player;
