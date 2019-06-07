@@ -127,6 +127,10 @@ void Yawara::NotifyCollision(GameObject& other) {
 }
 
 Vec2 Yawara::GetPos() {
+	return {associated.box.x, associated.box.y};
+}
+
+Vec2 Yawara::GetCenterPos() {
 	return associated.box.Center();
 }
 

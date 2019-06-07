@@ -39,4 +39,5 @@ public:
 	void NotifyCollision(GameObject&);
 
 	Vec2 GetPos();
+	Vec2 GetCenterPos();
 };
