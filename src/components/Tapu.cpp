@@ -36,11 +36,18 @@ Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 
+	GameObject* go = new GameObject();
+	shadow_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	std::shared_ptr<GameObject> ptr = shadow_ptr.lock();
+	Sprite* shadow = new Sprite(*ptr, "assets/img/tapu/shadow.png");
+	ptr->box.Centered(associated.box.Center());
+	ptr->AddComponent(shadow);
+
 	angle = 0;
 	this->yawara = Yawara;
-    radius = TAPU_RAIO;
 	dir = RIGHT;
 	changedDir = false;
+	height = sp->GetHeight();
 }
 
 void Tapu::Update(float dt) {
@@ -58,13 +65,11 @@ void Tapu::Update(float dt) {
 
 		angle = atan2(TapuCenter.y - YwrCenter.y, TapuCenter.x - YwrCenter.x);
 
-		if(dist.Modulo() > radius){
-			newPos = YwrCenter + ((dist/dist.Modulo()) * radius);
+		if(dist.Modulo() > TAPU_RAIO){
+			newPos = YwrCenter + ((dist/dist.Modulo()) * TAPU_RAIO);
 			angle = atan2(input.GetMouseY() + Camera::pos.y - TapuCenter.y, input.GetMouseX() + Camera::pos.x - TapuCenter.x);
 		}
 		associated.box.Centered(newPos);
-
-		// associated.angleDeg = angle*180/M_PI;
 
 		if(goingUp){
 			counter += TAPU_ANI_TIME*TAPU_FRAMES*dt;
@@ -80,7 +85,18 @@ void Tapu::Update(float dt) {
 			}
 		}
 
-		associated.box.y += SineEaseInOut(counter) * 10;
+		float ease = SineEaseInOut(counter);
+
+		associated.box.y += ease * 10;
+
+		std::shared_ptr<GameObject> shadow = shadow_ptr.lock();
+		if(shadow){
+			shadow->box.Centered(TapuCenter.x, (height) + TapuCenter.y - (ease * 10));
+			Sprite* shadow_sprite = static_cast<Sprite*> (shadow->GetComponent("Sprite"));
+			if(shadow_sprite){
+				shadow_sprite->SetScale(1 + (0.45 * ease), 1 + (0.45 * ease));
+			}
+		}
 
 		dist = TapuCenter - YwrCenter;
 		changedDir = false;
@@ -88,79 +104,53 @@ void Tapu::Update(float dt) {
 		float degAngle = angle * 180/M_PI;
 
 		if(degAngle >= -22.5 && degAngle <= 22.5){
+			angle = 0;
 			if(dir != RIGHT){
 				dir = RIGHT;
 				changedDir = true;
 			}
 		} else if(degAngle < -22.5 && degAngle >= -67.5){
+			angle = -M_PI/4;
 			if (dir != UP_RIGHT){
 				dir = UP_RIGHT;
 				changedDir = true;
 			}
 		} else if(degAngle < -67.5 && degAngle >= -112.5){
+			angle = -M_PI/2;
 			if (dir != UP){
 				dir = UP;
 				changedDir = true;
 			}
 		} else if(degAngle < -112.5 && degAngle >= -157.5){
+			angle = -3*M_PI/4;
 			if (dir != UP_LEFT){
 				dir = UP_LEFT;
 				changedDir = true;
 			}
 		} else if((degAngle < -112.5 && degAngle >= -180) || (degAngle > 157.5 && degAngle <= 180)){
+			angle = M_PI;
 			if (dir != LEFT){
 				dir = LEFT;
 				changedDir = true;
 			}
 		} else if(degAngle <= 157.5 && degAngle > 112.5){
+			angle = 3*M_PI/4;
 			if (dir != DOWN_LEFT){
 				dir = DOWN_LEFT;
 				changedDir = true;
 			}
 		} else if(degAngle <= 112.5 && degAngle > 67.5){
+			angle = M_PI/2;
 			if (dir != DOWN){
 				dir = DOWN;
 				changedDir = true;
 			}
 		} else if(degAngle <= 67.5 && degAngle > 22.5){
+			angle = M_PI/4;
 			if (dir != DOWN_RIGHT){
 				dir = DOWN_RIGHT;
 				changedDir = true;
 			}
-		}
-
-		switch (dir){
-			case LEFT:
-				angle = M_PI;
-				break;
-			
-			case RIGHT:
-				angle = 0;
-				break;
-			
-			case UP:
-				angle = -M_PI/2;
-				break;
-			
-			case DOWN:
-				angle = M_PI/2;
-				break;
-			
-			case UP_LEFT:
-				angle = -3*M_PI/4;
-				break;
-			
-			case UP_RIGHT:
-				angle = -M_PI/4;
-				break;
-			
-			case DOWN_LEFT:
-				angle = 3*M_PI/4;
-				break;
-			
-			case DOWN_RIGHT:
-				angle = M_PI/4;
-				break;
 		}
 
 		cd.Update(dt);
@@ -172,6 +162,10 @@ void Tapu::Update(float dt) {
 
 	} else {
 		associated.RequestDelete();
+		std::shared_ptr<GameObject> shadow = shadow_ptr.lock();
+		if(shadow){
+			shadow->RequestDelete();
+		}
 	}
 }
 
