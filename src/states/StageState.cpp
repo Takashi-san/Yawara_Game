@@ -100,7 +100,7 @@ StageState::StageState()
 	weak_ptr = AddObject(goali1);
 	ptr = weak_ptr.lock();
 	Capelobo *cape = new Capelobo(*ptr, 1);
-	ptr->box.Centered({512, 300});
+	ptr->box.Centered({512, 850});
 	ptr->AddComponent(cape);
 
 	// Yawara
@@ -183,7 +183,7 @@ void StageState::Update(float dt)
 				Collider *colj = static_cast<Collider *>(objectArray[j]->GetComponent("Collider"));
 				if (colj != nullptr)
 				{
-					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg / 0.0174533, objectArray[j]->angleDeg / 0.0174533))
+					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg / (PI / 180), objectArray[j]->angleDeg / (PI / 180)))
 					{
 						objectArray[i]->NotifyCollision(*(objectArray[j]));
 						objectArray[j]->NotifyCollision(*(objectArray[i]));
