@@ -24,7 +24,7 @@ private:
 
 	int frameCount;
 	int currentFrame;
-	float timeElapsed;
+	Timer timeCount;
 	float frameTime;
 
 	Timer selfDestructCount;
@@ -32,7 +32,7 @@ private:
 
 public:
 	Sprite(GameObject &);
-	Sprite(GameObject &, std::string, int = 1, float = 1, float = 0);
+	Sprite(GameObject &, std::string, int = 1, float = 0, float = 0);
 	~Sprite();
 	void Open(std::string);
 	void SetClip(int, int, int, int);
