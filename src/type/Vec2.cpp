@@ -30,6 +30,12 @@ float Vec2::Modulo()
 	return sqrt(x * x + y * y);
 }
 
+float Vec2::Inclination()
+{
+
+	return atan2(y, x) * 180 / PI;
+}
+
 Vec2 Vec2::operator+(const Vec2 &arg)
 {
 	return Vec2(x + arg.x, y + arg.y);
