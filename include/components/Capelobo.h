@@ -15,13 +15,15 @@
 #include <cmath>
 
 #define ALIEN_VEL_ANG 0
-#define ALIEN_SPEED 300
+#define ALIEN_SPEED 400
 #define ALIEN_REST_BASE 0.5
 #define BOSS_MOVEMENT 1.5
 
 #define SAFE_UP 16
-#define SAFE_DOWN 64
+#define SAFE_DOWN 142
 #define SAFE_SIDE 128
+
+#define CLAW_DAMEGE 20
 
 class Capelobo : public Component
 {
@@ -30,6 +32,7 @@ private:
 	{
 		MOVING,
 		RESTING,
+		SLEEPING,
 		BASIC_ATTACK,
 		LOAD_ATTACK
 	};
@@ -51,7 +54,7 @@ private:
 	Timer restTimer;
 	Timer moveTimer;
 	float restOffset;
-	Vec2 destination;
+	Vec2 enemyPos;
 
 	Vec2 speed;
 	int hp;

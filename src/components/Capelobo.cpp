@@ -10,6 +10,7 @@
 #include "Sound.h"
 #include "Yawara.h"
 #include "Floor.h"
+#include "Claw.h"
 
 Capelobo *Capelobo::boss;
 
@@ -32,7 +33,7 @@ Capelobo::Capelobo(GameObject &associated, float restOffset) : Component(associa
 	associated.AddComponent(sp);
 	associated.AddComponent(cl);
 
-	state = RESTING;
+	state = SLEEPING;
 }
 
 void Capelobo::Start()
@@ -51,7 +52,7 @@ void Capelobo::Update(float dt)
 {
 	float dst = 999999;
 
-	associated.angleDeg += (ALIEN_VEL_ANG / 0.0174533) * dt;
+	associated.angleDeg += (ALIEN_VEL_ANG / (PI / 180)) * dt;
 
 	if (Yawara::player != nullptr)
 	{
@@ -60,29 +61,28 @@ void Capelobo::Update(float dt)
 		{
 		case MOVING:
 			moveTimer.Update(dt);
-			if (moveTimer.Get() < BOSS_MOVEMENT)
+			if (moveTimer.Get() < BOSS_MOVEMENT && moveAllowed)
 			{
-				destination = Yawara::player->GetPos();
+				enemyPos = Yawara::player->GetPos();
 
-				if ((destination - associated.box.Center()).Modulo() != 0)
-					speed = ((destination - associated.box.Center()) / ((destination - associated.box.Center()).Modulo())) * ALIEN_SPEED;
+				if ((enemyPos - associated.box.Center()).Modulo() != 0)
+					speed = ((enemyPos - associated.box.Center()) / ((enemyPos - associated.box.Center()).Modulo())) * ALIEN_SPEED;
 				else
 					speed = {0, 0};
 
 				// Se chegou no destino.
-				if (((associated.box.Center().x <= destination.x + dt * abs(speed.x)) && (associated.box.Center().x >= destination.x - dt * abs(speed.x)) &&
-					 (associated.box.Center().y <= destination.y + dt * abs(speed.y)) && (associated.box.Center().y >= destination.y - dt * abs(speed.y))) ||
+				if (((associated.box.Center().x <= 150 + enemyPos.x + dt * abs(speed.x)) && (associated.box.Center().x >= -150 + enemyPos.x - dt * abs(speed.x)) &&
+					 (associated.box.Center().y <= 80 + enemyPos.y + dt * abs(speed.y)) && (associated.box.Center().y >= -150 + enemyPos.y - dt * abs(speed.y))) ||
 					!moveAllowed)
 				{
 					// Coloca na posição final.
-					if (moveAllowed)
-						associated.box.Centered(destination);
+					// if (moveAllowed)
+					// associated.box.Centered(enemyPos);
 					speed.x = 0;
 					speed.y = 0;
 
 					// Muda estado.
-					state = RESTING;
-					restTimer.Restart();
+					state = BASIC_ATTACK;
 					break;
 				}
 
@@ -92,19 +92,17 @@ void Capelobo::Update(float dt)
 					int signalY = speed.y / abs(speed.y);
 					int signalX = speed.x / abs(speed.x);
 					speed = {speed.x, signalY * signalX * speed.x};
-					change_sprite = true;
 				}
 				else if (abs(speed.x) < abs(speed.y) && (speed.x < -10 || speed.x > 10))
 				{
 					int signalY = speed.y / abs(speed.y);
 					int signalX = speed.x / abs(speed.x);
 					speed = {signalY * signalX * speed.y, speed.y};
-					change_sprite = true;
 				}
-				else
-					change_sprite = true;
 
 				// Seta direção para sprite
+
+				Direction lastDir = dir;
 
 				if (speed.y > 10)
 				{
@@ -131,39 +129,39 @@ void Capelobo::Update(float dt)
 					else if (speed.x < -10)
 						dir = LEFT;
 				}
+				if (dir != lastDir)
+					change_sprite = true;
 
 				// Verifica se pode andar
 
-				// if (speed.y > 100)
-				// {
-				// 	safeY = associated.box.Center().y + SAFE_UP;
-				// }
-				// else if (speed.y < -100)
-				// 	safeY = associated.box.Center().y + SAFE_UP + SAFE_DOWN;
-				// else
-				// 	safeY = associated.box.Center().y + 2 * SAFE_DOWN;
+				if (speed.y > 0.1)
+				{
+					safeY = associated.box.Center().y + SAFE_UP + SAFE_DOWN;
+				}
+				else if (speed.y < -0.1)
+					safeY = associated.box.Center().y + SAFE_UP;
+				else
+					safeY = associated.box.Center().y + SAFE_DOWN;
 
-				// if (speed.x > 100)
-				// 	safeX = associated.box.Center().x + SAFE_SIDE;
-				// else if (speed.x < -100)
-				// 	safeX = associated.box.Center().x - SAFE_SIDE;
-				// else
-				// 	safeX = associated.box.Center().x;
+				if (speed.x > 0.1)
+					safeX = associated.box.Center().x + SAFE_SIDE;
+				else if (speed.x < -0.1)
+					safeX = associated.box.Center().x - SAFE_SIDE;
+				else
+					safeX = associated.box.Center().x;
 
-				// moveAllowed = (Floor::loaded && Floor::AtAllowedArea(safeX, safeY, 0));
-				// cout << moveAllowed << endl;
-				// if (!moveAllowed)
-				// {
-				// 	state = RESTING;
-				// 	// cout << "move to : " << safeX << ' ' << safeY << '\t' << speed.x << ' ' << speed.y << "\t\t" << associated.box.Center().x << ' ' << associated.box.Center().y << endl;
-				// }
-
-				// Muda Sprite
-
+				moveAllowed = (Floor::loaded && Floor::AtAllowedArea(safeX, safeY, 0));
+				if (!moveAllowed)
+				{
+					state = RESTING;
+					restTimer.Restart();
+				}
 				// Anda.
-
-				associated.box.x += speed.x * dt;
-				associated.box.y += speed.y * dt;
+				else
+				{
+					associated.box.x += speed.x * dt;
+					associated.box.y += speed.y * dt;
+				}
 			}
 			else
 			{
@@ -179,11 +177,13 @@ void Capelobo::Update(float dt)
 
 		case RESTING:
 			restTimer.Update(dt);
+			if (!change_sprite)
+				change_sprite = true;
 			if (restTimer.Get() > ALIEN_REST_BASE + restOffset)
 			{
-				destination = Yawara::player->GetPos();
-				if ((destination - associated.box.Center()).Modulo() != 0)
-					speed = ((destination - associated.box.Center()) / ((destination - associated.box.Center()).Modulo())) * ALIEN_SPEED;
+				enemyPos = Yawara::player->GetPos();
+				if ((enemyPos - associated.box.Center()).Modulo() != 0)
+					speed = ((enemyPos - associated.box.Center()) / ((enemyPos - associated.box.Center()).Modulo())) * ALIEN_SPEED;
 				else
 					speed = {0, 0};
 
@@ -195,10 +195,24 @@ void Capelobo::Update(float dt)
 			}
 			break;
 
-		case BASIC_ATTACK:
+		case SLEEPING:
+			enemyPos = Yawara::player->GetPos();
+
+			if ((enemyPos - associated.box.Center()).Modulo() <= 450)
+				state = MOVING;
+
 			break;
 
-		case LOAD_ATTACK:
+		case BASIC_ATTACK:
+			state = RESTING;
+			GameObject *clawGO = new GameObject();
+			weak_ptr<GameObject> weak_claw = Game::GetInstance().GetCurrentState().AddObject(clawGO);
+			shared_ptr<GameObject> shared_claw = weak_claw.lock();
+
+			float angle = (Yawara::player->GetPos() - associated.box.Center()).Inclination();
+			float radius = Vec2(associated.box.w, associated.box.h).Modulo();
+
+			Claw *theClaw = new Claw(clawGO, clawGO->angleDeg, 200, CLAW_DAMEGE, associated.box.Center(), radius, 40, 40, true);
 			break;
 		}
 	}
@@ -234,49 +248,41 @@ void Capelobo::Render()
 			switch (dir)
 			{
 			case RIGHT:
-				cout << "RIGHT" << dir << endl;
-				// sp->Open("assets/img/yawara/yawara_idle_right.png");
-				// sp->SetFrameCount(12);
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
 				break;
 
 			case LEFT:
-				cout << "LEFT" << endl;
-				// sp->Open("assets/img/yawara/yawara_idle_left.png");
-				// sp->SetFrameCount(12);
+				sp->Open("assets/img/capelobo/capelobo_animacao_correndo.png");
+				sp->SetFrameCount(12);
 				break;
 
 			case UP:
-				cout << "UP" << endl;
 				// sp->Open("assets/img/yawara/yawara_idle_up.png");
 				// sp->SetFrameCount(1);
 				break;
 
 			case DOWN:
-				cout << "DOWN" << endl;
 				// sp->Open("assets/img/yawara/yawara_idle_down.png");
 				// sp->SetFrameCount(1);
 				break;
 
 			case RIGHT_UP:
-				cout << "RIGHT_UP" << dir << endl;
 				// sp->Open("assets/img/yawara/yawara_idle_up_right.png");
 				// sp->SetFrameCount(1);
 				break;
 
 			case RIGHT_DOWN:
-				cout << "RIGHT_DOWN" << endl;
 				// sp->Open("assets/img/yawara/yawara_idle_down_right.png");
 				// sp->SetFrameCount(1);
 				break;
 
 			case LEFT_UP:
-				cout << "LEFT_UP" << endl;
 				// sp->Open("assets/img/yawara/yawara_idle_up_left.png");
 				// sp->SetFrameCount(1);
 				break;
 
 			case LEFT_DOWN:
-				cout << "LEFT_DOWN" << endl;
 				// sp->Open("assets/img/yawara/yawara_idle_down_left.png");
 				// sp->SetFrameCount(1);
 				break;
@@ -290,51 +296,43 @@ void Capelobo::Render()
 			switch (dir)
 			{
 			case RIGHT:
-				cout << "RIGHT" << dir << endl;
-				// sp->Open("assets/img/yawara/yawara_idle_right.png");
-				// sp->SetFrameCount(12);
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
 				break;
 
 			case LEFT:
-				cout << "LEFT" << endl;
-				// sp->Open("assets/img/yawara/yawara_idle_left.png");
-				// sp->SetFrameCount(12);
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
 				break;
 
 			case UP:
-				cout << "UP" << endl;
-				// sp->Open("assets/img/yawara/yawara_idle_up.png");
-				// sp->SetFrameCount(1);
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
 				break;
 
 			case DOWN:
-				cout << "DOWN" << endl;
-				// sp->Open("assets/img/yawara/yawara_idle_down.png");
-				// sp->SetFrameCount(1);
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
 				break;
 
 			case RIGHT_UP:
-				cout << "RIGHT_UP" << dir << endl;
-				// sp->Open("assets/img/yawara/yawara_idle_up_right.png");
-				// sp->SetFrameCount(1);
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
 				break;
 
 			case RIGHT_DOWN:
-				cout << "RIGHT_DOWN" << endl;
-				// sp->Open("assets/img/yawara/yawara_idle_down_right.png");
-				// sp->SetFrameCount(1);
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
 				break;
 
 			case LEFT_UP:
-				cout << "LEFT_UP" << endl;
-				// sp->Open("assets/img/yawara/yawara_idle_up_left.png");
-				// sp->SetFrameCount(1);
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
 				break;
 
 			case LEFT_DOWN:
-				cout << "LEFT_DOWN" << endl;
-				// sp->Open("assets/img/yawara/yawara_idle_down_left.png");
-				// sp->SetFrameCount(1);
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
 				break;
 
 			default:
@@ -347,7 +345,7 @@ void Capelobo::Render()
 
 bool Capelobo::Is(std::string type)
 {
-	return !strcmp(type.c_str(), "Alien");
+	return !strcmp(type.c_str(), "Capelobo");
 }
 
 void Capelobo::NotifyCollision(GameObject &other)
