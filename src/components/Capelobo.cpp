@@ -15,6 +15,7 @@
 Capelobo *Capelobo::boss;
 
 bool moveAllowed = 1;
+bool startedAttack = 0;
 
 Vec2 temp_speed;
 
@@ -82,6 +83,7 @@ void Capelobo::Update(float dt)
 					speed.y = 0;
 
 					// Muda estado.
+					startedAttack = 0;
 					state = BASIC_ATTACK;
 					break;
 				}
@@ -204,15 +206,86 @@ void Capelobo::Update(float dt)
 			break;
 
 		case BASIC_ATTACK:
-			state = RESTING;
-			GameObject *clawGO = new GameObject();
-			weak_ptr<GameObject> weak_claw = Game::GetInstance().GetCurrentState().AddObject(clawGO);
-			shared_ptr<GameObject> shared_claw = weak_claw.lock();
+			attackTimer.Update(dt);
+			if (!startedAttack)
+			{
+				GameObject *clawGO = new GameObject();
+				weak_ptr<GameObject> weak_claw = Game::GetInstance().GetCurrentState().AddObject(clawGO);
+				shared_ptr<GameObject> shared_claw = weak_claw.lock();
+				startedAttack = 1;
 
-			float angle = (Yawara::player->GetPos() - associated.box.Center()).Inclination();
-			float radius = Vec2(associated.box.w, associated.box.h).Modulo();
+				weak_ptr<GameObject> weak_Boss = Game::GetInstance().GetCurrentState().GetObjectPtr(&associated);
 
-			Claw *theClaw = new Claw(clawGO, clawGO->angleDeg, 200, CLAW_DAMEGE, associated.box.Center(), radius, 40, 40, true);
+				int angle = (Yawara::player->GetPos() - associated.box.Center()).Inclination();
+				if (angle < 0)
+					angle += 360;
+				angle = angle - angle % 45;
+
+				float radius = Vec2(associated.box.w / 2, associated.box.h / 2).Modulo();
+
+				Vec2 offset;
+
+				switch (dir)
+				{
+				case RIGHT:
+					offset.x = 1;
+					offset.y = 1;
+					break;
+
+				case UP:
+					offset.x = 1;
+					offset.y = -1;
+					break;
+
+				case LEFT:
+					offset.x = -1;
+					offset.y = -1;
+					break;
+
+				case DOWN:
+					offset.x = -1;
+					offset.y = 1;
+					break;
+
+				case LEFT_DOWN:
+					offset.x = -1;
+					offset.y = 0;
+					break;
+
+				case LEFT_UP:
+					offset.x = 0;
+					offset.y = -1;
+					break;
+
+				case RIGHT_DOWN:
+					offset.x = 0;
+					offset.y = 1;
+					break;
+
+				case RIGHT_UP:
+					offset.x = 1;
+					offset.y = 0;
+					break;
+				default:
+					break;
+				}
+
+				shared_claw->box.x = associated.box.Center().x + (radius * offset.x);
+				shared_claw->box.y = associated.box.Center().y + (radius * offset.y);
+				shared_claw->box.h = 50;
+				shared_claw->box.w = 50;
+
+				Claw *theClaw = new Claw(*shared_claw, angle, .05, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
+
+				shared_claw->AddComponent(theClaw);
+				cout << angle << endl;
+			}
+
+			if (attackTimer.Get() > 0.7)
+			{
+				state = RESTING;
+				attackTimer.Restart();
+			}
 			break;
 		}
 	}

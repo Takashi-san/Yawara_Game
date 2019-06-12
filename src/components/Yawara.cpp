@@ -5,7 +5,7 @@
 #include "Collider.h"
 #include "InputManager.h"
 #include "Camera.h"
-#include "Bullet.h"
+#include "Claw.h"
 #include "Sound.h"
 #include "Tapu.h"
 #include "Floor.h"
@@ -350,11 +350,11 @@ bool Yawara::Is(std::string type)
 
 void Yawara::NotifyCollision(GameObject &other)
 {
-	Bullet *bullet = static_cast<Bullet *>(other.GetComponent("Bullet"));
+	Claw *claw = static_cast<Claw *>(other.GetComponent("Claw"));
 
-	if (bullet && bullet->targetsPlayer)
+	if (claw && claw->targetsPlayer)
 	{
-		hp -= bullet->GetDamage();
+		// hp -= claw->GetDamage();
 	}
 }
 
