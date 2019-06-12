@@ -24,11 +24,14 @@ private:
 
 	int frameCount;
 	int currentFrame;
+	
 	Timer timeCount;
 	float frameTime;
 	
 	int stopFrame;
 	bool stopFlag;
+
+	Uint8 alpha;
 
 	Timer selfDestructCount;
 	float secondsToSelfDestruct;
@@ -57,6 +60,9 @@ public:
 	void Stop();
 	void Resume();
 	bool IsStop();
+
+	void SetAlphaMod(int);
+	int GetAlphaMod();
 
 	void Update(float dt);
 	bool Is(std::string type);

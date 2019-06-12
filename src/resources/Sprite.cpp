@@ -16,6 +16,7 @@ Sprite::Sprite(GameObject& associated) : Component(associated){
 	secondsToSelfDestruct = 0;
 	stopFrame = -1;
 	stopFlag = false;
+	alpha = 255;
 }
 
 Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float frameTime, float secondsToSelfDestruct, int stopFrame) : Component(associated){
@@ -50,6 +51,7 @@ Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float f
 		stopFlag = false;
 	}
 
+	alpha = 255;
 	this->secondsToSelfDestruct = secondsToSelfDestruct;
 
 	Open(file);
@@ -60,6 +62,11 @@ Sprite::~Sprite() {
 }
 
 void Sprite::Open(std::string file) {
+	// corrige alpha da textura que não vai mais utilizar.
+	if (texture != nullptr) {
+		SDL_SetTextureAlphaMod(texture.get(), 255);
+	}
+
 	// carrega textura
 	texture = Resources::GetImage(file.c_str());
 	if (texture == nullptr) {
@@ -68,6 +75,9 @@ void Sprite::Open(std::string file) {
 		std::cout << "SDL_GetError: " << SDL_GetError() << "\n";
 		//exit(EXIT_FAILURE);
 	}
+
+	// aplica alpha.
+	SDL_SetTextureAlphaMod(texture.get(), alpha);
 
 	// descobre dimensoes da imagem.
 	SDL_QueryTexture(texture.get(), nullptr, nullptr, &width, &height);
@@ -227,4 +237,22 @@ void Sprite::Resume() {
 
 bool Sprite::IsStop() {
 	return stopFlag;
+}
+
+void Sprite::SetAlphaMod(int alpha) {
+	if ((alpha >= 0) && (alpha <= 255)) {
+		this->alpha = (Uint8)alpha;
+		SDL_SetTextureAlphaMod(texture.get(), this->alpha);
+	}
+}
+
+int Sprite::GetAlphaMod() {
+	Uint8 alpha;
+	int valid;
+	valid = SDL_GetTextureAlphaMod(texture.get(), &alpha);
+	if (valid == 0) {
+		return alpha;
+	} else {
+		return -1;
+	}
 }
