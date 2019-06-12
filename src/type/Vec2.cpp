@@ -56,9 +56,18 @@ Vec2 Vec2::operator/(const float a)
 	return Vec2(x / a, y / a);
 }
 
-Vec2 Vec2::operator-=(const Vec2 &arg)
+void Vec2::operator-=(const Vec2 &vector)
 {
-	return Vec2(x - arg.x, y - arg.y);
+
+	this->x -= vector.x;
+	this->y -= vector.y;
+}
+
+void Vec2::operator+=(const Vec2 &vector)
+{
+
+	this->x += vector.x;
+	this->y += vector.y;
 }
 
 bool Vec2::operator==(const Vec2 &arg)
