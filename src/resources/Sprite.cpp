@@ -138,25 +138,28 @@ void Sprite::Update(float dt)
 {
 	if (frameCount != 1 && frameTime != 0)
 	{
-		timeElapsed += dt;
-		if (timeElapsed >= frameTime)
+		if (frameTime != 0)
 		{
-			timeElapsed = 0;
-			currentFrame++;
-			if (currentFrame == frameCount)
+			timeCount.Update(dt);
+			if (timeCount.Get() >= frameTime)
 			{
-				currentFrame = 0;
+				timeCount.Restart();
+				currentFrame++;
+				if (currentFrame == frameCount)
+				{
+					currentFrame = 0;
+				}
+				SetClip((width / frameCount) * currentFrame, 0, width / frameCount, height);
 			}
-			SetClip((width / frameCount) * currentFrame, 0, width / frameCount, height);
 		}
-	}
 
-	if (secondsToSelfDestruct != 0)
-	{
-		selfDestructCount.Update(dt);
-		if (selfDestructCount.Get() > secondsToSelfDestruct)
+		if (secondsToSelfDestruct != 0)
 		{
-			associated.RequestDelete();
+			selfDestructCount.Update(dt);
+			if (selfDestructCount.Get() > secondsToSelfDestruct)
+			{
+				associated.RequestDelete();
+			}
 		}
 	}
 }
