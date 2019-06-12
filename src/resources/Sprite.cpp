@@ -14,9 +14,11 @@ Sprite::Sprite(GameObject& associated) : Component(associated){
 	frameTime = 0;
 	currentFrame = 0;
 	secondsToSelfDestruct = 0;
+	stopFrame = -1;
+	stopFlag = false;
 }
 
-Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float frameTime, float secondsToSelfDestruct) : Component(associated){
+Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float frameTime, float secondsToSelfDestruct, int stopFrame) : Component(associated){
 	texture = nullptr;
 	scale.x = 1;
 	scale.y = 1;
@@ -28,12 +30,26 @@ Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float f
 	} else {
 		this->frameCount = frameCount;
 	}
+
 	if (frameTime < 0) {
 		this->frameTime = 0;
 	} else {
 		this->frameTime = frameTime;
 	}
+
+	if (stopFrame < this->frameCount) {
+		this->stopFrame = stopFrame;
+	} else {
+		this->stopFrame = -1;
+	}
+
 	currentFrame = 0;
+	if (this->stopFrame == currentFrame) {
+		stopFlag = true;
+	} else {
+		stopFlag = false;
+	}
+
 	this->secondsToSelfDestruct = secondsToSelfDestruct;
 
 	Open(file);
@@ -113,13 +129,16 @@ bool Sprite::IsOpen() {
 }
 
 void Sprite::Update(float dt){
-	if (frameTime != 0) {
+	if ((frameTime != 0) && (!stopFlag)) {
 		timeCount.Update(dt);
 		if (timeCount.Get() >= frameTime) {
 			timeCount.Restart();
 			currentFrame++;
 			if (currentFrame == frameCount) {
 				currentFrame = 0;
+			}
+			if (currentFrame == stopFrame) {
+				stopFlag = true;
 			}
 			SetClip((width/frameCount)*currentFrame, 0, width/frameCount, height);
 		}
@@ -161,6 +180,10 @@ void Sprite::SetFrame(int frame) {
 		timeCount.Restart();
 		currentFrame = frame;
 		SetClip((width/frameCount)*currentFrame, 0, width/frameCount, height);
+		
+		if (currentFrame == stopFrame) {
+			stopFlag = true;
+		}
 	}
 }
 
@@ -169,6 +192,8 @@ void Sprite::SetFrameCount(int frameCount) {
 		this->frameCount = frameCount;
 		timeCount.Restart();
 		currentFrame = 0;
+		stopFrame = -1;
+		stopFlag = false;
 		SetClip((width/frameCount)*currentFrame, 0, width/frameCount, height);
 		associated.box.w = width/frameCount;
 	}
@@ -179,4 +204,27 @@ void Sprite::SetFrameTime(float frameTime) {
 		this->frameTime = frameTime;
 		timeCount.Restart();
 	}
+}
+
+void Sprite::SetStopFrame(int stopFrame) {
+	if (stopFrame < frameCount) {
+		this->stopFrame = stopFrame;
+		timeCount.Restart();
+
+		if (currentFrame == stopFrame) {
+			stopFlag = true;
+		}
+	}
+}
+
+void Sprite::Stop() {
+	stopFlag = true;
+}
+
+void Sprite::Resume() {
+	stopFlag = false;
+}
+
+bool Sprite::IsStop() {
+	return stopFlag;
 }

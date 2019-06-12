@@ -26,13 +26,16 @@ private:
 	int currentFrame;
 	Timer timeCount;
 	float frameTime;
+	
+	int stopFrame;
+	bool stopFlag;
 
 	Timer selfDestructCount;
 	float secondsToSelfDestruct;
 
 public:
 	Sprite(GameObject &);
-	Sprite(GameObject &, std::string, int = 1, float = 0, float = 0);
+	Sprite(GameObject &, std::string, int = 1, float = 0, float = 0, int = -1);
 	~Sprite();
 	void Open(std::string);
 	void SetClip(int, int, int, int);
@@ -49,6 +52,11 @@ public:
 	void SetFrame(int);
 	void SetFrameCount(int);
 	void SetFrameTime(float);
+	void SetStopFrame(int);
+
+	void Stop();
+	void Resume();
+	bool IsStop();
 
 	void Update(float dt);
 	bool Is(std::string type);
