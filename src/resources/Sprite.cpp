@@ -17,6 +17,9 @@ Sprite::Sprite(GameObject& associated) : Component(associated){
 	stopFrame = -1;
 	stopFlag = false;
 	alpha = 255;
+	r_mod = 255;
+	g_mod = 255;
+	b_mod = 255;
 }
 
 Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float frameTime, float secondsToSelfDestruct, int stopFrame) : Component(associated){
@@ -52,19 +55,27 @@ Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float f
 	}
 
 	alpha = 255;
+	r_mod = 255;
+	g_mod = 255;
+	b_mod = 255;
 	this->secondsToSelfDestruct = secondsToSelfDestruct;
 
 	Open(file);
 }
 
 Sprite::~Sprite() {
-	
+	// corrige alpha e cor da textura que não vai mais utilizar.
+	if (texture != nullptr) {
+		SDL_SetTextureAlphaMod(texture.get(), 255);
+		SDL_SetTextureColorMod(texture.get(), 255, 255, 255);
+	}
 }
 
 void Sprite::Open(std::string file) {
-	// corrige alpha da textura que não vai mais utilizar.
+	// corrige alpha e cor da textura que não vai mais utilizar.
 	if (texture != nullptr) {
 		SDL_SetTextureAlphaMod(texture.get(), 255);
+		SDL_SetTextureColorMod(texture.get(), 255, 255, 255);
 	}
 
 	// carrega textura
@@ -76,8 +87,9 @@ void Sprite::Open(std::string file) {
 		//exit(EXIT_FAILURE);
 	}
 
-	// aplica alpha.
+	// aplica alpha e modificador de cor.
 	SDL_SetTextureAlphaMod(texture.get(), alpha);
+	SDL_SetTextureColorMod(texture.get(), r_mod, g_mod, b_mod);
 
 	// descobre dimensoes da imagem.
 	SDL_QueryTexture(texture.get(), nullptr, nullptr, &width, &height);
@@ -254,5 +266,29 @@ int Sprite::GetAlphaMod() {
 		return alpha;
 	} else {
 		return -1;
+	}
+}
+
+void Sprite::SetColorMod(int r, int g, int b) {
+	if ((r >= 0) && (r <= 255) && (g >= 0) && (g <= 255) && (b >= 0) && (b <= 255)) {
+		r_mod = (Uint8)r;
+		g_mod = (Uint8)g;
+		b_mod = (Uint8)b;
+		SDL_SetTextureColorMod(texture.get(), r_mod, g_mod, b_mod);
+	}
+}
+
+void Sprite::GetColorMod(int* r, int* g, int* b) {
+	int valid;
+	Uint8 rm, gm, bm;
+	valid = SDL_GetTextureColorMod(texture.get(), &rm, &gm, &bm);
+	if (valid == 0) {
+		*r = rm;
+		*g = gm;
+		*b = bm;
+	} else {
+		*r = -1;
+		*g = -1;
+		*b = -1;
 	}
 }

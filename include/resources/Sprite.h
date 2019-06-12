@@ -33,6 +33,10 @@ private:
 
 	Uint8 alpha;
 
+	Uint8 r_mod;
+	Uint8 g_mod;
+	Uint8 b_mod;
+
 	Timer selfDestructCount;
 	float secondsToSelfDestruct;
 
@@ -63,6 +67,9 @@ public:
 
 	void SetAlphaMod(int);
 	int GetAlphaMod();
+
+	void SetColorMod(int, int, int);
+	void GetColorMod(int*, int*, int*);
 
 	void Update(float dt);
 	bool Is(std::string type);
