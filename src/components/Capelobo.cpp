@@ -62,6 +62,7 @@ void Capelobo::Update(float dt)
 		{
 		case MOVING:
 			moveTimer.Update(dt);
+			startedAttack = 0;
 			if (moveTimer.Get() < BOSS_MOVEMENT && moveAllowed)
 			{
 				enemyPos = Yawara::player->GetPos();
@@ -83,7 +84,6 @@ void Capelobo::Update(float dt)
 					speed.y = 0;
 
 					// Muda estado.
-					startedAttack = 0;
 					state = BASIC_ATTACK;
 					break;
 				}
@@ -207,11 +207,20 @@ void Capelobo::Update(float dt)
 
 		case BASIC_ATTACK:
 			attackTimer.Update(dt);
+			if (change_sprite)
+				change_sprite = false;
 			if (!startedAttack)
 			{
 				GameObject *clawGO = new GameObject();
-				weak_ptr<GameObject> weak_claw = Game::GetInstance().GetCurrentState().AddObject(clawGO);
-				shared_ptr<GameObject> shared_claw = weak_claw.lock();
+				weak_ptr<GameObject> weak_claw1 = Game::GetInstance().GetCurrentState().AddObject(clawGO);
+				shared_ptr<GameObject> shared_claw1 = weak_claw1.lock();
+				Claw *theClaw1;
+
+				GameObject *clawGO2 = new GameObject();
+				weak_ptr<GameObject> weak_claw2 = Game::GetInstance().GetCurrentState().AddObject(clawGO2);
+				shared_ptr<GameObject> shared_claw2 = weak_claw2.lock();
+				Claw *theClaw2;
+
 				startedAttack = 1;
 
 				weak_ptr<GameObject> weak_Boss = Game::GetInstance().GetCurrentState().GetObjectPtr(&associated);
@@ -223,68 +232,91 @@ void Capelobo::Update(float dt)
 
 				float radius = Vec2(associated.box.w / 2, associated.box.h / 2).Modulo();
 
-				Vec2 offset;
+				shared_claw1->box = associated.box;
+				shared_claw1->box.h = associated.box.h;
+				shared_claw1->box.w = 80;
+
+				shared_claw2->box = associated.box;
+				shared_claw2->box.h = associated.box.h + shared_claw1->box.w / 2;
+				shared_claw2->box.w = shared_claw1->box.w;
 
 				switch (dir)
 				{
 				case RIGHT:
-					offset.x = 1;
-					offset.y = 1;
+					shared_claw1->box.x += associated.box.w - shared_claw1->box.w / 2;
 					break;
 
 				case UP:
-					offset.x = 1;
-					offset.y = -1;
+					swap(shared_claw1->box.h, shared_claw1->box.w);
+					shared_claw1->box.y -= shared_claw1->box.h - shared_claw1->box.h / 2;
 					break;
 
 				case LEFT:
-					offset.x = -1;
-					offset.y = -1;
 					break;
 
 				case DOWN:
-					offset.x = -1;
-					offset.y = 1;
+					swap(shared_claw1->box.h, shared_claw1->box.w);
+					shared_claw1->box.y += associated.box.h - shared_claw1->box.h / 2;
 					break;
 
 				case LEFT_DOWN:
-					offset.x = -1;
-					offset.y = 0;
+					swap(shared_claw2->box.h, shared_claw2->box.w);
+					shared_claw2->box.y += associated.box.h - shared_claw2->box.h / 2;
+					shared_claw2->box.x -= shared_claw1->box.w / 2;
+					theClaw2 = new Claw(*shared_claw2, angle, 0, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
+					shared_claw2->AddComponent(theClaw2);
+
+					shared_claw1->box.x -= shared_claw1->box.w / 2;
+					shared_claw1->box.h -= shared_claw2->box.h / 2;
 					break;
 
 				case LEFT_UP:
-					offset.x = 0;
-					offset.y = -1;
+					swap(shared_claw2->box.h, shared_claw2->box.w);
+					shared_claw2->box.y -= shared_claw2->box.h - shared_claw2->box.h / 2;
+					theClaw2 = new Claw(*shared_claw2, angle, 0, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
+					shared_claw2->AddComponent(theClaw2);
+
+					shared_claw1->box.y += shared_claw2->box.h / 2;
+					shared_claw1->box.h -= shared_claw2->box.h / 2;
 					break;
 
 				case RIGHT_DOWN:
-					offset.x = 0;
-					offset.y = 1;
+					swap(shared_claw2->box.h, shared_claw2->box.w);
+					shared_claw2->box.y += associated.box.h - shared_claw2->box.h / 2;
+					theClaw2 = new Claw(*shared_claw2, angle, 0, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
+					shared_claw2->AddComponent(theClaw2);
+
+					shared_claw1->box.x += associated.box.w - shared_claw1->box.w / 2;
+					shared_claw1->box.h -= shared_claw2->box.h / 2;
 					break;
 
 				case RIGHT_UP:
-					offset.x = 1;
-					offset.y = 0;
+					swap(shared_claw2->box.h, shared_claw2->box.w);
+					shared_claw2->box.y -= shared_claw2->box.h - shared_claw2->box.h / 2;
+					theClaw2 = new Claw(*shared_claw2, angle, 0, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
+					shared_claw2->AddComponent(theClaw2);
+
+					shared_claw1->box.x += associated.box.w - shared_claw1->box.w / 2;
+					shared_claw1->box.y += shared_claw2->box.h / 2;
+					shared_claw1->box.h -= shared_claw2->box.h / 2;
 					break;
 				default:
 					break;
 				}
 
-				shared_claw->box.x = associated.box.Center().x + (radius * offset.x);
-				shared_claw->box.y = associated.box.Center().y + (radius * offset.y);
-				shared_claw->box.h = 50;
-				shared_claw->box.w = 50;
+				theClaw1 = new Claw(*shared_claw1, angle, 0, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
 
-				Claw *theClaw = new Claw(*shared_claw, angle, .05, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
-
-				shared_claw->AddComponent(theClaw);
-				cout << angle << endl;
+				shared_claw1->AddComponent(theClaw1);
+				if(shared_claw1 != nullptr)
+					change_sprite = true;
 			}
 
-			if (attackTimer.Get() > 0.7)
+			if (attackTimer.Get() > 1)
 			{
+				cout << "got out" << endl;
 				state = RESTING;
 				attackTimer.Restart();
+				restTimer.Restart();
 			}
 			break;
 		}
@@ -318,6 +350,7 @@ void Capelobo::Render()
 		change_sprite = false;
 		if (state == MOVING)
 		{
+			sp->SetFrameTime(0.1);
 			switch (dir)
 			{
 			case RIGHT:
@@ -366,11 +399,61 @@ void Capelobo::Render()
 		}
 		else if (state == RESTING)
 		{
+			sp->SetFrameTime(0.15);
 			switch (dir)
 			{
 			case RIGHT:
 				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
 				sp->SetFrameCount(8);
+				break;
+
+			case LEFT:
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
+				break;
+
+			case UP:
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
+				break;
+
+			case DOWN:
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
+				break;
+
+			case RIGHT_UP:
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
+				break;
+
+			case RIGHT_DOWN:
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
+				break;
+
+			case LEFT_UP:
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
+				break;
+
+			case LEFT_DOWN:
+				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->SetFrameCount(8);
+				break;
+
+			default:
+				break;
+			}
+		}
+		else if (state == BASIC_ATTACK)
+		{
+			sp->SetFrameTime(0.05);
+			switch (dir)
+			{
+			case RIGHT:
+				sp->Open("assets/img/capelobo/capelobo_attack_r.png");
+				sp->SetFrameCount(16);
 				break;
 
 			case LEFT:
