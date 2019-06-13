@@ -13,6 +13,11 @@
 #include <stdbool.h>
 #include <memory>
 
+#define BLEND_NONE SDL_BLENDMODE_NONE
+#define BLEND_BLEND SDL_BLENDMODE_BLEND
+#define BLEND_ADD SDL_BLENDMODE_ADD
+#define BLEND_MOD SDL_BLENDMODE_MOD
+
 class Sprite : public Component
 {
 private:
@@ -36,6 +41,8 @@ private:
 	Uint8 r_mod;
 	Uint8 g_mod;
 	Uint8 b_mod;
+
+	SDL_BlendMode blend;
 
 	Timer selfDestructCount;
 	float secondsToSelfDestruct;
@@ -70,6 +77,8 @@ public:
 
 	void SetColorMod(int, int, int);
 	void GetColorMod(int*, int*, int*);
+
+	void SetBlendMode(int);
 
 	void Update(float dt);
 	bool Is(std::string type);

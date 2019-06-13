@@ -20,6 +20,7 @@ Sprite::Sprite(GameObject& associated) : Component(associated){
 	r_mod = 255;
 	g_mod = 255;
 	b_mod = 255;
+	blend = BLEND_BLEND;
 }
 
 Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float frameTime, float secondsToSelfDestruct, int stopFrame) : Component(associated){
@@ -58,24 +59,27 @@ Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float f
 	r_mod = 255;
 	g_mod = 255;
 	b_mod = 255;
+	blend = BLEND_BLEND;
 	this->secondsToSelfDestruct = secondsToSelfDestruct;
 
 	Open(file);
 }
 
 Sprite::~Sprite() {
-	// corrige alpha e cor da textura que não vai mais utilizar.
+	// corrige alpha, color mod e blend da textura que não vai mais utilizar.
 	if (texture != nullptr) {
 		SDL_SetTextureAlphaMod(texture.get(), 255);
 		SDL_SetTextureColorMod(texture.get(), 255, 255, 255);
+		SDL_SetTextureBlendMode(texture.get(), BLEND_BLEND);
 	}
 }
 
 void Sprite::Open(std::string file) {
-	// corrige alpha e cor da textura que não vai mais utilizar.
+	// corrige alpha, color mod e blend da textura que não vai mais utilizar.
 	if (texture != nullptr) {
 		SDL_SetTextureAlphaMod(texture.get(), 255);
 		SDL_SetTextureColorMod(texture.get(), 255, 255, 255);
+		SDL_SetTextureBlendMode(texture.get(), BLEND_BLEND);
 	}
 
 	// carrega textura
@@ -87,9 +91,10 @@ void Sprite::Open(std::string file) {
 		//exit(EXIT_FAILURE);
 	}
 
-	// aplica alpha e modificador de cor.
+	// aplica alpha, color mod e blend.
 	SDL_SetTextureAlphaMod(texture.get(), alpha);
 	SDL_SetTextureColorMod(texture.get(), r_mod, g_mod, b_mod);
+	SDL_SetTextureBlendMode(texture.get(), blend);
 
 	// descobre dimensoes da imagem.
 	SDL_QueryTexture(texture.get(), nullptr, nullptr, &width, &height);
@@ -290,5 +295,12 @@ void Sprite::GetColorMod(int* r, int* g, int* b) {
 		*r = -1;
 		*g = -1;
 		*b = -1;
+	}
+}
+
+void Sprite::SetBlendMode(int mode) {
+	if ((mode >= BLEND_NONE) && (mode <= BLEND_MOD) && (mode != 3)) {
+		blend = (SDL_BlendMode)mode;
+		SDL_SetTextureBlendMode(texture.get(), blend);
 	}
 }
