@@ -15,6 +15,7 @@
 #include "Game.h"
 #include "Cursor.h"
 #include "Yawara.h"
+#include "HealthRune.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -89,6 +90,14 @@ StageState::StageState() {
 	ptr->box.x = 0;
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp5);
+
+	//Runas
+	GameObject *gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	HealthRune *rune1 = new HealthRune(*ptr, 1.5);
+	ptr->box.Centered(300,300);
+	ptr->AddComponent(rune1);
 
 	// Yawara
 	GameObject *goya = new GameObject();

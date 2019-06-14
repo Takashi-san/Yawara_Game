@@ -66,6 +66,10 @@ Yawara::Yawara(GameObject& associated) : Component(associated) {
 	speed = {0, 0};
 	dir = RIGHT;
 	idle = true;
+
+	boostMap[HPBOOST] = {false, 1};
+	boostMap[DEFBOOST] = {false, 1};
+	boostMap[ATTBOOST] = {false, 1};
 }
 
 Yawara::~Yawara() {
@@ -276,6 +280,26 @@ void Yawara::Update(float dt) {
 	associated.box.x += speed.x*dt;
 	associated.box.y += speed.y*dt;
 
+	if(boostMap[HPBOOST].isBoosted){
+		static Timer hpTimer;
+
+		if(hpTimer.Get() == 0)
+			hp = YWR_HP * boostMap[HPBOOST].factor;
+
+		hpTimer.Update(dt);
+
+		if(hpTimer.Get() >= 15){
+			hpTimer.Restart();
+
+			if(hp > YWR_HP)
+				hp = YWR_HP;
+
+			boostMap[HPBOOST].isBoosted = false;
+		}
+	}
+
+	std::cout << hp << std::endl;
+
 	if (hp <= 0) {
 		associated.RequestDelete();
 		Camera::Unfollow();
@@ -312,4 +336,9 @@ void Yawara::NotifyCollision(GameObject& other) {
 
 Vec2 Yawara::GetPos() {
 	return associated.box.Center();
+}
+
+void Yawara::Boost(Boosts which, float factor){
+
+	boostMap[which] = {true, factor};
 }

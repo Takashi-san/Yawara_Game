@@ -8,6 +8,8 @@
 #include <iostream>
 #include <stdbool.h>
 #include <memory>
+#include <unordered_map>
+#include <vector>
 
 class Yawara : public Component{
 private:
@@ -18,6 +20,15 @@ private:
 	Direction dir;
 
 	std::weak_ptr<GameObject> tapu;
+
+	typedef struct
+	{
+		bool isBoosted;
+		float factor;
+	} boosters;
+	
+
+	std::unordered_map<int, boosters> boostMap;
 
 public:
 	static Yawara* player;
@@ -33,4 +44,8 @@ public:
 	void NotifyCollision(GameObject&);
 
 	Vec2 GetPos();
+
+	enum Boosts { HPBOOST, ATTBOOST, DEFBOOST };
+
+	void Boost(Boosts, float);
 };
