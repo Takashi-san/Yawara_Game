@@ -63,6 +63,6 @@ void Tongue::NotifyCollision(GameObject &other)
 	if (other.GetComponent("Capelobo") && !targetsPlayer)
 		associated.RequestDelete();
 
-	// if (other.GetComponent("Yawara") && targetsPlayer)
-	// 	associated.RequestDelete();
+	if (other.GetComponent("Yawara") && targetsPlayer)
+		associated.RequestDelete();
 }
