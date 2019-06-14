@@ -11,6 +11,7 @@
 #include "Yawara.h"
 #include "Floor.h"
 #include "Claw.h"
+#include "Tongue.h"
 
 Capelobo *Capelobo::boss;
 
@@ -85,6 +86,7 @@ void Capelobo::Update(float dt)
 
 					// Muda estado.
 					state = BASIC_ATTACK;
+					// state = LOAD_ATTACK;
 					break;
 				}
 
@@ -181,6 +183,7 @@ void Capelobo::Update(float dt)
 			restTimer.Update(dt);
 			if (!change_sprite)
 				change_sprite = true;
+			startedAttack = 0;
 			if (restTimer.Get() > ALIEN_REST_BASE + restOffset)
 			{
 				enemyPos = Yawara::player->GetPos();
@@ -191,7 +194,8 @@ void Capelobo::Update(float dt)
 
 				temp_speed = speed;
 
-				state = MOVING;
+				// state = MOVING;
+				state = LOAD_ATTACK;
 				moveAllowed = 1;
 				moveTimer.Restart();
 			}
@@ -209,6 +213,7 @@ void Capelobo::Update(float dt)
 			attackTimer.Update(dt);
 			if (change_sprite)
 				change_sprite = false;
+
 			if (!startedAttack)
 			{
 				GameObject *clawGO = new GameObject();
@@ -263,7 +268,7 @@ void Capelobo::Update(float dt)
 					swap(shared_claw2->box.h, shared_claw2->box.w);
 					shared_claw2->box.y += associated.box.h - shared_claw2->box.h / 2;
 					shared_claw2->box.x -= shared_claw1->box.w / 2;
-					theClaw2 = new Claw(*shared_claw2, angle, 0, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
+					theClaw2 = new Claw(*shared_claw2, CLAW_DAMEGE,true);
 					shared_claw2->AddComponent(theClaw2);
 
 					shared_claw1->box.x -= shared_claw1->box.w / 2;
@@ -273,7 +278,7 @@ void Capelobo::Update(float dt)
 				case LEFT_UP:
 					swap(shared_claw2->box.h, shared_claw2->box.w);
 					shared_claw2->box.y -= shared_claw2->box.h - shared_claw2->box.h / 2;
-					theClaw2 = new Claw(*shared_claw2, angle, 0, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
+					theClaw2 = new Claw(*shared_claw2, CLAW_DAMEGE,true);
 					shared_claw2->AddComponent(theClaw2);
 
 					shared_claw1->box.y += shared_claw2->box.h / 2;
@@ -283,7 +288,7 @@ void Capelobo::Update(float dt)
 				case RIGHT_DOWN:
 					swap(shared_claw2->box.h, shared_claw2->box.w);
 					shared_claw2->box.y += associated.box.h - shared_claw2->box.h / 2;
-					theClaw2 = new Claw(*shared_claw2, angle, 0, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
+					theClaw2 = new Claw(*shared_claw2, CLAW_DAMEGE,true);
 					shared_claw2->AddComponent(theClaw2);
 
 					shared_claw1->box.x += associated.box.w - shared_claw1->box.w / 2;
@@ -293,7 +298,7 @@ void Capelobo::Update(float dt)
 				case RIGHT_UP:
 					swap(shared_claw2->box.h, shared_claw2->box.w);
 					shared_claw2->box.y -= shared_claw2->box.h - shared_claw2->box.h / 2;
-					theClaw2 = new Claw(*shared_claw2, angle, 0, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
+					theClaw2 = new Claw(*shared_claw2, CLAW_DAMEGE,true);
 					shared_claw2->AddComponent(theClaw2);
 
 					shared_claw1->box.x += associated.box.w - shared_claw1->box.w / 2;
@@ -304,7 +309,7 @@ void Capelobo::Update(float dt)
 					break;
 				}
 
-				theClaw1 = new Claw(*shared_claw1, angle, 0, CLAW_DAMEGE, weak_Boss, radius, 10, 10, true);
+				theClaw1 = new Claw(*shared_claw1, CLAW_DAMEGE,true);
 
 				shared_claw1->AddComponent(theClaw1);
 				if(shared_claw1 != nullptr)
@@ -313,8 +318,47 @@ void Capelobo::Update(float dt)
 
 			if (attackTimer.Get() > 1)
 			{
-				cout << "got out" << endl;
-				state = RESTING;
+				state = MOVING;
+				attackTimer.Restart();
+				restTimer.Restart();
+			}
+			break;
+		
+		case LOAD_ATTACK:
+			
+			attackTimer.Update(dt);
+			if (change_sprite)
+				change_sprite = false;
+
+			if (!startedAttack)
+			{
+				startedAttack = 1;
+
+				GameObject *tongueGO = new GameObject();
+				weak_ptr<GameObject> weak_tongue = Game::GetInstance().GetCurrentState().AddObject(tongueGO);
+				shared_ptr<GameObject> shared_tongue = weak_tongue.lock();
+
+				shared_tongue->box.w = 20;
+				shared_tongue->box.h = 20;
+				shared_tongue->box.x = associated.box.Center().x - shared_tongue->box.w / 2;
+				shared_tongue->box.y = associated.box.Center().y;
+
+				int angle = (Yawara::player->GetPos() - associated.box.Center()).Inclination();
+				if (angle < 0)
+					angle += 360;
+
+				angle = angle - angle % 45;
+
+				Tongue *theTongue = new Tongue(*shared_tongue, TONGUE_DAMEGE, TONGUE_SPEED, angle, TONGUE_MAX_DIST, true);
+
+				shared_tongue->AddComponent(theTongue);
+				if(shared_tongue != nullptr)
+					change_sprite = true;
+			}
+
+			if (attackTimer.Get() > 1.5)
+			{
+				state = MOVING;
 				attackTimer.Restart();
 				restTimer.Restart();
 			}

@@ -15,7 +15,7 @@
 #include <cmath>
 
 #define ALIEN_VEL_ANG 0
-#define ALIEN_SPEED 400
+#define ALIEN_SPEED 350
 #define ALIEN_REST_BASE 0.5
 #define BOSS_MOVEMENT 1.5
 
@@ -24,6 +24,9 @@
 #define SAFE_SIDE 128
 
 #define CLAW_DAMEGE 20
+#define TONGUE_DAMEGE 50
+#define TONGUE_SPEED 800
+#define TONGUE_MAX_DIST 400
 
 class Capelobo : public Component
 {
@@ -41,13 +44,13 @@ private:
 	enum Direction
 	{
 		RIGHT,
+		RIGHT_UP,
 		UP,
-		LEFT,
-		DOWN,
-		LEFT_DOWN,
 		LEFT_UP,
-		RIGHT_DOWN,
-		RIGHT_UP
+		LEFT,
+		LEFT_DOWN,
+		DOWN,
+		RIGHT_DOWN
 	};
 	Direction dir;
 
