@@ -99,7 +99,7 @@ StageState::StageState()
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
 	ptr = weak_ptr.lock();
-	Capelobo *cape = new Capelobo(*ptr, 0.5);
+	Capelobo *cape = new Capelobo(*ptr, 0.1);
 	ptr->box.Centered({512, 850});
 	ptr->AddComponent(cape);
 
