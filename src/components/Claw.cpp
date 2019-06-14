@@ -3,18 +3,13 @@
 #include "Collider.h"
 #include "Easing.h"
 
-Claw::Claw(GameObject &associated, float angle, float speed, int damage, weak_ptr<GameObject> center, float radius, float width, float high, bool targetsPlayer) : Component(associated)
+Claw::Claw(GameObject &associated, int damage, bool targetsPlayer) : Component(associated)
 {
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 
 	this->targetsPlayer = targetsPlayer;
-	this->speed = speed;
 	this->damage = damage;
-	this->radius = radius;
-	this->angleLeft = 90;
-	this->atAngle = angle;
-	this->center = center;
 
 	duration.Restart();
 }
@@ -48,6 +43,6 @@ void Claw::NotifyCollision(GameObject &other)
 	if (other.GetComponent("Capelobo") && !targetsPlayer)
 		associated.RequestDelete();
 
-	// if (other.GetComponent("Yawara") && targetsPlayer)
-	// 	associated.RequestDelete();
+	if (other.GetComponent("Yawara") && targetsPlayer)
+		associated.RequestDelete();
 }

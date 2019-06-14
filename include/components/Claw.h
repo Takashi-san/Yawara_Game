@@ -15,17 +15,12 @@ using namespace std;
 class Claw : public Component
 {
 private:
-	float speed;
-	float angleLeft;
-	float atAngle;
-	float radius;
 	Timer duration;
 	int damage;
-	weak_ptr<GameObject> center;
 
 public:
 	bool targetsPlayer;
-	Claw(GameObject &, float, float, int, weak_ptr<GameObject>, float, float, float, bool);
+	Claw(GameObject &, int, bool);
 
 	void Update(float);
 	void Render();
