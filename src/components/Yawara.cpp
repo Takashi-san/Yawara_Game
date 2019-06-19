@@ -14,7 +14,7 @@
 
 #define YWR_DGE_SPEED	2000
 #define YWR_DGE_CD		1
-#define YWR_DGE_ACT		0.1
+#define YWR_DGE_ACT		0.2
 
 #define YWR_ATK_CD		1
 
@@ -225,10 +225,13 @@ void Yawara::Comand(float dt) {
 			if (dge_act.Get() > YWR_DGE_ACT) {
 				act = MOV;
 
+				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+				sp->SetFrameTime(YWR_ANI_TIME);
 				Collider *cl = new Collider(associated);
 				associated.AddComponent(cl);
 				change_sprite = true;
 				speed = {0, 0};
+				associated.angleDeg = 0;
 
 				dge_act.Restart();
 				dge_cd.Restart();
@@ -382,53 +385,48 @@ void Yawara::SetDge() {
 	
 	Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 	if (sp) {
+		sp->Open("assets/penguin/img/dash.png");
+		sp->SetFrameCount(4);
+		sp->SetFrameTime(0.04);
 		switch (dir) {
 			case RIGHT:
 				speed = {YWR_DGE_SPEED, 0};
-				sp->Open(YWR_RUN_R);
-				sp->SetFrameCount(YWR_RUN_R_FRAME);
+				associated.angleDeg = 0;
 			break;
 
 			case LEFT:
 				speed = {-YWR_DGE_SPEED, 0};
-				sp->Open(YWR_RUN_L);
-				sp->SetFrameCount(YWR_RUN_L_FRAME);
+				associated.angleDeg = 180;
 			break;
 
 			case DOWN:
 				speed = {0, YWR_DGE_SPEED};
-				sp->Open(YWR_RUN_D);
-				sp->SetFrameCount(YWR_RUN_D_FRAME);
+				associated.angleDeg = 90;
 			break;
 
 			case DOWN_RIGHT:
 				speed = {YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
-				sp->Open(YWR_RUN_DR);
-				sp->SetFrameCount(YWR_RUN_DR_FRAME);
+				associated.angleDeg = 45;
 			break;
 
 			case DOWN_LEFT:
 				speed = {-YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
-				sp->Open(YWR_RUN_DL);
-				sp->SetFrameCount(YWR_RUN_DL_FRAME);
+				associated.angleDeg = 135;
 			break;
 
 			case UP:
 				speed = {0, -YWR_DGE_SPEED};
-				sp->Open(YWR_RUN_U);
-				sp->SetFrameCount(YWR_RUN_U_FRAME);
+				associated.angleDeg = 270;
 			break;
 
 			case UP_RIGHT:
 				speed = {YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
-				sp->Open(YWR_RUN_UR);
-				sp->SetFrameCount(YWR_RUN_UR_FRAME);
+				associated.angleDeg = 315;
 			break;
 
 			case UP_LEFT:
 				speed = {-YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
-				sp->Open(YWR_RUN_UL);
-				sp->SetFrameCount(YWR_RUN_UL_FRAME);
+				associated.angleDeg = 225;
 			break;
 
 			default:
