@@ -9,8 +9,14 @@
 #include "Sound.h"
 #include "Tapu.h"
 
-#define YWR_SPEED		500
 #define YWR_HP			100
+#define YWR_SPEED		500
+
+#define YWR_DGE_SPEED	2000
+#define YWR_DGE_CD		1
+#define YWR_DGE_ACT		0.1
+
+#define YWR_ATK_CD		1
 
 #define YWR_ANI_TIME	0.100
 
@@ -88,25 +94,15 @@ void Yawara::Start() {
 }
 
 void Yawara::Update(float dt) {
-	CheckInput();
-
-	DoAction(dt);
+	dge_cd.Update(dt);
+	atk_cd.Update(dt);
 
 	if (hp <= 0) {
-		associated.RequestDelete();
 		Camera::Unfollow();
-
-		GameObject *go = new GameObject();
-		std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
-		std::shared_ptr<GameObject> ptr = weak_ptr.lock();
-		
-		Sprite* sp = new Sprite(*ptr, YWR_DEATH, YWR_DEATH_FRAME, YWR_ANI_TIME, YWR_DEATH_FRAME * YWR_ANI_TIME);
-		Sound *so = new Sound(*ptr, YWR_DEATH_SOUND);
-		ptr->box.Centered(associated.box.Center());
-		ptr->AddComponent(sp);
-		ptr->AddComponent(so);
-
-		so->Play(1);
+		associated.RequestDelete();
+	} else {
+		Comand(dt);
+		DoAction(dt);
 	}
 }
 
@@ -134,70 +130,113 @@ Vec2 Yawara::GetCenterPos() {
 	return associated.box.Center();
 }
 
-void Yawara::CheckInput() {
+void Yawara::Comand(float dt) {
 	InputManager& input = InputManager::GetInstance();
 
-	if (input.IsKeyDown(W_KEY)) {
-		if (input.IsKeyDown(A_KEY)) {
-			if (dir != UP_LEFT) {
-				change_sprite = true;
-			}
-			dir = UP_LEFT;
-		} else if (input.IsKeyDown(D_KEY)) {
-			if (dir != UP_RIGHT) {
-				change_sprite = true;
-			}
-			dir = UP_RIGHT;
-		} else {
-			if (dir != UP) {
-				change_sprite = true;
-			}
-			dir = UP;
-		}
+	switch (act) {
+		case MOV:
+			if (input.IsKeyDown(W_KEY)) {
+				if (input.IsKeyDown(A_KEY)) {
+					if (dir != UP_LEFT) {
+						change_sprite = true;
+					}
+					dir = UP_LEFT;
+				} else if (input.IsKeyDown(D_KEY)) {
+					if (dir != UP_RIGHT) {
+						change_sprite = true;
+					}
+					dir = UP_RIGHT;
+				} else {
+					if (dir != UP) {
+						change_sprite = true;
+					}
+					dir = UP;
+				}
 
-		if (idle) {
-			change_sprite = true;
-		}
-		idle = false;
-	} else if (input.IsKeyDown(S_KEY)) {
-		if (input.IsKeyDown(A_KEY)) {
-			if (dir != DOWN_LEFT) {
-				change_sprite = true;
-			}
-			dir = DOWN_LEFT;
-		} else if (input.IsKeyDown(D_KEY)) {
-			if (dir != DOWN_RIGHT) {
-				change_sprite = true;
-			}
-			dir = DOWN_RIGHT;
-		} else {
-			if (dir != DOWN) {
-				change_sprite = true;
-			}
-			dir = DOWN;
-		}
+				if (idle) {
+					change_sprite = true;
+				}
+				idle = false;
+			} else if (input.IsKeyDown(S_KEY)) {
+				if (input.IsKeyDown(A_KEY)) {
+					if (dir != DOWN_LEFT) {
+						change_sprite = true;
+					}
+					dir = DOWN_LEFT;
+				} else if (input.IsKeyDown(D_KEY)) {
+					if (dir != DOWN_RIGHT) {
+						change_sprite = true;
+					}
+					dir = DOWN_RIGHT;
+				} else {
+					if (dir != DOWN) {
+						change_sprite = true;
+					}
+					dir = DOWN;
+				}
 
-		if (idle) {
-			change_sprite = true;
-		}
-		idle = false;
-	} else if (input.IsKeyDown(A_KEY)) {
-		if ((dir != LEFT) || idle) {
-			change_sprite = true;
-		}
-		dir = LEFT;
-		idle = false;
-	} else if (input.IsKeyDown(D_KEY)) {
-		if ((dir != RIGHT) || idle) {
-			change_sprite = true;
-		}
-		dir = RIGHT;
-		idle = false;
-	} else {
-		if (!idle) {
-			change_sprite = true;
-		}
-		idle = true;
+				if (idle) {
+					change_sprite = true;
+				}
+				idle = false;
+			} else if (input.IsKeyDown(A_KEY)) {
+				if ((dir != LEFT) || idle) {
+					change_sprite = true;
+				}
+				dir = LEFT;
+				idle = false;
+			} else if (input.IsKeyDown(D_KEY)) {
+				if ((dir != RIGHT) || idle) {
+					change_sprite = true;
+				}
+				dir = RIGHT;
+				idle = false;
+			} else {
+				if (!idle) {
+					change_sprite = true;
+				}
+				idle = true;
+			}
+
+			if (input.KeyPress(SPACE_KEY)) {
+				if (dge_cd.Get() > YWR_DGE_CD) {
+					SetDge();
+					associated.RemoveComponent(associated.GetComponent("Collider"));
+					act = DGE;
+					break;
+				}
+			}
+
+			if (input.MousePress(RIGHT_MOUSE_BUTTON)) {
+				if (atk_cd.Get() > YWR_ATK_CD) {
+					act = ATK;
+					break;
+				}
+			}
+		break;
+
+		case ATK:
+			act = MOV;
+			atk_cd.Restart();
+		break;
+
+		case DGE:
+			dge_act.Update(dt);
+			if (dge_act.Get() > YWR_DGE_ACT) {
+				act = MOV;
+
+				Collider *cl = new Collider(associated);
+				associated.AddComponent(cl);
+				change_sprite = true;
+				speed = {0, 0};
+
+				dge_act.Restart();
+				dge_cd.Restart();
+			}
+		break;
+
+		default:
+		break;
 	}
 }
 
@@ -205,15 +244,17 @@ void Yawara::DoAction(float dt) {
 	switch (act) {
 		case MOV:
 			SetMov();
-
 			associated.box.x += speed.x*dt;
 			associated.box.y += speed.y*dt;
 		break;
 
 		case ATK:
+			std::cout << "ataque!\n";
 		break;
 
 		case DGE:
+			associated.box.x += speed.x*dt;
+			associated.box.y += speed.y*dt;
 		break;
 
 		default:
@@ -334,4 +375,66 @@ void Yawara::SetMov() {
 		}
 		associated.box.Centered(position);
 	}
+}
+
+void Yawara::SetDge() {
+	Vec2 position = associated.box.Center();
+	
+	Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+	if (sp) {
+		switch (dir) {
+			case RIGHT:
+				speed = {YWR_DGE_SPEED, 0};
+				sp->Open(YWR_RUN_R);
+				sp->SetFrameCount(YWR_RUN_R_FRAME);
+			break;
+
+			case LEFT:
+				speed = {-YWR_DGE_SPEED, 0};
+				sp->Open(YWR_RUN_L);
+				sp->SetFrameCount(YWR_RUN_L_FRAME);
+			break;
+
+			case DOWN:
+				speed = {0, YWR_DGE_SPEED};
+				sp->Open(YWR_RUN_D);
+				sp->SetFrameCount(YWR_RUN_D_FRAME);
+			break;
+
+			case DOWN_RIGHT:
+				speed = {YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
+				sp->Open(YWR_RUN_DR);
+				sp->SetFrameCount(YWR_RUN_DR_FRAME);
+			break;
+
+			case DOWN_LEFT:
+				speed = {-YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
+				sp->Open(YWR_RUN_DL);
+				sp->SetFrameCount(YWR_RUN_DL_FRAME);
+			break;
+
+			case UP:
+				speed = {0, -YWR_DGE_SPEED};
+				sp->Open(YWR_RUN_U);
+				sp->SetFrameCount(YWR_RUN_U_FRAME);
+			break;
+
+			case UP_RIGHT:
+				speed = {YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
+				sp->Open(YWR_RUN_UR);
+				sp->SetFrameCount(YWR_RUN_UR_FRAME);
+			break;
+
+			case UP_LEFT:
+				speed = {-YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
+				sp->Open(YWR_RUN_UL);
+				sp->SetFrameCount(YWR_RUN_UL_FRAME);
+			break;
+
+			default:
+				speed = {0, 0};
+			break;
+		}
+	}
+	associated.box.Centered(position);
 }

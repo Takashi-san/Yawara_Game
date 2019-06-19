@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "GameObject.h"
 #include "Vec2.h"
+#include "Timer.h"
 
 #include <string>
 #include <iostream>
@@ -21,9 +22,14 @@ private:
 
 	std::weak_ptr<GameObject> tapu;
 
-	void CheckInput();
+	void Comand(float);
 	void DoAction(float);
 	void SetMov();
+	void SetDge();
+
+	Timer dge_cd;
+	Timer dge_act;
+	Timer atk_cd;
 
 public:
 	static Yawara* player;
