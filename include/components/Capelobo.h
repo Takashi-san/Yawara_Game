@@ -14,9 +14,9 @@
 #include <queue>
 #include <cmath>
 
-#define ALIEN_VEL_ANG 0
-#define ALIEN_SPEED 350
-#define ALIEN_REST_BASE 0.5
+#define BOSS_VEL_ANG 0
+#define BOSS_SPEED 350
+#define BOSS_REST_BASE 0.5
 #define BOSS_MOVEMENT 1.5
 
 #define SAFE_UP 16

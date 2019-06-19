@@ -13,6 +13,50 @@
 #include "Claw.h"
 #include "Tongue.h"
 
+// Movement sprites
+
+const string MOVE_RIGHT 	 = "assets/img/capelobo/capelobo_idle_left.png";
+const string MOVE_RIGHT_DOWN = "";
+const string MOVE_DOWN		 = "";
+const string MOVE_LEFT_DOWN	 = "";
+const string MOVE_LEFT		 = "assets/img/capelobo/capelobo_animacao_correndo.png";
+const string MOVE_LEFT_UP	 = "";
+const string MOVE_UP		 = "";
+const string MOVE_RIGHT_UP	 = "";
+
+// Resting sprites
+
+const string REST_RIGHT		 = "assets/img/capelobo/capelobo_idle_left.png";
+const string REST_RIGHT_DOWN = "assets/img/capelobo/capelobo_idle_left.png";
+const string REST_DOWN		 = "assets/img/capelobo/capelobo_idle_left.png";
+const string REST_LEFT_DOWN	 = "assets/img/capelobo/capelobo_idle_left.png";
+const string REST_LEFT		 = "assets/img/capelobo/capelobo_idle_left.png";
+const string REST_LEFT_UP	 = "assets/img/capelobo/capelobo_idle_left.png";
+const string REST_UP		 = "assets/img/capelobo/capelobo_idle_left.png";
+const string REST_RIGHT_UP	 = "assets/img/capelobo/capelobo_idle_left.png";
+
+// Attacking sprites
+
+const string ATTACK_RIGHT		= "assets/img/capelobo/capelobo_attack_r.png";
+const string ATTACK_RIGHT_DOWN	= "";
+const string ATTACK_DOWN		= "";
+const string ATTACK_LEFT_DOWN	= "";
+const string ATTACK_LEFT		= "";
+const string ATTACK_LEFT_UP		= "";
+const string ATTACK_UP			= "";
+const string ATTACK_RIGHT_UP	= "";
+
+// Load attack sprites
+
+const string LOAD_RIGHT		 = "";
+const string LOAD_RIGHT_DOWN = "";
+const string LOAD_DOWN		 = "";
+const string LOAD_LEFT_DOWN	 = "";
+const string LOAD_LEFT		 = "";
+const string LOAD_LEFT_UP	 = "";
+const string LOAD_UP		 = "";
+const string LOAD_RIGHT_UP	 = "";
+
 Capelobo *Capelobo::boss;
 
 bool moveAllowed = 1;
@@ -54,7 +98,7 @@ void Capelobo::Update(float dt)
 {
 	float dst = 999999;
 
-	associated.angleDeg += (ALIEN_VEL_ANG / (PI / 180)) * dt;
+	associated.angleDeg += (BOSS_VEL_ANG / (PI / 180)) * dt;
 
 	if (Yawara::player != nullptr)
 	{
@@ -69,7 +113,7 @@ void Capelobo::Update(float dt)
 				enemyPos = Yawara::player->GetPos();
 
 				if ((enemyPos - associated.box.Center()).Modulo() != 0)
-					speed = ((enemyPos - associated.box.Center()) / ((enemyPos - associated.box.Center()).Modulo())) * ALIEN_SPEED;
+					speed = ((enemyPos - associated.box.Center()) / ((enemyPos - associated.box.Center()).Modulo())) * BOSS_SPEED;
 				else
 					speed = {0, 0};
 
@@ -78,9 +122,6 @@ void Capelobo::Update(float dt)
 					 (associated.box.Center().y <= 80 + enemyPos.y + dt * abs(speed.y)) && (associated.box.Center().y >= -150 + enemyPos.y - dt * abs(speed.y))) ||
 					!moveAllowed)
 				{
-					// Coloca na posição final.
-					// if (moveAllowed)
-					// associated.box.Centered(enemyPos);
 					speed.x = 0;
 					speed.y = 0;
 
@@ -184,11 +225,11 @@ void Capelobo::Update(float dt)
 			if (!change_sprite)
 				change_sprite = true;
 			startedAttack = 0;
-			if (restTimer.Get() > ALIEN_REST_BASE + restOffset)
+			if (restTimer.Get() > BOSS_REST_BASE + restOffset)
 			{
 				enemyPos = Yawara::player->GetPos();
 				if ((enemyPos - associated.box.Center()).Modulo() != 0)
-					speed = ((enemyPos - associated.box.Center()) / ((enemyPos - associated.box.Center()).Modulo())) * ALIEN_SPEED;
+					speed = ((enemyPos - associated.box.Center()) / ((enemyPos - associated.box.Center()).Modulo())) * BOSS_SPEED;
 				else
 					speed = {0, 0};
 
@@ -398,42 +439,42 @@ void Capelobo::Render()
 			switch (dir)
 			{
 			case RIGHT:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->Open(MOVE_RIGHT);
 				sp->SetFrameCount(8);
 				break;
 
 			case LEFT:
-				sp->Open("assets/img/capelobo/capelobo_animacao_correndo.png");
+				sp->Open(MOVE_LEFT);
 				sp->SetFrameCount(12);
 				break;
 
 			case UP:
-				// sp->Open("assets/img/yawara/yawara_idle_up.png");
+				// sp->Open(MOVE_UP);
 				// sp->SetFrameCount(1);
 				break;
 
 			case DOWN:
-				// sp->Open("assets/img/yawara/yawara_idle_down.png");
+				// sp->Open(MOVE_DOWN);
 				// sp->SetFrameCount(1);
 				break;
 
 			case RIGHT_UP:
-				// sp->Open("assets/img/yawara/yawara_idle_up_right.png");
+				// sp->Open(MOVE_RIGHT_UP);
 				// sp->SetFrameCount(1);
 				break;
 
 			case RIGHT_DOWN:
-				// sp->Open("assets/img/yawara/yawara_idle_down_right.png");
+				// sp->Open(MOVE_RIGHT_DOWN);
 				// sp->SetFrameCount(1);
 				break;
 
 			case LEFT_UP:
-				// sp->Open("assets/img/yawara/yawara_idle_up_left.png");
+				// sp->Open(MOVE_LEFT_UP);
 				// sp->SetFrameCount(1);
 				break;
 
 			case LEFT_DOWN:
-				// sp->Open("assets/img/yawara/yawara_idle_down_left.png");
+				// sp->Open(MOVE_LEFT_DOWN);
 				// sp->SetFrameCount(1);
 				break;
 
@@ -447,42 +488,42 @@ void Capelobo::Render()
 			switch (dir)
 			{
 			case RIGHT:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->Open(REST_RIGHT);
 				sp->SetFrameCount(8);
 				break;
 
 			case LEFT:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->Open(REST_LEFT);
 				sp->SetFrameCount(8);
 				break;
 
 			case UP:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->Open(REST_UP);
 				sp->SetFrameCount(8);
 				break;
 
 			case DOWN:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->Open(REST_DOWN);
 				sp->SetFrameCount(8);
 				break;
 
 			case RIGHT_UP:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->Open(REST_RIGHT_UP);
 				sp->SetFrameCount(8);
 				break;
 
 			case RIGHT_DOWN:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->Open(REST_RIGHT_DOWN);
 				sp->SetFrameCount(8);
 				break;
 
 			case LEFT_UP:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->Open(REST_LEFT_UP);
 				sp->SetFrameCount(8);
 				break;
 
 			case LEFT_DOWN:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
+				sp->Open(REST_LEFT_DOWN);
 				sp->SetFrameCount(8);
 				break;
 
@@ -496,43 +537,92 @@ void Capelobo::Render()
 			switch (dir)
 			{
 			case RIGHT:
-				sp->Open("assets/img/capelobo/capelobo_attack_r.png");
+				sp->Open(ATTACK_RIGHT);
 				sp->SetFrameCount(16);
 				break;
 
 			case LEFT:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
-				sp->SetFrameCount(8);
+				// sp->Open(ATTACK_LEFT);
+				// sp->SetFrameCount(16);
 				break;
 
 			case UP:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
-				sp->SetFrameCount(8);
+				// sp->Open(ATTACK_UP);
+				// sp->SetFrameCount(16);
 				break;
 
 			case DOWN:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
-				sp->SetFrameCount(8);
+				// sp->Open(ATTACK_DOWN);
+				// sp->SetFrameCount(16);
 				break;
 
 			case RIGHT_UP:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
-				sp->SetFrameCount(8);
+				// sp->Open(ATTACK_RIGHT_UP);
+				// sp->SetFrameCount(16);
 				break;
 
 			case RIGHT_DOWN:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
-				sp->SetFrameCount(8);
+				// sp->Open(ATTACK_RIGHT_DOWN);
+				// sp->SetFrameCount(16);
 				break;
 
 			case LEFT_UP:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
-				sp->SetFrameCount(8);
+				// sp->Open(ATTACK_LEFT_UP);
+				// sp->SetFrameCount(16);
 				break;
 
 			case LEFT_DOWN:
-				sp->Open("assets/img/capelobo/capelobo_idle_left.png");
-				sp->SetFrameCount(8);
+				// sp->Open(ATTACK_LEFT_DOWN);
+				// sp->SetFrameCount(16);
+				break;
+
+			default:
+				break;
+			}
+		}
+		else if (state == LOAD_ATTACK)
+		{
+			sp->SetFrameTime(0.05);
+			switch (dir)
+			{
+			case RIGHT:
+				// sp->Open(LOAD_RIGHT);
+				// sp->SetFrameCount(16);
+				break;
+
+			case LEFT:
+				// sp->Open(LOAD_LEFT);
+				// sp->SetFrameCount(16);
+				break;
+
+			case UP:
+				// sp->Open(LOAD_UP);
+				// sp->SetFrameCount(16);
+				break;
+
+			case DOWN:
+				// sp->Open(LOAD_DOWN);
+				// sp->SetFrameCount(16);
+				break;
+
+			case RIGHT_UP:
+				// sp->Open(LOAD_RIGHT_UP);
+				// sp->SetFrameCount(16);
+				break;
+
+			case RIGHT_DOWN:
+				// sp->Open(LOAD_RIGHT_DOWN);
+				// sp->SetFrameCount(16);
+				break;
+
+			case LEFT_UP:
+				// sp->Open(LOAD_LEFT_UP);
+				// sp->SetFrameCount(16);
+				break;
+
+			case LEFT_DOWN:
+				// sp->Open(LOAD_LEFT_DOWN);
+				// sp->SetFrameCount(16);
 				break;
 
 			default:
