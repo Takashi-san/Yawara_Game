@@ -224,8 +224,9 @@ void Capelobo::Update(float dt)
 				speed.y = 0;
 
 				// Muda estado.
-				state = RESTING;
+				state = LOAD_ATTACK;
 				restTimer.Restart();
+				moveTimer.Restart();
 			}
 			break;
 
@@ -244,8 +245,8 @@ void Capelobo::Update(float dt)
 
 				temp_speed = speed;
 
-				// state = MOVING;
-				state = LOAD_ATTACK;
+				state = MOVING;
+				// state = LOAD_ATTACK;
 				moveAllowed = 1;
 				moveTimer.Restart();
 			}
@@ -367,7 +368,7 @@ void Capelobo::Update(float dt)
 
 			if (attackTimer.Get() > 1)
 			{
-				state = MOVING;
+				state = RESTING;
 				attackTimer.Restart();
 				restTimer.Restart();
 			}

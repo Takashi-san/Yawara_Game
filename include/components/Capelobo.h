@@ -17,7 +17,7 @@
 #define BOSS_VEL_ANG 0
 #define BOSS_SPEED 350
 #define BOSS_REST_BASE 0.5
-#define BOSS_MOVEMENT 1.5
+#define BOSS_MOVEMENT 1
 
 #define SAFE_UP 16
 #define SAFE_DOWN 142
