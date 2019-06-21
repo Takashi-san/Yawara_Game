@@ -65,3 +65,17 @@ void Collider::SetScale(Vec2 scale) {
 	box.w = associated.box.w * scale.x;
 	box.h = associated.box.h * scale.y;
 }
+
+void Collider::SetDimension() {
+	box.w = associated.box.w * scale.x;
+	box.h = associated.box.h * scale.y;
+}
+
+void Collider::SetDimension(float w, float h) {
+	box.w = w * scale.x;
+	box.h = h * scale.y;
+}
+
+void Collider::SetDimension(Vec2 dimension) {
+	SetDimension(dimension.x, dimension.y);
+}
