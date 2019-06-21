@@ -25,4 +25,7 @@ public:
 
 	void SetScale(Vec2);
 	void SetOffset(Vec2);
+	void SetDimension();
+	void SetDimension(Vec2);
+	void SetDimension(float, float);
 };
