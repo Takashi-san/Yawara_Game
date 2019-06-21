@@ -22,7 +22,7 @@ private:
 public:
 	Collider* colisor;
 	bool targetsPlayer;
-	Hitbox(GameObject&, float = 0);
+	Hitbox(GameObject&, bool = false, float = 0);
 
 	void Update(float);
 	void Render();

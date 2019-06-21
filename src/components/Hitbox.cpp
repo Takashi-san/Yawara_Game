@@ -1,11 +1,12 @@
 #include "Hitbox.h"
 
-Hitbox::Hitbox(GameObject& associated, float selfDestruct) : Component(associated) {
+Hitbox::Hitbox(GameObject& associated, bool targetsPlayer, float selfDestruct) : Component(associated) {
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 	colisor = cl;
 
 	this->selfDestruct = selfDestruct;
+	this->targetsPlayer = targetsPlayer;
 }
 
 void Hitbox::Update(float dt) {
