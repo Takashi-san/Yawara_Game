@@ -13,6 +13,15 @@
 #include "Claw.h"
 #include "Tongue.h"
 
+#define DISTANCE_Y 150
+#define DISTANCE_X 150
+
+#define B_ATTACK_H 300
+#define B_ATTACK_W 90
+
+#define L_ATTACK_H 20
+#define L_ATTACK_W 20
+
 // Movement sprites
 
 const string MOVE_RIGHT 	 = "assets/img/capelobo/capelobo_idle_left.png";
@@ -276,81 +285,80 @@ void Capelobo::Update(float dt)
 					angle += 360;
 				angle = angle - angle % 45;
 
-				float radius = Vec2(associated.box.w / 2, associated.box.h / 2).Modulo();
+				shared_claw1->box.h = B_ATTACK_H;
+				shared_claw1->box.w = B_ATTACK_W;
 
-				shared_claw1->box = associated.box;
-				shared_claw1->box.h = associated.box.h;
-				shared_claw1->box.w = 80;
-
-				shared_claw2->box = associated.box;
-				shared_claw2->box.h = associated.box.h + shared_claw1->box.w / 2;
-				shared_claw2->box.w = shared_claw1->box.w;
+				shared_claw2->box.h = B_ATTACK_H + B_ATTACK_W / 2;
+				shared_claw2->box.w = B_ATTACK_W;
 
 				switch (dir)
 				{
 				case RIGHT:
-					shared_claw1->box.x += associated.box.w - shared_claw1->box.w / 2;
+					shared_claw1->box.Centered(associated.box.Center()+Vec2({DISTANCE_X,0}));
 					break;
 
 				case UP:
 					swap(shared_claw1->box.h, shared_claw1->box.w);
-					shared_claw1->box.y -= shared_claw1->box.h - shared_claw1->box.h / 2;
+					shared_claw1->box.Centered(associated.box.Center()-Vec2({0,DISTANCE_X}));
 					break;
 
 				case LEFT:
+					shared_claw1->box.Centered(associated.box.Center()-Vec2({DISTANCE_X,0}));
 					break;
 
 				case DOWN:
 					swap(shared_claw1->box.h, shared_claw1->box.w);
-					shared_claw1->box.y += associated.box.h - shared_claw1->box.h / 2;
+					shared_claw1->box.Centered(associated.box.Center()+Vec2({0,DISTANCE_X}));
 					break;
 
 				case LEFT_DOWN:
 					swap(shared_claw2->box.h, shared_claw2->box.w);
-					shared_claw2->box.y += associated.box.h - shared_claw2->box.h / 2;
-					shared_claw2->box.x -= shared_claw1->box.w / 2;
-					theClaw2 = new Claw(*shared_claw2, CLAW_DAMEGE,true);
+					shared_claw2->box.Centered(associated.box.Center()+Vec2({-shared_claw1->box.w/4,DISTANCE_Y}));
+					
+					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
 					shared_claw2->AddComponent(theClaw2);
 
-					shared_claw1->box.x -= shared_claw1->box.w / 2;
-					shared_claw1->box.h -= shared_claw2->box.h / 2;
+					shared_claw1->box.Centered(associated.box.Center()-Vec2({DISTANCE_X,0}));
+					shared_claw1->box.h -= shared_claw2->box.h/2;
 					break;
 
 				case LEFT_UP:
 					swap(shared_claw2->box.h, shared_claw2->box.w);
-					shared_claw2->box.y -= shared_claw2->box.h - shared_claw2->box.h / 2;
-					theClaw2 = new Claw(*shared_claw2, CLAW_DAMEGE,true);
+					shared_claw2->box.Centered(associated.box.Center()-Vec2({shared_claw1->box.w/4,DISTANCE_Y}));
+					
+					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
 					shared_claw2->AddComponent(theClaw2);
 
-					shared_claw1->box.y += shared_claw2->box.h / 2;
-					shared_claw1->box.h -= shared_claw2->box.h / 2;
+					shared_claw1->box.Centered(associated.box.Center()-Vec2({DISTANCE_X,-shared_claw2->box.h/2}));
+					shared_claw1->box.h -= shared_claw2->box.h/2;
 					break;
 
 				case RIGHT_DOWN:
 					swap(shared_claw2->box.h, shared_claw2->box.w);
-					shared_claw2->box.y += associated.box.h - shared_claw2->box.h / 2;
-					theClaw2 = new Claw(*shared_claw2, CLAW_DAMEGE,true);
+					shared_claw2->box.Centered(associated.box.Center()+Vec2({shared_claw1->box.w/4,DISTANCE_Y}));
+					
+					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
 					shared_claw2->AddComponent(theClaw2);
-
-					shared_claw1->box.x += associated.box.w - shared_claw1->box.w / 2;
-					shared_claw1->box.h -= shared_claw2->box.h / 2;
+					
+					shared_claw1->box.Centered(associated.box.Center()+Vec2({DISTANCE_X,0}));
+					shared_claw1->box.h -= shared_claw2->box.h/2;
 					break;
 
 				case RIGHT_UP:
 					swap(shared_claw2->box.h, shared_claw2->box.w);
-					shared_claw2->box.y -= shared_claw2->box.h - shared_claw2->box.h / 2;
-					theClaw2 = new Claw(*shared_claw2, CLAW_DAMEGE,true);
+					shared_claw2->box.Centered(associated.box.Center()+Vec2({shared_claw1->box.w/4,-DISTANCE_Y}));
+					
+					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
 					shared_claw2->AddComponent(theClaw2);
 
-					shared_claw1->box.x += associated.box.w - shared_claw1->box.w / 2;
-					shared_claw1->box.y += shared_claw2->box.h / 2;
-					shared_claw1->box.h -= shared_claw2->box.h / 2;
+					shared_claw1->box.Centered(associated.box.Center()+Vec2({DISTANCE_X,shared_claw2->box.h/2}));
+					shared_claw1->box.h -= shared_claw2->box.h/2;
 					break;
 				default:
 					break;
 				}
 
-				theClaw1 = new Claw(*shared_claw1, CLAW_DAMEGE,true);
+				theClaw1 = new Claw(*shared_claw1, CLAW_DAMAGE,true);
 
 				shared_claw1->AddComponent(theClaw1);
 				if(shared_claw1 != nullptr)
@@ -379,8 +387,8 @@ void Capelobo::Update(float dt)
 				weak_ptr<GameObject> weak_tongue = Game::GetInstance().GetCurrentState().AddObject(tongueGO);
 				shared_ptr<GameObject> shared_tongue = weak_tongue.lock();
 
-				shared_tongue->box.w = 20;
-				shared_tongue->box.h = 20;
+				shared_tongue->box.w = L_ATTACK_W;
+				shared_tongue->box.h = L_ATTACK_H;
 				shared_tongue->box.x = associated.box.Center().x - shared_tongue->box.w / 2;
 				shared_tongue->box.y = associated.box.Center().y;
 
@@ -390,7 +398,7 @@ void Capelobo::Update(float dt)
 
 				angle = angle - angle % 45;
 
-				Tongue *theTongue = new Tongue(*shared_tongue, TONGUE_DAMEGE, TONGUE_SPEED, angle, TONGUE_MAX_DIST, true);
+				Tongue *theTongue = new Tongue(*shared_tongue, TONGUE_DAMAGE, TONGUE_SPEED, angle, TONGUE_MAX_DIST, true);
 
 				shared_tongue->AddComponent(theTongue);
 				if(shared_tongue != nullptr)
