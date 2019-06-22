@@ -22,12 +22,13 @@ private:
 public:
 	Collider* colisor;
 	bool targetsPlayer;
-	Hitbox(GameObject&, bool = false, float = 0);
+	Hitbox(GameObject&, int = 0, bool = false, float = 0);
 
 	void Update(float);
 	void Render();
 	bool Is(std::string);
 	
 	int GetDamage();
+	void SetDamage(int);
 	void SetSelfDestruct(float);
 };
