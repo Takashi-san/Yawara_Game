@@ -1,12 +1,13 @@
 #include "Hitbox.h"
 
-Hitbox::Hitbox(GameObject& associated, bool targetsPlayer, float selfDestruct) : Component(associated) {
+Hitbox::Hitbox(GameObject& associated, int damage, bool targetsPlayer, float selfDestruct) : Component(associated) {
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 	colisor = cl;
 
 	this->selfDestruct = selfDestruct;
 	this->targetsPlayer = targetsPlayer;
+	this->damage = damage;
 }
 
 void Hitbox::Update(float dt) {
@@ -27,6 +28,10 @@ bool Hitbox::Is(std::string type) {
 
 int Hitbox::GetDamage() {
 	return damage;
+}
+
+void Hitbox::SetDamage(int damage) {
+	this->damage = damage;
 }
 
 void Hitbox::SetSelfDestruct(float selfDestruct) {
