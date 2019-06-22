@@ -26,10 +26,12 @@ private:
 	void DoAction(float);
 	void SetMov();
 	void SetDge();
+	void SetAtk();
 
 	Timer dge_cd;
 	Timer dge_act;
 	Timer atk_cd;
+	Timer atk_act;
 
 public:
 	static Yawara* player;

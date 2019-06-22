@@ -8,6 +8,7 @@
 #include "Bullet.h"
 #include "Sound.h"
 #include "Tapu.h"
+#include "Hitbox.h"
 
 #define YWR_HP			100
 #define YWR_SPEED		500
@@ -17,6 +18,7 @@
 #define YWR_DGE_ACT		0.2
 
 #define YWR_ATK_CD		1
+#define YWR_ATK_ACT		4*0.05
 
 #define YWR_ANI_TIME	0.100
 
@@ -209,6 +211,7 @@ void Yawara::Comand(float dt) {
 
 			if (input.MousePress(RIGHT_MOUSE_BUTTON)) {
 				if (atk_cd.Get() > YWR_ATK_CD) {
+					SetAtk();
 					act = ATK;
 					break;
 				}
@@ -216,8 +219,17 @@ void Yawara::Comand(float dt) {
 		break;
 
 		case ATK:
-			act = MOV;
-			atk_cd.Restart();
+			atk_act.Update(dt);
+			if (atk_act.Get() > YWR_ATK_ACT) {
+				act = MOV;
+
+				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+				sp->SetFrameTime(YWR_ANI_TIME);
+				change_sprite = true;
+
+				atk_act.Restart();
+				atk_cd.Restart();
+			}
 		break;
 
 		case DGE:
@@ -252,7 +264,6 @@ void Yawara::DoAction(float dt) {
 		break;
 
 		case ATK:
-			std::cout << "ataque!\n";
 		break;
 
 		case DGE:
@@ -435,4 +446,68 @@ void Yawara::SetDge() {
 		}
 	}
 	associated.box.Centered(position);
+}
+
+void Yawara::SetAtk() {
+	GameObject *go = new GameObject();
+	std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
+
+	Sprite* sp = new Sprite(*ptr, "assets/penguin/img/slash.png", 5, 0.05, 5*0.05);
+	Hitbox* hit = new Hitbox(*ptr);
+	ptr->AddComponent(sp);
+	ptr->AddComponent(hit);
+	hit->colisor->SetScale({0.55, 0.85});
+	hit->colisor->SetOffset({200, 0});
+	ptr->box.Centered(associated.box.Center());
+
+	switch (dir) {
+		case RIGHT:
+			ptr->box.x += 100;
+			ptr->angleDeg = 0;
+		break;
+
+		case LEFT:
+			ptr->box.x -= 100;
+			ptr->angleDeg = 180;
+		break;
+
+		case DOWN:
+			ptr->box.y += 100;
+			ptr->angleDeg = 90;
+		break;
+
+		case DOWN_RIGHT:
+			ptr->box.x += 50;
+			ptr->box.y += 50;
+			ptr->angleDeg = 45;
+		break;
+
+		case DOWN_LEFT:
+			ptr->box.x -= 50;
+			ptr->box.y += 50;
+			ptr->angleDeg = 135;
+		break;
+
+		case UP:
+			ptr->box.y -= 100;
+			ptr->angleDeg = 270;
+		break;
+
+		case UP_RIGHT:
+			ptr->box.x += 50;
+			ptr->box.y -= 50;
+			ptr->angleDeg = 315;
+		break;
+
+		case UP_LEFT:
+			ptr->box.x -= 50;
+			ptr->box.y -= 50;
+			ptr->angleDeg = 225;
+		break;
+
+		default:
+			std::cout << "Unknow direction to atack!\n";
+		break;
+	}
 }
