@@ -11,28 +11,27 @@ TileMap::TileMap(GameObject& associated, int tileWidth, int tileHeight, std::str
 }
 
 void TileMap::Load(std::string file){
+	mapWidth = 0;
+	mapHeight = 0;
+	mapDepth = 1;
+	int count = 0;
 	std::ifstream input;
 	std::string in, num;
 	input.open(file.c_str(), std::ios::in);
 
 	if (!input.fail()) {
-		std::getline(input, in, ',');
-		mapWidth = std::stoi(in);
-		std::getline(input, in, ',');
-		mapHeight = std::stoi(in);
-		std::getline(input, in, ',');
-		mapDepth = std::stoi(in);
-
-		std::getline(input, in);
-		for(int k = 0; k < mapDepth; k++){
+		while (!input.eof()) {
 			std::getline(input, in);
-			for(int i = 0; i < mapHeight; i++){
-				std::getline(input, in);
+			if (in.size() != 0) {
+				mapHeight++;
 				std::stringstream line(in);
-				for(int j = 0; j < mapWidth; j++){
+				count = 0;
+				while (!line.eof()) {
+					count++;
 					std::getline(line, num, ',');
 					tileMatrix.push_back(std::stoi(num));
 				}
+				mapWidth = count;
 			}
 		}
 	} else {
