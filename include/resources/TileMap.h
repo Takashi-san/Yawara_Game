@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "TileSet.h"
 #include "GameObject.h"
+#include "State.h"
 
 #include <string>
 #include <iostream>
@@ -38,4 +39,6 @@ public:
 
 	void Update(float dt);
 	bool Is(std::string type);
+
+	static void SetMapLayer(State&, std::string, int, int, std::string, int, int, int, int);
 };

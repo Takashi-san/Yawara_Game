@@ -1,5 +1,9 @@
 #include "TileMap.h"
 #include "Camera.h"
+#include "Tilemaps.h"
+#include "Tilesets.h"
+#include "Game.h"
+#include "TileSet.h"
 #include <sstream>
 
 TileMap::TileMap(GameObject& associated, int tileWidth, int tileHeight, std::string file, TileSet* tileSet): Component(associated) {
@@ -93,4 +97,34 @@ void TileMap::Update(float dt) {
 
 bool TileMap::Is(std::string type) {
 	return !strcmp(type.c_str(), "TileMap");
+}
+
+void TileMap::SetMapLayer(State& state, std::string layer_path, int x, int y, std::string tileset_path, int tileset_w, int tileset_h, int offsetX, int offsetY) {
+	// setup tileset.
+	GameObject* go = new GameObject();
+	std::weak_ptr<GameObject> weak_ptr = state.AddObject(go);
+	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
+	TileSet* tileset = new TileSet(*ptr, tileset_w, tileset_h, tileset_path);
+
+	std::string tilemap;
+
+	for(int i = 1; i <= y; i++) {
+		for(int j = 1; j <= x; j++) {
+			go = new GameObject();
+			weak_ptr = state.AddObject(go);
+			ptr = weak_ptr.lock();
+
+			tilemap = layer_path;
+			tilemap += "/c";
+			tilemap += std::to_string(j);
+			tilemap += "_l";
+			tilemap += std::to_string(i);
+			tilemap += ".csv";
+
+			TileMap* tlmp = new TileMap(*ptr, TILE, TILE, tilemap, tileset);
+			ptr->box.x = offsetX + tlmp->GetWidth()*tileset_w*(j-1);
+			ptr->box.y = offsetY + tlmp->GetHeight()*tileset_h*(i-1);
+			ptr->AddComponent(tlmp);
+		}
+	}
 }
