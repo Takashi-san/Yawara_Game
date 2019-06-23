@@ -20,6 +20,8 @@ class Tapu : public Component
         Direction dir;
         bool changedDir;
 
+        float damageFactor;
+
     public:
         Tapu(GameObject &, std::weak_ptr<GameObject>);
 
@@ -29,4 +31,6 @@ class Tapu : public Component
         void NotifyCollision(GameObject &);
 
         void Shoot();
+
+        void SetDamageFactor(float);
 };

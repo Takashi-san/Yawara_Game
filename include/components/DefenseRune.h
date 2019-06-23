@@ -7,14 +7,14 @@
 
 class GameObject;
 
-class HealthRune : public Item
+class DefenseRune : public Item
 {
 private:
-    float hpFactor;
+    float defFactor;
     Sprite* sp;
-
+    
 public:
-    HealthRune(GameObject&, float);
+    DefenseRune(GameObject&, float);
     
     void Update(float);
     void Render();

@@ -1,19 +1,19 @@
-#include "HealthRune.h"
+#include "AttackRune.h"
 #include "Sprite.h"
 #include "Yawara.h"
 #include "Timer.h"
 
-/* 1 < factor <= 2 means an increased health */
-HealthRune::HealthRune(GameObject& associated, float hpFactor) : Item(associated){
+/* 1 < factor <= 2 increased attack damage */
+AttackRune::AttackRune(GameObject& associated, float attFactor) : Item(associated){
 
-    sp = new Sprite(associated, "assets/img/items/cristal.png");
+    sp = new Sprite(associated, "assets/img/items/runa.png");
     sp->SetScale(0.5, 0.5);
 	associated.AddComponent(sp);
 
-    this->hpFactor = hpFactor;
+    this->attFactor = attFactor;
 }
 
-void HealthRune::Update(float dt){
+void AttackRune::Update(float dt){
 
     static Timer blendTimer;
     static bool active = true;
@@ -22,7 +22,7 @@ void HealthRune::Update(float dt){
         float dist = (associated.box.Center() - Yawara::player->GetPos()).Modulo();
 
         if(dist <= 45 && active){
-            Yawara::player->Boost(Yawara::HPBOOST, hpFactor);
+            Yawara::player->Boost(Yawara::ATTBOOST, attFactor);
             sp->SetBlendMode(BLEND_ADD);
             blendTimer.Restart();
             active = false;
@@ -36,17 +36,17 @@ void HealthRune::Update(float dt){
     }
 }
 
-void HealthRune::Render(){
+void AttackRune::Render(){
 
 
 }
 
-bool HealthRune::Is(std::string type){
+bool AttackRune::Is(std::string type){
 
-	return !strcmp(type.c_str(), "HealthRune");
+	return !strcmp(type.c_str(), "AttackRune");
 }
 
-void HealthRune::Start(){
+void AttackRune::Start(){
 
 
 }
