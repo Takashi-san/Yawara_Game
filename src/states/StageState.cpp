@@ -8,7 +8,6 @@
 #include "InputManager.h"
 #include "Camera.h"
 #include "CameraFollower.h"
-#include "Capelobo.h"
 #include "Collision.h"
 #include "Collider.h"
 #include "Data.h"
@@ -16,7 +15,6 @@
 #include "Game.h"
 #include "Cursor.h"
 #include "Yawara.h"
-#include "Floor.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -94,16 +92,6 @@ StageState::StageState()
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp5);
 
-	Floor::Load(CL_MAP1, TILE, TILE);
-
-	// Capelobo
-	GameObject *goali1 = new GameObject();
-	weak_ptr = AddObject(goali1);
-	ptr = weak_ptr.lock();
-	Capelobo *cape = new Capelobo(*ptr, 0.1);
-	ptr->box.Centered({512, 850});
-	ptr->AddComponent(cape);
-
 	// Yawara
 	GameObject *goya = new GameObject();
 	weak_ptr = AddObject(goya);
@@ -154,13 +142,13 @@ void StageState::Update(float dt)
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
 	}
-	else if (Capelobo::boss == nullptr)
-	{
-		popRequested = true;
-		Data::playerVictory = true;
-		EndState *stage = new EndState();
-		Game::GetInstance().Push(stage);
-	}
+	// else if (Capelobo::boss == nullptr)
+	// {
+	// 	popRequested = true;
+	// 	Data::playerVictory = true;
+	// 	EndState *stage = new EndState();
+	// 	Game::GetInstance().Push(stage);
+	// }
 
 	UpdateArray(dt);
 
@@ -185,7 +173,7 @@ void StageState::Update(float dt)
 				Collider *colj = static_cast<Collider *>(objectArray[j]->GetComponent("Collider"));
 				if (colj != nullptr)
 				{
-					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg / (PI / 180), objectArray[j]->angleDeg / (PI / 180)))
+					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg / (3.1415926 / 180), objectArray[j]->angleDeg / (3.1415926 / 180)))
 					{
 						objectArray[i]->NotifyCollision(*(objectArray[j]));
 						objectArray[j]->NotifyCollision(*(objectArray[i]));
