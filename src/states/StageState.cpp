@@ -1,5 +1,6 @@
 #include "StageState.h"
 
+#include "PauseState.h"
 #include "Sprite.h"
 #include "Sound.h"
 #include "TileMap.h"
@@ -7,7 +8,7 @@
 #include "InputManager.h"
 #include "Camera.h"
 #include "CameraFollower.h"
-#include "Alien.h"
+#include "Capelobo.h"
 #include "Collision.h"
 #include "Collider.h"
 #include "Data.h"
@@ -15,16 +16,18 @@
 #include "Game.h"
 #include "Cursor.h"
 #include "Yawara.h"
+#include "Floor.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
 
-#define STAGE_STT_BG			"assets/penguin/img/ocean.jpg"
-#define STAGE_STT_BGM			"assets/penguin/audio/stageState.ogg"
-#define STAGE_STT_CURSOR_SPRITE	"assets/penguin/img/penguinface.png"
-#define STAGE_STT_CAMERA_RATIO	0.37
+#define STAGE_STT_BG "assets/penguin/img/ocean.jpg"
+#define STAGE_STT_BGM "assets/penguin/audio/stageState.ogg"
+#define STAGE_STT_CURSOR_SPRITE "assets/penguin/img/penguinface.png"
+#define STAGE_STT_CAMERA_RATIO 0.37
 
-StageState::StageState() {
+StageState::StageState()
+{
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
@@ -38,7 +41,7 @@ StageState::StageState() {
 	CameraFollower *cmfl = new CameraFollower(*ptr);
 	ptr->AddComponent(sp);
 	ptr->AddComponent(cmfl);
-	
+
 	// TileMap
 	GameObject *gomp1 = new GameObject();
 	weak_ptr = AddObject(gomp1);
@@ -65,6 +68,7 @@ StageState::StageState() {
 	ptr = weak_ptr.lock();
 	tileset = new TileSet(*ptr, TS_SOLO_W, TS_SOLO_H, TS_SOLO);
 	TileMap *tlmp3 = new TileMap(*ptr, TILE, TILE, TM_MAP1_3, tileset);
+	// TileMap *tlmp3 = new TileMap(*ptr, TILE, TILE, CL_MAP1, tileset);
 	tlmp3->SetParallax(1);
 	ptr->box.x = 0;
 	ptr->box.y = 0;
@@ -90,12 +94,22 @@ StageState::StageState() {
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp5);
 
+	Floor::Load(CL_MAP1, TILE, TILE);
+
+	// Capelobo
+	GameObject *goali1 = new GameObject();
+	weak_ptr = AddObject(goali1);
+	ptr = weak_ptr.lock();
+	Capelobo *cape = new Capelobo(*ptr, 0.1);
+	ptr->box.Centered({512, 850});
+	ptr->AddComponent(cape);
+
 	// Yawara
 	GameObject *goya = new GameObject();
 	weak_ptr = AddObject(goya);
 	ptr = weak_ptr.lock();
 	Yawara *yawara = new Yawara(*ptr);
-	ptr->box.Centered({0, 0});
+	ptr->box.Centered({1150, 30});
 	ptr->AddComponent(yawara);
 
 	// Cursor
@@ -116,51 +130,63 @@ StageState::StageState() {
 	bgMusic.Play();
 }
 
-StageState::~StageState() {
+StageState::~StageState()
+{
 	objectArray.clear();
 }
 
-void StageState::Update(float dt) {
-	InputManager& input = InputManager::GetInstance();
+void StageState::Update(float dt)
+{
+	InputManager &input = InputManager::GetInstance();
 
 	// verifica fechamento do jogo.
-	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY)) {
-		popRequested = true;
+	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY))
+	{
+		PauseState *stage = new PauseState();
+		Game::GetInstance().Push(stage);
 	}
 
-	/*
 	// verifica condições de vitoria.
-	if (Yawara::player == nullptr) {
+	if (Yawara::player == nullptr)
+	{
 		popRequested = true;
 		Data::playerVictory = false;
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
-	} else if (Alien::alienCount == 0) {
+	}
+	else if (Capelobo::boss == nullptr)
+	{
 		popRequested = true;
 		Data::playerVictory = true;
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
 	}
-	*/
-	
+
 	UpdateArray(dt);
 
 	// update dos colliders.
-	for (unsigned int i = 0; i < objectArray.size(); i++) {
-		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("Collider"));
-		if (coli != nullptr) {
+	for (unsigned int i = 0; i < objectArray.size(); i++)
+	{
+		Collider *coli = static_cast<Collider *>(objectArray[i]->GetComponent("Collider"));
+		if (coli != nullptr)
+		{
 			coli->Update(dt);
 		}
 	}
 
 	// verifica colisão dos objetos.
-	for (unsigned int i = 0; i < objectArray.size(); i++) {
-		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("Collider"));
-		if (coli != nullptr) {
-			for (unsigned int j = i+1; j < objectArray.size(); j++) {
-				Collider *colj = static_cast<Collider*>(objectArray[j]->GetComponent("Collider"));
-				if (colj != nullptr) {
-					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg/0.0174533, objectArray[j]->angleDeg/0.0174533)) {
+	for (unsigned int i = 0; i < objectArray.size(); i++)
+	{
+		Collider *coli = static_cast<Collider *>(objectArray[i]->GetComponent("Collider"));
+		if (coli != nullptr)
+		{
+			for (unsigned int j = i + 1; j < objectArray.size(); j++)
+			{
+				Collider *colj = static_cast<Collider *>(objectArray[j]->GetComponent("Collider"));
+				if (colj != nullptr)
+				{
+					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg / (PI / 180), objectArray[j]->angleDeg / (PI / 180)))
+					{
 						objectArray[i]->NotifyCollision(*(objectArray[j]));
 						objectArray[j]->NotifyCollision(*(objectArray[i]));
 					}
@@ -173,44 +199,50 @@ void StageState::Update(float dt) {
 
 	// Componentes dependentes de Camera.
 	// update dos CameraFollower.
-	for (unsigned int i = 0; i < objectArray.size(); i++) {
-		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("CameraFollower"));
-		if (coli != nullptr) {
+	for (unsigned int i = 0; i < objectArray.size(); i++)
+	{
+		Collider *coli = static_cast<Collider *>(objectArray[i]->GetComponent("CameraFollower"));
+		if (coli != nullptr)
+		{
 			coli->Update(dt);
 			break;
 		}
 	}
 
 	// update dos Cursor.
-	for (unsigned int i = 0; i < objectArray.size(); i++) {
-		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("Cursor"));
-		if (coli != nullptr) {
+	for (unsigned int i = 0; i < objectArray.size(); i++)
+	{
+		Collider *coli = static_cast<Collider *>(objectArray[i]->GetComponent("Cursor"));
+		if (coli != nullptr)
+		{
 			coli->Update(dt);
 			break;
 		}
 	}
 }
 
-void StageState::Render() {
+void StageState::Render()
+{
 	RenderArray();
 }
 
-void StageState::LoadAssets() {
-
+void StageState::LoadAssets()
+{
 }
 
-void StageState::Start(){
+void StageState::Start()
+{
 	LoadAssets();
-	
+
 	StartArray();
 
 	started = true;
 }
 
-void StageState::Pause() {
-
+void StageState::Pause()
+{
 }
 
-void StageState::Resume() {
-
+void StageState::Resume()
+{
 }
