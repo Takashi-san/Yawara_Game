@@ -15,19 +15,15 @@ class Hitbox : public Component
 {
 private:
 	int damage;
-
-	float selfDestruct;
-	Timer SFTimer;
-
 public:
 	Collider* colisor;
 	bool targetsPlayer;
-	Hitbox(GameObject&, bool = false, float = 0);
+	Hitbox(GameObject&, int = 10, bool = false, float = 0);
 
 	void Update(float);
 	void Render();
 	bool Is(std::string);
 	
 	int GetDamage();
-	void SetSelfDestruct(float);
+	void NotifyCollision(GameObject &);
 };

@@ -359,7 +359,7 @@ void Capelobo::Update(float dt)
 					break;
 				}
 
-				theClaw1 = new Claw(*shared_claw1, CLAW_DAMAGE,true);
+				theClaw1 = new Claw(*shared_claw1, CLAW_DAMAGE, true);
 
 				shared_claw1->AddComponent(theClaw1);
 				if(shared_claw1 != nullptr)

@@ -5,7 +5,9 @@
 #include "Collider.h"
 #include "InputManager.h"
 #include "Camera.h"
+#include "Hitbox.h"
 #include "Claw.h"
+#include "Tongue.h"
 #include "Sound.h"
 #include "Tapu.h"
 #include "Floor.h"
@@ -24,7 +26,7 @@ Yawara::Yawara(GameObject &associated) : Component(associated)
 	sp->SetScale({0.7, 0.7});
 	cl->SetScale({0.7, 0.7});
 
-	hp = 100;
+	hp = 200;
 	speed = {0, 0};
 	dir = RIGHT;
 	idle = true;
@@ -350,11 +352,11 @@ bool Yawara::Is(std::string type)
 
 void Yawara::NotifyCollision(GameObject &other)
 {
-	Claw *claw = static_cast<Claw *>(other.GetComponent("Claw"));
+	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
 
-	if (claw && claw->targetsPlayer)
+	if (hitbox && hitbox->targetsPlayer)
 	{
-		// hp -= claw->GetDamage();
+		// hp -= hitbox->GetDamage();
 	}
 }
 

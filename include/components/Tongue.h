@@ -1,6 +1,6 @@
 #pragma once // Alows to initializate the header just once
 
-#include "Component.h"
+#include "Hitbox.h"
 #include "GameObject.h"
 #include "Vec2.h"
 #include "Timer.h"
@@ -12,7 +12,9 @@
 
 using namespace std;
 
-class Tongue : public Component
+// class Hitbox;
+
+class Tongue : public Hitbox
 {
 private:
 	Vec2 speed;
@@ -20,7 +22,6 @@ private:
 	float distanceLeft;
 	float maxDistance;
 	float radius;
-	int damage;
 	weak_ptr<GameObject> center;
 
 
@@ -29,8 +30,5 @@ public:
 	Tongue(GameObject &, int, float, int, float, bool);
 
 	void Update(float);
-	void Render();
-	bool Is(std::string);
 	void NotifyCollision(GameObject &);
-	int GetDamage();
 };

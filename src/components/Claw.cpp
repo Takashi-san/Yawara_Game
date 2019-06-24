@@ -3,11 +3,8 @@
 #include "Collider.h"
 #include "Easing.h"
 
-Claw::Claw(GameObject &associated, int damage, bool targetsPlayer) : Component(associated)
+Claw::Claw(GameObject &associated, int damage, bool targetsPlayer) : Hitbox(associated, damage, targetsPlayer, 1)
 {
-	Collider *cl = new Collider(associated);
-	associated.AddComponent(cl);
-
 	this->targetsPlayer = targetsPlayer;
 	this->damage = damage;
 
@@ -16,26 +13,11 @@ Claw::Claw(GameObject &associated, int damage, bool targetsPlayer) : Component(a
 
 void Claw::Update(float dt)
 {
-
 	duration.Update(dt);
 	if (duration.Get() > 1)
 	{
 		associated.RequestDelete();
 	}
-}
-
-void Claw::Render()
-{
-}
-
-bool Claw::Is(std::string type)
-{
-	return !strcmp(type.c_str(), "Claw");
-}
-
-int Claw::GetDamage()
-{
-	return damage;
 }
 
 void Claw::NotifyCollision(GameObject &other)

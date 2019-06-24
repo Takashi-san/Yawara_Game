@@ -5,12 +5,8 @@
 
 bool hitMax;
 
-Tongue::Tongue(GameObject &associated, int damage, float speed, int angleDeg, float maxDistance, bool targetsPlayer) : Component(associated)
+Tongue::Tongue(GameObject &associated, int damage, float speed, int angleDeg, float maxDistance, bool targetsPlayer) : Hitbox(associated, damage, true, 0)
 {
-	Collider *cl = new Collider(associated);
-	associated.AddComponent(cl);
-
-	this->damage = damage;
 	angle = angleDeg;
 	distanceLeft = maxDistance;
 	this->maxDistance = maxDistance;
@@ -44,25 +40,8 @@ void Tongue::Update(float dt)
 	}
 }
 
-void Tongue::Render()
-{
-}
-
-bool Tongue::Is(std::string type)
-{
-	return !strcmp(type.c_str(), "Tongue");
-}
-
-int Tongue::GetDamage()
-{
-	return damage;
-}
-
 void Tongue::NotifyCollision(GameObject &other)
 {
-	if (other.GetComponent("Capelobo") && !targetsPlayer)
-		associated.RequestDelete();
-
 	if (other.GetComponent("Yawara") && targetsPlayer)
 		associated.RequestDelete();
 }

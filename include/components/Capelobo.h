@@ -23,7 +23,7 @@
 #define SAFE_DOWN 142
 #define SAFE_SIDE 128
 
-#define CLAW_DAMAGE 20
+#define CLAW_DAMAGE 10
 #define TONGUE_DAMAGE 50
 #define TONGUE_SPEED 800
 #define TONGUE_MAX_DIST 400

@@ -1,6 +1,6 @@
 #pragma once // Alows to initializate the header just once
 
-#include "Component.h"
+#include "Hitbox.h"
 #include "GameObject.h"
 #include "Vec2.h"
 #include "Timer.h"
@@ -12,7 +12,7 @@
 
 using namespace std;
 
-class Claw : public Component
+class Claw : public Hitbox
 {
 private:
 	Timer duration;
@@ -23,8 +23,5 @@ public:
 	Claw(GameObject &, int, bool);
 
 	void Update(float);
-	void Render();
-	bool Is(std::string);
 	void NotifyCollision(GameObject &);
-	int GetDamage();
 };
