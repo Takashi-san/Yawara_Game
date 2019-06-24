@@ -1,5 +1,6 @@
 #include "StageState.h"
 
+#include "PauseState.h"
 #include "Sprite.h"
 #include "Sound.h"
 #include "TileMap.h"
@@ -141,7 +142,8 @@ void StageState::Update(float dt)
 	// verifica fechamento do jogo.
 	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY))
 	{
-		popRequested = true;
+		PauseState *stage = new PauseState();
+		Game::GetInstance().Push(stage);
 	}
 
 	// verifica condições de vitoria.
@@ -173,18 +175,13 @@ void StageState::Update(float dt)
 	}
 
 	// verifica colisão dos objetos.
-	for (unsigned int i = 0; i < objectArray.size(); i++)
-	{
-		Collider *coli = static_cast<Collider *>(objectArray[i]->GetComponent("Collider"));
-		if (coli != nullptr)
-		{
-			for (unsigned int j = i + 1; j < objectArray.size(); j++)
-			{
-				Collider *colj = static_cast<Collider *>(objectArray[j]->GetComponent("Collider"));
-				if (colj != nullptr)
-				{
-					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg / (PI / 180), objectArray[j]->angleDeg / (PI / 180)))
-					{
+	for (unsigned int i = 0; i < objectArray.size(); i++) {
+		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("Collider"));
+		if (coli != nullptr) {
+			for (unsigned int j = i+1; j < objectArray.size(); j++) {
+				Collider *colj = static_cast<Collider*>(objectArray[j]->GetComponent("Collider"));
+				if (colj != nullptr) {
+					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg/0.0174533, objectArray[j]->angleDeg/0.0174533)) {
 						objectArray[i]->NotifyCollision(*(objectArray[j]));
 						objectArray[j]->NotifyCollision(*(objectArray[i]));
 					}
