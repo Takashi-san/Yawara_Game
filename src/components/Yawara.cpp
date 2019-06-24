@@ -30,6 +30,7 @@ Yawara::Yawara(GameObject &associated) : Component(associated)
 	speed = {0, 0};
 	dir = RIGHT;
 	idle = true;
+	hitTime.Restart();
 }
 
 Yawara::~Yawara()
@@ -339,6 +340,8 @@ void Yawara::Update(float dt)
 
 		so->Play(1);
 	}
+
+	hitTime.Update(dt);
 }
 
 void Yawara::Render()
@@ -354,9 +357,10 @@ void Yawara::NotifyCollision(GameObject &other)
 {
 	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
 
-	if (hitbox && hitbox->targetsPlayer)
+	if (hitbox && hitbox->targetsPlayer && hitTime.Get() >= HIT_COOL_DOWN)
 	{
 		// hp -= hitbox->GetDamage();
+		hitTime.Restart();
 	}
 }
 

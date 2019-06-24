@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "GameObject.h"
 #include "Vec2.h"
+#include "Timer.h"
 
 #include <string>
 #include <iostream>
@@ -12,6 +13,8 @@
 #define YAWARA_SPEED 500
 #define SAFE_DISTANCE_UP 16 * 0.7
 #define SAFE_DISTANCE_DOWN 48 * 0.7
+#define HIT_COOL_DOWN 1
+
 
 class Yawara : public Component
 {
@@ -31,6 +34,8 @@ private:
 		RIGHT_UP
 	};
 	Direction dir;
+
+	Timer hitTime;
 
 	int safeX;
 	int safeY;
