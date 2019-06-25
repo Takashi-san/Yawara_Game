@@ -1,8 +1,12 @@
 #pragma once
 
-#define TS_SOLO "assets/img/tileset/solo.png"
-#define TS_SOLO_W 16
-#define TS_SOLO_H 16
+#define TS_DEBUG		"assets/img/tileset/debug_tileset.png"
+#define TS_DEBUG_W		16
+#define TS_DEBUG_H		16
+
+#define TS_SOLO			"assets/img/tileset/solo.png"
+#define TS_SOLO_W		16
+#define TS_SOLO_H		16
 
 #define TS_PLANT_ROCK "assets/img/tileset/planta_rocha.png"
 #define TS_PLANT_ROCK_W 144
