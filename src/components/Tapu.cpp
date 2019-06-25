@@ -37,12 +37,14 @@ Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component
 	changedDir = false;
 }
 
-void Tapu::Update(float dt) {
+void Tapu::Update(float dt)
+{
 	static Timer cd;
-	InputManager& input = InputManager::GetInstance();
+	InputManager &input = InputManager::GetInstance();
 
 	std::shared_ptr<GameObject> ywr = yawara.lock();
-	if (ywr) {
+	if (ywr)
+	{
 
 		Vec2 newPos(input.GetMouseX() + Camera::pos.x, input.GetMouseY() + Camera::pos.y);
 		Vec2 dist = newPos - ywr->box.Center();
@@ -50,10 +52,11 @@ void Tapu::Update(float dt) {
 		angle = 0;
 		associated.angleDeg = 0;
 
-		if(dist.Modulo() > radius){
-			newPos = ywr->box.Center() + ((dist/dist.Modulo()) * radius);
+		if (dist.Modulo() > radius)
+		{
+			newPos = ywr->box.Center() + ((dist / dist.Modulo()) * radius);
 			angle = atan2(input.GetMouseY() + Camera::pos.y - associated.box.Center().y, input.GetMouseX() + Camera::pos.x - associated.box.Center().x);
-			associated.angleDeg = angle/0.0174533;
+			associated.angleDeg = angle / 0.0174533;
 		}
 		associated.box.Centered(newPos);
 		cd.Update(dt);
@@ -61,46 +64,59 @@ void Tapu::Update(float dt) {
 		dist = associated.box.Center() - ywr->box.Center();
 		changedDir = false;
 
-		if(dist.x >= 0){
-			if(dir == LEFT){
+		if (dist.x >= 0)
+		{
+			if (dir == LEFT)
+			{
 				changedDir = true;
 				dir = RIGHT;
 			}
-		} else {
-			if (dir == RIGHT){
+		}
+		else
+		{
+			if (dir == RIGHT)
+			{
 				dir = LEFT;
 				changedDir = true;
 			}
 		}
 
-		if(dir == LEFT && (dist.Modulo() >= (radius - 1))){
+		if (dir == LEFT && (dist.Modulo() >= (radius - 1)))
+		{
 			associated.angleDeg += 180;
-		} else if (dir == LEFT) {
+		}
+		else if (dir == LEFT)
+		{
 			angle += M_PI;
 		}
-		
 
-		if(input.MousePress(LEFT_MOUSE_BUTTON) && cd.Get() > TAPU_SHOOT_CD){
+		if (input.MousePress(LEFT_MOUSE_BUTTON) && cd.Get() > TAPU_SHOOT_CD)
+		{
 			Shoot();
 			cd.Restart();
 		}
 
-		if(associated.angleDeg >= 360){
+		if (associated.angleDeg >= 360)
+		{
 			associated.angleDeg -= 360;
 		}
-		if(associated.angleDeg <= -360){
+		if (associated.angleDeg <= -360)
+		{
 			associated.angleDeg += 360;
 		}
-	} else {
+	}
+	else
+	{
 		associated.RequestDelete();
 	}
 }
 
-void Tapu::Render() {
+void Tapu::Render()
+{
 
-
-	Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
-	if(sp && changedDir){
+	Sprite *sp = static_cast<Sprite *>(associated.GetComponent("Sprite"));
+	if (sp && changedDir)
+	{
 
 		switch (dir)
 		{
@@ -115,11 +131,13 @@ void Tapu::Render() {
 	}
 }
 
-bool Tapu::Is(std::string type) {
+bool Tapu::Is(std::string type)
+{
 	return !strcmp(type.c_str(), "Tapu");
 }
 
-void Tapu::Shoot() {
+void Tapu::Shoot()
+{
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
@@ -129,16 +147,16 @@ void Tapu::Shoot() {
 	
 	Bullet *bam = new Bullet(*ptr, angle, TAPU_BULLET_SPEED, TAPU_BULLET_DAMAGE, TAPU_BULLET_RANGE, TAPU_BULLET, TAPU_BULLET_FRAME, TAPU_BULLET_TIME, false);
 	ptr->box.Centered(associated.box.Center());
-	Vec2 offset(associated.box.w/2, 0);
+	Vec2 offset(associated.box.w / 2, 0);
 	offset.Rotate(angle);
 	ptr->box.x += offset.x;
 	ptr->box.y += offset.y;
 	ptr->AddComponent(bam);
-
 }
 
-void Tapu::NotifyCollision(GameObject& other) {
-	if (other.GetComponent("Bullet") && static_cast<Bullet*>(other.GetComponent("Bullet"))->targetsPlayer) {
-		
+void Tapu::NotifyCollision(GameObject &other)
+{
+	if (other.GetComponent("Bullet") && static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer)
+	{
 	}
 }

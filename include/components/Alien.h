@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 #include <queue>
+#include <cmath>
 
 #define ALIEN_VEL_ANG 0
 #define ALIEN_SPEED 0
