@@ -1,5 +1,6 @@
 #include "StageState.h"
 
+#include "PauseState.h"
 #include "Sprite.h"
 #include "Sound.h"
 #include "TileMap.h"
@@ -7,7 +8,6 @@
 #include "InputManager.h"
 #include "Camera.h"
 #include "CameraFollower.h"
-#include "Alien.h"
 #include "Collision.h"
 #include "Collider.h"
 #include "Data.h"
@@ -132,10 +132,10 @@ void StageState::Update(float dt)
 	// verifica fechamento do jogo.
 	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY))
 	{
-		popRequested = true;
+		PauseState *stage = new PauseState();
+		Game::GetInstance().Push(stage);
 	}
 
-	/*
 	// verifica condições de vitoria.
 	if (Yawara::player == nullptr)
 	{
@@ -144,15 +144,14 @@ void StageState::Update(float dt)
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
 	}
-	else if (Alien::alienCount == 0)
-	{
-		popRequested = true;
-		Data::playerVictory = true;
-		EndState *stage = new EndState();
-		Game::GetInstance().Push(stage);
-	}
-	*/
-	
+	// else if (Capelobo::boss == nullptr)
+	// {
+	// 	popRequested = true;
+	// 	Data::playerVictory = true;
+	// 	EndState *stage = new EndState();
+	// 	Game::GetInstance().Push(stage);
+	// }
+
 	UpdateArray(dt);
 
 	// update dos colliders.
