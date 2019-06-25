@@ -62,9 +62,19 @@ void TileMap::RenderLayer(int layer, int cameraX=0, int cameraY=0) {
 }
 
 void TileMap::Render(){
-	for(int i = 0; i < mapDepth; i++){
-		RenderLayer(i, Camera::pos.x + (int)Camera::pos.x*parallax*i, Camera::pos.y + (int)Camera::pos.y*parallax*i);
+	Game& instance = Game::GetInstance();
+	int x = associated.box.x - Camera::pos.x;
+	int y = associated.box.y - Camera::pos.y;
+
+	// Renderiza apenas o que pode ser visível na tela.
+	Vec2 tmp(mapWidth*tileWidth, mapHeight*tileHeight);
+	if ((x < -tmp.x) || (y < -tmp.y)) {
+		return;
+	} else if ((x > instance.GetWindowSize().x) || (y > instance.GetWindowSize().y)) {
+		return;
 	}
+
+	RenderLayer(0, Camera::pos.x, Camera::pos.y);
 }
 
 int TileMap::GetWidth() {
