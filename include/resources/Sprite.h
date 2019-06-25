@@ -13,6 +13,11 @@
 #include <stdbool.h>
 #include <memory>
 
+#define BLEND_NONE SDL_BLENDMODE_NONE
+#define BLEND_BLEND SDL_BLENDMODE_BLEND
+#define BLEND_ADD SDL_BLENDMODE_ADD
+#define BLEND_MOD SDL_BLENDMODE_MOD
+
 class Sprite : public Component
 {
 private:
@@ -24,15 +29,27 @@ private:
 
 	int frameCount;
 	int currentFrame;
-	float timeElapsed;
+	
+	Timer timeCount;
 	float frameTime;
+	
+	int stopFrame;
+	bool stopFlag;
+
+	Uint8 alpha;
+
+	Uint8 r_mod;
+	Uint8 g_mod;
+	Uint8 b_mod;
+
+	SDL_BlendMode blend;
 
 	Timer selfDestructCount;
 	float secondsToSelfDestruct;
 
 public:
 	Sprite(GameObject &);
-	Sprite(GameObject &, std::string, int = 1, float = 1, float = 0);
+	Sprite(GameObject &, std::string, int = 1, float = 0, float = 0, int = -1);
 	~Sprite();
 	void Open(std::string);
 	void SetClip(int, int, int, int);
@@ -49,6 +66,19 @@ public:
 	void SetFrame(int);
 	void SetFrameCount(int);
 	void SetFrameTime(float);
+	void SetStopFrame(int);
+
+	void Stop();
+	void Resume();
+	bool IsStop();
+
+	void SetAlphaMod(int);
+	int GetAlphaMod();
+
+	void SetColorMod(int, int, int);
+	void GetColorMod(int*, int*, int*);
+
+	void SetBlendMode(int);
 
 	void Update(float dt);
 	bool Is(std::string type);
