@@ -11,7 +11,7 @@ class HealthRune : public Item
 {
 private:
     float hpFactor;
-    Sprite* sp;
+    Sprite* sp, *top_layer_sprite;
 
 public:
     HealthRune(GameObject&, float);

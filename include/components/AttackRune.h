@@ -11,7 +11,7 @@ class AttackRune : public Item
 {
 private:
     float attFactor;
-    Sprite* sp;
+    Sprite* sp, *top_layer_sprite;
     
 public:
     AttackRune(GameObject&, float);

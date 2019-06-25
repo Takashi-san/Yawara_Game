@@ -3,35 +3,55 @@
 #include "Yawara.h"
 #include "Timer.h"
 
+#define BASE_ATTRUNE_FILE           "assets/img/items/runa_base.png"
+#define BASE_ATTRUNE_FRAMES         3
+#define TOP_ATTRUNE_FILE            "assets/img/items/runa_imagem.png"
+#define TOP_ATTRUNE_FRAMES          2
+
+#define ATTRUNE_ACTIVATION_DISTANCE 45
+#define ATTRUNE_COOLDOWN_TIME       30
+
 /* 1 < factor <= 2 increased attack damage */
 AttackRune::AttackRune(GameObject& associated, float attFactor) : Item(associated){
 
-    sp = new Sprite(associated, "assets/img/items/runa.png");
+    sp = new Sprite(associated, BASE_ATTRUNE_FILE, BASE_ATTRUNE_FRAMES);
     sp->SetScale(0.5, 0.5);
+    sp->SetFrame(1);
+    sp->SetStopFrame(1);
 	associated.AddComponent(sp);
+
+    top_layer_sprite = new Sprite(associated, TOP_ATTRUNE_FILE, TOP_ATTRUNE_FRAMES);
+    top_layer_sprite->SetScale(0.5, 0.5);
+    top_layer_sprite->SetFrame(0);
+    top_layer_sprite->SetStopFrame(0);
+    associated.AddComponent(top_layer_sprite);
 
     this->attFactor = attFactor;
 }
 
 void AttackRune::Update(float dt){
 
-    static Timer blendTimer;
+    static Timer cooldownTimer;
     static bool active = true;
     
     if(Yawara::player){
         float dist = (associated.box.Center() - Yawara::player->GetPos()).Modulo();
 
-        if(dist <= 45 && active){
+        if(dist <= ATTRUNE_ACTIVATION_DISTANCE && active){
             Yawara::player->Boost(Yawara::ATTBOOST, attFactor);
-            sp->SetBlendMode(BLEND_ADD);
-            blendTimer.Restart();
+            cooldownTimer.Restart();
             active = false;
+            associated.RemoveComponent(top_layer_sprite);
         }
 
-        blendTimer.Update(dt);
-        if(blendTimer.Get() >= 30){
-            sp->SetBlendMode(BLEND_BLEND);
+        cooldownTimer.Update(dt);
+        if(cooldownTimer.Get() >= ATTRUNE_COOLDOWN_TIME && !active){
             active = true;
+            top_layer_sprite = new Sprite(associated, TOP_ATTRUNE_FILE, TOP_ATTRUNE_FRAMES);
+            top_layer_sprite->SetScale(0.5, 0.5);
+            top_layer_sprite->SetFrame(0);
+            top_layer_sprite->SetStopFrame(0);
+            associated.AddComponent(top_layer_sprite);
         }
     }
 }
