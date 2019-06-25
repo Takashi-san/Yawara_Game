@@ -48,6 +48,7 @@ Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component
 	dir = RIGHT;
 	changedDir = false;
 	height = sp->GetHeight();
+	damageFactor = 1;
 }
 
 void Tapu::Update(float dt)
@@ -230,7 +231,7 @@ void Tapu::Shoot()
 	weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 	ptr = weak_ptr.lock();
 	
-	Bullet *bam = new Bullet(*ptr, angle, TAPU_BULLET_SPEED, TAPU_BULLET_DAMAGE, TAPU_BULLET_RANGE, TAPU_BULLET, TAPU_BULLET_FRAME, TAPU_BULLET_TIME, false);
+	Bullet *bam = new Bullet(*ptr, angle, TAPU_BULLET_SPEED, TAPU_BULLET_DAMAGE * damageFactor, TAPU_BULLET_RANGE, TAPU_BULLET, TAPU_BULLET_FRAME, TAPU_BULLET_TIME, false);
 	ptr->box.Centered(associated.box.Center());
 	Vec2 offset(associated.box.w / 2, 0);
 	offset.Rotate(angle);
@@ -239,6 +240,10 @@ void Tapu::Shoot()
 	ptr->AddComponent(bam);
 }
 
+void Tapu::SetDamageFactor(float factor){
+	damageFactor = factor;
+}
+		
 void Tapu::NotifyCollision(GameObject &other)
 {
 	if (other.GetComponent("Bullet") && static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer)

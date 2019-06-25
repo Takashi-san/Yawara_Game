@@ -16,6 +16,9 @@
 #include "Cursor.h"
 #include "Yawara.h"
 #include "Floor.h"
+#include "HealthRune.h"
+#include "AttackRune.h"
+#include "DefenseRune.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -94,6 +97,28 @@ StageState::StageState()
 	ptr->AddComponent(tlmp5);
 
 	Floor::Load(CL_MAP1, TILE, TILE);
+	//Runas
+	GameObject *gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	HealthRune *rune1 = new HealthRune(*ptr, 1.5);
+	ptr->box.Centered(510,960);
+	ptr->AddComponent(rune1);
+
+	GameObject *gorune2 = new GameObject();
+	weak_ptr = AddObject(gorune2);
+	ptr = weak_ptr.lock();
+	AttackRune *rune2 = new AttackRune(*ptr, 1.5);
+	ptr->box.Centered(960,760);
+	ptr->AddComponent(rune2);
+
+	GameObject *gorune3 = new GameObject();
+	weak_ptr = AddObject(gorune3);
+	ptr = weak_ptr.lock();
+	DefenseRune *rune3 = new DefenseRune(*ptr, 1.5);
+	ptr->box.Centered(500,500);
+	ptr->AddComponent(rune3);
+
 	// Yawara
 	GameObject *goya = new GameObject();
 	weak_ptr = AddObject(goya);

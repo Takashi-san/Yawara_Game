@@ -21,6 +21,8 @@ class Tapu : public Component
 
         std::weak_ptr<GameObject> shadow_ptr;
 
+        float damageFactor;
+
     public:
         Tapu(GameObject &, std::weak_ptr<GameObject>);
 
@@ -30,4 +32,6 @@ class Tapu : public Component
         void NotifyCollision(GameObject &);
 
         void Shoot();
+
+        void SetDamageFactor(float);
 };

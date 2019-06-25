@@ -11,6 +11,8 @@
 
 #define YWR_SPEED		500
 #define YWR_HP			100
+#define YWR_ATT			15
+#define YWR_DEF			1
 
 #define YWR_ANI_TIME	0.100
 
@@ -63,9 +65,15 @@ Yawara::Yawara(GameObject& associated) : Component(associated) {
 	associated.AddComponent(cl);
 
 	hp = YWR_HP;
+	att = YWR_ATT;
+	def = YWR_DEF;
 	speed = {0, 0};
 	dir = RIGHT;
 	idle = true;
+
+	boostMap[HPBOOST] = {false, 1};
+	boostMap[DEFBOOST] = {false, 1};
+	boostMap[ATTBOOST] = {false, 1};
 }
 
 Yawara::~Yawara() {
@@ -276,6 +284,65 @@ void Yawara::Update(float dt) {
 	associated.box.x += speed.x*dt;
 	associated.box.y += speed.y*dt;
 
+	if(boostMap[HPBOOST].isBoosted){
+		static Timer hpTimer;
+
+		if(hpTimer.Get() == 0)
+			hp = YWR_HP * boostMap[HPBOOST].factor;
+
+		hpTimer.Update(dt);
+
+		if(hpTimer.Get() >= 15){
+			hpTimer.Restart();
+
+			if(hp > YWR_HP)
+				hp = YWR_HP;
+
+			boostMap[HPBOOST] = {false, 1};
+		}
+	}
+	if(boostMap[ATTBOOST].isBoosted){
+		static Timer attTimer;
+
+		if(attTimer.Get() == 0){
+			att = YWR_ATT * boostMap[ATTBOOST].factor;
+			std::shared_ptr<GameObject> tp_go = tapu.lock();
+			if(tp_go){
+				Tapu* tp =  static_cast<Tapu*> (tp_go->GetComponent("Tapu"));
+				if(tp)
+					tp->SetDamageFactor(boostMap[ATTBOOST].factor);
+			}
+		}
+
+		attTimer.Update(dt);
+
+		if(attTimer.Get() >= 15){
+			attTimer.Restart();
+			att = YWR_ATT;
+			boostMap[ATTBOOST] = {false, 1};
+			std::shared_ptr<GameObject> tp_go = tapu.lock();
+			if(tp_go){
+				Tapu* tp =  static_cast<Tapu*> (tp_go->GetComponent("Tapu"));
+				if(tp)
+					tp->SetDamageFactor(1);
+			}
+		}
+	}
+	if(boostMap[DEFBOOST].isBoosted){
+		static Timer defTimer;
+
+		if(defTimer.Get() == 0)
+			def = YWR_DEF * boostMap[DEFBOOST].factor;
+
+		defTimer.Update(dt);
+
+		if(defTimer.Get() >= 15){
+			defTimer.Restart();
+			def = YWR_DEF;
+			boostMap[DEFBOOST] = {false, 1};
+		}
+	}
+
 	if (hp <= 0) {
 		associated.RequestDelete();
 		Camera::Unfollow();
@@ -306,10 +373,20 @@ void Yawara::NotifyCollision(GameObject& other) {
 	Bullet* bullet = static_cast<Bullet*>(other.GetComponent("Bullet"));
 	
 	if (bullet && bullet->targetsPlayer) {
-		hp -= bullet->GetDamage();
+		float defended = def - 1;
+
+		if(defended > 1)
+			defended = 1;
+		
+		hp -= (1 - defended) * bullet->GetDamage();
 	}
 }
 
 Vec2 Yawara::GetPos() {
 	return associated.box.Center();
+}
+
+void Yawara::Boost(Boosts which, float factor){
+
+	boostMap[which] = {true, factor};
 }
