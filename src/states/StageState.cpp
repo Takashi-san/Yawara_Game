@@ -165,11 +165,16 @@ void StageState::Update(float dt)
 	InputManager &input = InputManager::GetInstance();
 
 	// verifica fechamento do jogo.
-	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY))
+	if (input.KeyPress(ESCAPE_KEY))
 	{
 		PauseState *stage = new PauseState();
 		Game::GetInstance().Push(stage);
 	}
+
+	if(input.QuitRequested()){
+		quitRequested = true;
+	}
+
 
 	// verifica condições de vitoria.
 	/*
