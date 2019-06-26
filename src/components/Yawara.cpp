@@ -14,10 +14,10 @@
 #define YWR_SPEED		500
 
 #define YWR_DGE_SPEED	2000
-#define YWR_DGE_CD		1
+#define YWR_DGE_CD		0.5
 #define YWR_DGE_ACT		0.2
 
-#define YWR_ATK_CD		1
+#define YWR_ATK_CD		0.5
 #define YWR_ATK_ACT		4*0.05
 
 #define YWR_ANI_TIME	0.100
@@ -458,7 +458,7 @@ void Yawara::SetAtk() {
 	ptr->AddComponent(sp);
 	ptr->AddComponent(hit);
 	hit->colisor->SetScale({0.55, 0.85});
-	hit->colisor->SetOffset({200, 0});
+	hit->colisor->SetOffset({0, 0});
 	ptr->box.Centered(associated.box.Center());
 
 	switch (dir) {
