@@ -18,6 +18,9 @@
 #define S_KEY SDLK_s
 #define D_KEY SDLK_d
 
+#define E_KEY SDLK_e
+#define Q_KEY SDLK_q
+
 #define SPACE_KEY SDLK_SPACE
 #define ESCAPE_KEY SDLK_ESCAPE
 #define ENTER_KEY SDLK_RETURN

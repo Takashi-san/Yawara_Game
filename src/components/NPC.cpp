@@ -13,7 +13,7 @@ NPC::NPC(GameObject associated, bool interactive) : Component(associated) {
 void NPC::Update(float dt) {
     InputManager& input = InputManager::GetInstance();
 
-    if(input.KeyPress(SPACE_KEY)){
+    if(input.KeyPress(E_KEY)){
 
         float dist = (associated.box.Center() - Yawara::player->GetPos()).Modulo();
         if(interactive && dist <= MIN_DIST){
