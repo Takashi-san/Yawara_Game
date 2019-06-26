@@ -4,7 +4,6 @@
 #include "Camera.h"
 #include "State.h"
 #include "Game.h"
-#include "Minion.h"
 #include "Collider.h"
 #include "Bullet.h"
 #include "Sound.h"

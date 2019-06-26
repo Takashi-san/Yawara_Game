@@ -172,6 +172,7 @@ void StageState::Update(float dt)
 	}
 
 	// verifica condições de vitoria.
+	/*
 	if (Yawara::player == nullptr)
 	{
 		popRequested = true;
@@ -179,7 +180,6 @@ void StageState::Update(float dt)
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
 	}
-	/*
 	else if (Capelobo::boss == nullptr)
 	{
 		popRequested = true;
