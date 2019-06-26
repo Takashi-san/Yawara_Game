@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+#define PI 3.1415926
+
 class Vec2
 {
 public:
@@ -12,10 +14,15 @@ public:
 
 	void Rotate(float);
 	float Modulo();
+	float Inclination();
+
 	Vec2 GetRotated(float);
 	Vec2 operator+(const Vec2 &);
 	Vec2 operator-(const Vec2 &);
 	Vec2 operator*(const float);
 	Vec2 operator/(const float);
+	void operator-=(const Vec2 &);
+	void operator+=(const Vec2 &);
+	bool operator==(const Vec2 &);
 	// Vec2 operator+(const Rect &);
 };

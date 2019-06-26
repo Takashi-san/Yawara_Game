@@ -12,6 +12,10 @@
 #include <unordered_map>
 #include <vector>
 
+#define SAFE_DISTANCE_UP 16 * 0.7
+#define SAFE_DISTANCE_DOWN 48 * 0.7
+#define HIT_COOL_DOWN 1
+
 class Yawara : public Component{
 private:
 	Vec2 speed;
@@ -22,6 +26,11 @@ private:
 	enum Action { MOV, ATK, DGE };
 	Direction dir;
 	Action act;
+
+	Timer hitTime;
+
+	int safeX;
+	int safeY;
 
 	std::weak_ptr<GameObject> tapu;
 

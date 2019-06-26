@@ -8,6 +8,7 @@
 #include "InputManager.h"
 #include "Camera.h"
 #include "CameraFollower.h"
+#include "Capelobo.h"
 #include "Collision.h"
 #include "Collider.h"
 #include "Data.h"
@@ -32,6 +33,8 @@ StageState::StageState()
 {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
+
+	Floor::Load(CL_MAP1, TILE, TILE);
 
 	// Background
 	GameObject *gobg = new GameObject();
@@ -96,7 +99,6 @@ StageState::StageState()
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp5);
 
-	Floor::Load(CL_MAP1, TILE, TILE);
 	//Runas
 	GameObject *gorune = new GameObject();
 	weak_ptr = AddObject(gorune);
@@ -111,13 +113,21 @@ StageState::StageState()
 	AttackRune *rune2 = new AttackRune(*ptr, 1.5);
 	ptr->box.Centered(960,760);
 	ptr->AddComponent(rune2);
-
+	
 	GameObject *gorune3 = new GameObject();
 	weak_ptr = AddObject(gorune3);
 	ptr = weak_ptr.lock();
 	DefenseRune *rune3 = new DefenseRune(*ptr, 1.5);
 	ptr->box.Centered(500,500);
 	ptr->AddComponent(rune3);
+
+	// Capelobo
+	GameObject *goali1 = new GameObject();
+	weak_ptr = AddObject(goali1);
+	ptr = weak_ptr.lock();
+	Capelobo *cape = new Capelobo(*ptr, 0.1);
+	ptr->box.Centered({512, 850});
+	ptr->AddComponent(cape);
 
 	// Yawara
 	GameObject *goya = new GameObject();
@@ -169,13 +179,15 @@ void StageState::Update(float dt)
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
 	}
-	// else if (Capelobo::boss == nullptr)
-	// {
-	// 	popRequested = true;
-	// 	Data::playerVictory = true;
-	// 	EndState *stage = new EndState();
-	// 	Game::GetInstance().Push(stage);
-	// }
+	/*
+	else if (Capelobo::boss == nullptr)
+	{
+		popRequested = true;
+		Data::playerVictory = true;
+		EndState *stage = new EndState();
+		Game::GetInstance().Push(stage);
+	}
+	*/
 
 	UpdateArray(dt);
 
@@ -190,18 +202,13 @@ void StageState::Update(float dt)
 	}
 
 	// verifica colisão dos objetos.
-	for (unsigned int i = 0; i < objectArray.size(); i++)
-	{
-		Collider *coli = static_cast<Collider *>(objectArray[i]->GetComponent("Collider"));
-		if (coli != nullptr)
-		{
-			for (unsigned int j = i + 1; j < objectArray.size(); j++)
-			{
-				Collider *colj = static_cast<Collider *>(objectArray[j]->GetComponent("Collider"));
-				if (colj != nullptr)
-				{
-					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg / 0.0174533, objectArray[j]->angleDeg / 0.0174533))
-					{
+	for (unsigned int i = 0; i < objectArray.size(); i++) {
+		Collider *coli = static_cast<Collider*>(objectArray[i]->GetComponent("Collider"));
+		if (coli != nullptr) {
+			for (unsigned int j = i+1; j < objectArray.size(); j++) {
+				Collider *colj = static_cast<Collider*>(objectArray[j]->GetComponent("Collider"));
+				if (colj != nullptr) {
+					if (Collision::IsColliding(coli->box, colj->box, objectArray[i]->angleDeg/0.0174533, objectArray[j]->angleDeg/0.0174533)) {
 						objectArray[i]->NotifyCollision(*(objectArray[j]));
 						objectArray[j]->NotifyCollision(*(objectArray[i]));
 					}

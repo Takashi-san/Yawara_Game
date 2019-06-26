@@ -31,4 +31,5 @@ public:
 	int GetDamage();
 	void SetDamage(int);
 	void SetSelfDestruct(float);
+	void NotifyCollision(GameObject &);
 };

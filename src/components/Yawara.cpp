@@ -5,7 +5,9 @@
 #include "Collider.h"
 #include "InputManager.h"
 #include "Camera.h"
-#include "Bullet.h"
+#include "Hitbox.h"
+#include "Claw.h"
+#include "Tongue.h"
 #include "Sound.h"
 #include "Tapu.h"
 #include "Hitbox.h"
@@ -72,6 +74,9 @@ Yawara::Yawara(GameObject& associated) : Component(associated) {
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 
+	sp->SetScale({0.7, 0.7});
+	cl->SetScale({0.7, 0.7});
+
 	hp = YWR_HP;
 	att = YWR_ATT;
 	def = YWR_DEF;
@@ -79,6 +84,7 @@ Yawara::Yawara(GameObject& associated) : Component(associated) {
 	dir = RIGHT;
 	act = MOV;
 	idle = true;
+	hitTime.Restart();
 
 	boostMap[HPBOOST] = {false, 1};
 	boostMap[DEFBOOST] = {false, 1};
@@ -106,6 +112,7 @@ void Yawara::Start() {
 void Yawara::Update(float dt) {
 	dge_cd.Update(dt);
 	atk_cd.Update(dt);
+	hitTime.Update(dt);
 
 	if(boostMap[HPBOOST].isBoosted){
 		static Timer hpTimer;
@@ -184,15 +191,17 @@ bool Yawara::Is(std::string type) {
 }
 
 void Yawara::NotifyCollision(GameObject& other) {
-	Bullet* bullet = static_cast<Bullet*>(other.GetComponent("Bullet"));
+	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
 	
-	if (bullet && bullet->targetsPlayer) {
+	if (hitbox && hitbox->targetsPlayer && hitTime.Get() >= HIT_COOL_DOWN)
+	{
 		float defended = def - 1;
 
 		if(defended > 1)
 			defended = 1;
 		
-		hp -= (1 - defended) * bullet->GetDamage();
+		hp -= (1 - defended) * hitbox->GetDamage();
+		hitTime.Restart();
 	}
 }
 

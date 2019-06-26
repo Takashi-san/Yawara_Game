@@ -30,6 +30,12 @@ float Vec2::Modulo()
 	return sqrt(x * x + y * y);
 }
 
+float Vec2::Inclination()
+{
+
+	return atan2(y, x) * 180 / PI;
+}
+
 Vec2 Vec2::operator+(const Vec2 &arg)
 {
 	return Vec2(x + arg.x, y + arg.y);
@@ -50,7 +56,21 @@ Vec2 Vec2::operator/(const float a)
 	return Vec2(x / a, y / a);
 }
 
-// Vec2 Vec2::operator+(const Rect &rect)
-// {
-// 	return Vec2(x + rect.x, y + rect.y);
-// }
+void Vec2::operator-=(const Vec2 &vector)
+{
+
+	this->x -= vector.x;
+	this->y -= vector.y;
+}
+
+void Vec2::operator+=(const Vec2 &vector)
+{
+
+	this->x += vector.x;
+	this->y += vector.y;
+}
+
+bool Vec2::operator==(const Vec2 &arg)
+{
+	return (x == arg.x && y == arg.y);
+}
