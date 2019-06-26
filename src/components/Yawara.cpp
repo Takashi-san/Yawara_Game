@@ -540,6 +540,8 @@ void Yawara::SetAtk() {
 	ptr->AddComponent(hit);
 	hit->colisor->SetScale({0.55, 0.85});
 	hit->colisor->SetOffset({0, 0});
+	hit->SetDamage(att);
+	hit->hitDie = false;
 	ptr->box.Centered(associated.box.Center());
 
 	switch (dir) {
