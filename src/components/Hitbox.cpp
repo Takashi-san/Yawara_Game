@@ -1,6 +1,6 @@
 #include "Hitbox.h"
 
-Hitbox::Hitbox(GameObject& associated, int damage, bool targetsPlayer, float selfDestruct) : Component(associated) {
+Hitbox::Hitbox(GameObject& associated, int damage, bool targetsPlayer, float selfDestruct, bool hitDie) : Component(associated) {
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 	colisor = cl;
@@ -8,6 +8,7 @@ Hitbox::Hitbox(GameObject& associated, int damage, bool targetsPlayer, float sel
 	this->selfDestruct = selfDestruct;
 	this->targetsPlayer = targetsPlayer;
 	this->damage = damage;
+	this->hitDie = hitDie;
 }
 
 void Hitbox::Update(float dt) {
@@ -39,9 +40,11 @@ void Hitbox::SetSelfDestruct(float selfDestruct) {
 }
 void Hitbox::NotifyCollision(GameObject &other)
 {
-	if (other.GetComponent("Capelobo") && !targetsPlayer)
-		associated.RequestDelete();
+	if (hitDie) {
+		if (other.GetComponent("Capelobo") && !targetsPlayer)
+			associated.RequestDelete();
 
-	if (other.GetComponent("Yawara") && targetsPlayer)
-		associated.RequestDelete();
+		if (other.GetComponent("Yawara") && targetsPlayer)
+			associated.RequestDelete();
+	}
 }
