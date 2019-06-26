@@ -28,7 +28,7 @@ void HealthRune::Update(float dt){
     static bool active = true;
     
     if(Yawara::player){
-        float dist = (associated.box.Center() - Yawara::player->GetPos()).Modulo();
+        float dist = (associated.box.Center() - Yawara::player->GetCenterPos()).Modulo();
 
         if(dist <= HEALTHRUNE_ACTIVATION_DISTANCE && active){
             Yawara::player->Boost(Yawara::HPBOOST, hpFactor);

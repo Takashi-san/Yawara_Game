@@ -35,7 +35,7 @@ void AttackRune::Update(float dt){
     static bool active = true;
     
     if(Yawara::player){
-        float dist = (associated.box.Center() - Yawara::player->GetPos()).Modulo();
+        float dist = (associated.box.Center() - Yawara::player->GetCenterPos()).Modulo();
 
         if(dist <= ATTRUNE_ACTIVATION_DISTANCE && active){
             Yawara::player->Boost(Yawara::ATTBOOST, attFactor);
