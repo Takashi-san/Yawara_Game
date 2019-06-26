@@ -24,7 +24,7 @@
 #define YWR_ATK_CD		0.5
 #define YWR_ATK_ACT		4*0.05
 
-#define YWR_ANI_TIME	0.100
+#define YWR_ANI_TIME	0.070
 
 #define YWR_IDLE_D			"assets/img/yawara/yawara_idle_down.png"
 #define YWR_IDLE_D_FRAME	1
@@ -48,7 +48,7 @@
 #define YWR_RUN_U			"assets/img/yawara/yawara_run_up.png"
 #define YWR_RUN_U_FRAME		9
 #define YWR_RUN_L			"assets/img/yawara/yawara_run_left.png"
-#define YWR_RUN_L_FRAME		10
+#define YWR_RUN_L_FRAME		9
 #define YWR_RUN_R			"assets/img/yawara/yawara_walk_right.png"
 #define YWR_RUN_R_FRAME		12
 #define YWR_RUN_DL			"assets/img/yawara/yawara_run_down_left.png"
@@ -74,8 +74,8 @@ Yawara::Yawara(GameObject& associated) : Component(associated) {
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 
-	sp->SetScale({0.7, 0.7});
-	cl->SetScale({0.7, 0.7});
+	//sp->SetScale({0.7, 0.7});
+	//cl->SetScale({0.7, 0.7});
 
 	hp = YWR_HP;
 	att = YWR_ATT;
