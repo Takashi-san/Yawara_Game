@@ -304,3 +304,7 @@ void Sprite::SetBlendMode(int mode) {
 		SDL_SetTextureBlendMode(texture.get(), blend);
 	}
 }
+
+void Sprite::SetSelfDestruct(float secondsToSelfDestruct) {
+	this->secondsToSelfDestruct = secondsToSelfDestruct;
+}
