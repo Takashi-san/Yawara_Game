@@ -15,13 +15,13 @@
 AttackRune::AttackRune(GameObject& associated, float attFactor) : Item(associated){
 
     sp = new Sprite(associated, BASE_ATTRUNE_FILE, BASE_ATTRUNE_FRAMES);
-    sp->SetScale(0.5, 0.5);
+    sp->SetScale(1, 1);
     sp->SetFrame(1);
     sp->SetStopFrame(1);
 	associated.AddComponent(sp);
 
     top_layer_sprite = new Sprite(associated, TOP_ATTRUNE_FILE, TOP_ATTRUNE_FRAMES);
-    top_layer_sprite->SetScale(0.5, 0.5);
+    top_layer_sprite->SetScale(1, 1);
     top_layer_sprite->SetFrame(0);
     top_layer_sprite->SetStopFrame(0);
     associated.AddComponent(top_layer_sprite);
@@ -48,7 +48,7 @@ void AttackRune::Update(float dt){
         if(cooldownTimer.Get() >= ATTRUNE_COOLDOWN_TIME && !active){
             active = true;
             top_layer_sprite = new Sprite(associated, TOP_ATTRUNE_FILE, TOP_ATTRUNE_FRAMES);
-            top_layer_sprite->SetScale(0.5, 0.5);
+            top_layer_sprite->SetScale(1, 1);
             top_layer_sprite->SetFrame(0);
             top_layer_sprite->SetStopFrame(0);
             associated.AddComponent(top_layer_sprite);

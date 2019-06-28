@@ -17,7 +17,7 @@
 DefenseRune::DefenseRune(GameObject& associated, float defFactor) : Item(associated){
 
     sp = new Sprite(associated, BASE_DEFRUNE_FILE, BASE_DEFRUNE_FRAMES, BASE_DEFRUNE_FRAMETIME);
-    sp->SetScale(0.5, 0.5);
+    sp->SetScale(1, 1);
 	associated.AddComponent(sp);
 
     this->defFactor = defFactor;
@@ -37,6 +37,8 @@ void DefenseRune::Update(float dt){
             sp->SetFrameCount(ACTIVATED_DEFRUNE_FRAMES);
             sp->SetFrameTime(ACTIVATED_DEFRUNE_FRAMETIME);
             sp->SetScale(1, 1);
+            associated.box.x += 32;
+            associated.box.y += 20;
             cooldownTimer.Restart();
             active = false;
         }
@@ -46,7 +48,9 @@ void DefenseRune::Update(float dt){
             sp->Open(BASE_DEFRUNE_FILE);
             sp->SetFrameCount(BASE_DEFRUNE_FRAMES);
             sp->SetFrameTime(BASE_DEFRUNE_FRAMETIME);
-            sp->SetScale(0.5, 0.5);
+            sp->SetScale(1, 1);
+            associated.box.x -= 32;
+            associated.box.y -= 20;
             active = true;
         }
     }

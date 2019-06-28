@@ -14,7 +14,7 @@
 HealthRune::HealthRune(GameObject& associated, float hpFactor) : Item(associated){
 
     sp = new Sprite(associated, BASE_HEALTHRUNE_FILE, BASE_HEALTHRUNE_FRAMES, 0.5);
-    sp->SetScale(0.5, 0.5);
+    sp->SetScale(1, 1);
     sp->SetFrame(2);
     sp->SetStopFrame(2);
 	associated.AddComponent(sp);
@@ -35,7 +35,7 @@ void HealthRune::Update(float dt){
             cooldownTimer.Restart();
             active = false;
             top_layer_sprite = new Sprite(associated, TOP_HEALTHRUNE_FILE);
-            top_layer_sprite->SetScale(0.5, 0.5);
+            top_layer_sprite->SetScale(1, 1);
             associated.AddComponent(top_layer_sprite);
         }
 

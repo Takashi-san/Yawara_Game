@@ -110,21 +110,21 @@ StageState::StageState()
 	weak_ptr = AddObject(gorune);
 	ptr = weak_ptr.lock();
 	HealthRune *rune1 = new HealthRune(*ptr, 1.5);
-	ptr->box.Centered(350,1100);
+	ptr->box.Centered(550,1200);
 	ptr->AddComponent(rune1);
 
 	GameObject *gorune2 = new GameObject();
 	weak_ptr = AddObject(gorune2);
 	ptr = weak_ptr.lock();
 	AttackRune *rune2 = new AttackRune(*ptr, 1.5);
-	ptr->box.Centered(960,760);
+	ptr->box.Centered(1000,850);
 	ptr->AddComponent(rune2);
 	
 	GameObject *gorune3 = new GameObject();
 	weak_ptr = AddObject(gorune3);
 	ptr = weak_ptr.lock();
 	DefenseRune *rune3 = new DefenseRune(*ptr, 1.5);
-	ptr->box.Centered(400,150);
+	ptr->box.Centered(1300,500);
 	ptr->AddComponent(rune3);
 
 	// Capelobo
