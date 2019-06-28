@@ -79,7 +79,7 @@ void TitleState::Update(float dt) {
 		selection->box.Centered({600, 500});
 	}
 
-	if (input.KeyPress(ENTER_KEY)) {
+	if (input.KeyPress(ENTER_KEY) || input.KeyPress(ENTER_KEY2)) {
 		StageState *stage = new StageState();
 		switch (opt) {
 			case PLAY:

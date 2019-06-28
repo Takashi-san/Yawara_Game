@@ -63,8 +63,12 @@ void PauseState::Update(float dt)
 {
 	InputManager &input = InputManager::GetInstance();
 
-	if(input.QuitRequested() || input.KeyPress(ESCAPE_KEY)){
+	if(input.KeyPress(ESCAPE_KEY)){
 		popRequested = true;
+	}
+
+	if(input.QuitRequested()){
+		quitRequested = true;
 	}
 
 	if (input.KeyPress(A_KEY) || input.KeyPress(LEFT_ARROW_KEY))
@@ -78,7 +82,7 @@ void PauseState::Update(float dt)
 		selection->box.Centered({600 + Camera::pos.x, 500 + Camera::pos.y});
 	}
 
-	if (input.KeyPress(ENTER_KEY))
+	if (input.KeyPress(ENTER_KEY) || input.KeyPress(ENTER_KEY2))
 	{
 		switch (opt)
 		{
