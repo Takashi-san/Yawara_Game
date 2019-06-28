@@ -109,7 +109,7 @@ bool TileMap::Is(std::string type) {
 	return !strcmp(type.c_str(), "TileMap");
 }
 
-void TileMap::SetMapLayer(State& state, std::string layer_path, int x, int y, std::string tileset_path, int tileset_w, int tileset_h, int offsetX, int offsetY) {
+void TileMap::SetMapLayer(State& state, std::string layer_path, int size_x, int size_y, int csv_x, int csv_y, std::string tileset_path, int tileset_w, int tileset_h, int offsetX, int offsetY) {
 	// setup tileset.
 	GameObject* go = new GameObject();
 	std::weak_ptr<GameObject> weak_ptr = state.AddObject(go);
@@ -118,22 +118,22 @@ void TileMap::SetMapLayer(State& state, std::string layer_path, int x, int y, st
 
 	std::string tilemap;
 
-	for(int i = 1; i <= y; i++) {
-		for(int j = 1; j <= x; j++) {
+	for(int y = 1; y <= size_y; y++) {
+		for(int x = 1; x <= size_x; x++) {
 			go = new GameObject();
 			weak_ptr = state.AddObject(go);
 			ptr = weak_ptr.lock();
 
 			tilemap = layer_path;
-			tilemap += "/c";
-			tilemap += std::to_string(j);
-			tilemap += "_l";
-			tilemap += std::to_string(i);
+			tilemap += "/x";
+			tilemap += std::to_string(x);
+			tilemap += "_y";
+			tilemap += std::to_string(y);
 			tilemap += ".csv";
 
 			TileMap* tlmp = new TileMap(*ptr, TILE, TILE, tilemap, tileset);
-			ptr->box.x = offsetX + tlmp->GetWidth()*tileset_w*(j-1);
-			ptr->box.y = offsetY + tlmp->GetHeight()*tileset_h*(i-1);
+			ptr->box.x = offsetX + csv_x*tileset_w*(x-1);
+			ptr->box.y = offsetY + csv_y*tileset_h*(y-1);
 			ptr->AddComponent(tlmp);
 		}
 	}

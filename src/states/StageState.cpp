@@ -48,6 +48,12 @@ StageState::StageState()
 	ptr->AddComponent(cmfl);
 
 	// TileMap
+	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_1_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_2_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_3_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_4_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_5_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
+	/*
 	GameObject *gomp1 = new GameObject();
 	weak_ptr = AddObject(gomp1);
 	ptr = weak_ptr.lock();
@@ -98,7 +104,7 @@ StageState::StageState()
 	ptr->box.x = 0;
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp5);
-
+	*/
 	//Runas
 	GameObject *gorune = new GameObject();
 	weak_ptr = AddObject(gorune);
