@@ -199,7 +199,8 @@ void Capelobo::Update(float dt)
 				else
 					safeX = associated.box.Center().x;
 
-				moveAllowed = (Floor::loaded && Floor::AtAllowedArea(safeX, safeY, 0));
+				// moveAllowed = (Floor::loaded && Floor::AtAllowedArea(safeX, safeY, 0));
+				moveAllowed = 1;
 				if (!moveAllowed)
 				{
 					state = RESTING;
