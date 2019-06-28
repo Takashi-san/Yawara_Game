@@ -10,7 +10,7 @@
 #define TOP_ATTRUNE_FRAMES          2
 
 #define ATTRUNE_ACTIVATION_DISTANCE 45
-#define ATTRUNE_COOLDOWN_TIME       10
+#define ATTRUNE_COOLDOWN_TIME       30
 
 /* 1 < factor <= 2 increased attack damage */
 AttackRune::AttackRune(GameObject& associated, float attFactor) : Item(associated){
