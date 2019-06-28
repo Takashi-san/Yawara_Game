@@ -5,12 +5,10 @@
 #include <fstream>
 #include <cstring>
 
-using namespace std;
-
 class Floor
 {
 private:
-    static vector<int> floorMatrix;
+    static std::vector<int> floorMatrix;
     static int mapWidth;
     static int mapHeight;
     static int tileWidth;
@@ -22,15 +20,15 @@ public:
     static Vec2 speed;
     static float ratio;
 
-    static void Load(string, int, int);
+    static void Load(std::string, int, int);
     static bool AtAllowedArea(int, int, int);
 
     static void Update(float);
     static void Render();
-    static bool Is(string);
+    static bool Is(std::string);
 
     static int GetWidth();
     static int GetHeight();
 
-    static vector<int> GetMatrix();
+    static std::vector<int> GetMatrix();
 };
