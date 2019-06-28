@@ -80,6 +80,8 @@ public:
 
 	void SetBlendMode(int);
 
+	void SetSelfDestruct(float);
+
 	void Update(float dt);
 	bool Is(std::string type);
 };
