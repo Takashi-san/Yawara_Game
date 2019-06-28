@@ -2,6 +2,7 @@
 #include "Sprite.h"
 #include "Yawara.h"
 #include "Timer.h"
+#include "Easing.h"
 
 #define BASE_HEALTHRUNE_FILE            "assets/img/items/cristal_base.png"
 #define BASE_HEALTHRUNE_FRAMES          3
@@ -20,6 +21,8 @@ HealthRune::HealthRune(GameObject& associated, float hpFactor) : Item(associated
 	associated.AddComponent(sp);
 
     this->hpFactor = hpFactor;
+
+    top_layer_sprite = nullptr;
 }
 
 void HealthRune::Update(float dt){
@@ -44,6 +47,30 @@ void HealthRune::Update(float dt){
             sp->SetBlendMode(BLEND_BLEND);
             active = true;
             associated.RemoveComponent(top_layer_sprite);
+            top_layer_sprite = nullptr;
+        }
+        
+        if(top_layer_sprite){
+            static float counter = 0;
+            static bool fadingIn = true;
+
+            if(fadingIn){
+                counter += dt;
+                if(counter >= 1){
+                    counter = 1;
+                    fadingIn = false;
+                }
+            } else{
+                counter -= dt;
+                if(counter <= 0){
+                    counter = 0;
+                    fadingIn = true;
+                }
+            }
+
+            float ease = QuadraticEaseInOut(counter);
+
+            top_layer_sprite->SetAlphaMod(int (ease * 255));
         }
     }
 }
