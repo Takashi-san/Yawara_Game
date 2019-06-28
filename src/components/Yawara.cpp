@@ -49,16 +49,16 @@
 #define YWR_RUN_U_FRAME		9
 #define YWR_RUN_L			"assets/img/yawara/yawara_run_left.png"
 #define YWR_RUN_L_FRAME		9
-#define YWR_RUN_R			"assets/img/yawara/yawara_walk_right.png"
-#define YWR_RUN_R_FRAME		12
+#define YWR_RUN_R			"assets/img/yawara/yawara_run_right.png"
+#define YWR_RUN_R_FRAME		9
 #define YWR_RUN_DL			"assets/img/yawara/yawara_run_down_left.png"
 #define YWR_RUN_DL_FRAME	9
-#define YWR_RUN_DR			"assets/img/yawara/yawara_idle_down_right.png"
-#define YWR_RUN_DR_FRAME	1
+#define YWR_RUN_DR			"assets/img/yawara/yawara_run_down_right.png"
+#define YWR_RUN_DR_FRAME	9
 #define YWR_RUN_UL			"assets/img/yawara/yawara_run_up_left.png"
 #define YWR_RUN_UL_FRAME	9
-#define YWR_RUN_UR			"assets/img/yawara/yawara_idle_up_right.png"
-#define YWR_RUN_UR_FRAME	1
+#define YWR_RUN_UR			"assets/img/yawara/yawara_run_up_right.png"
+#define YWR_RUN_UR_FRAME	9
 
 #define YWR_DEATH		"assets/penguin/img/penguindeath.png"
 #define YWR_DEATH_FRAME	5
