@@ -4,7 +4,7 @@
 
 Bullet::Bullet(GameObject& associated, float angle, float speed, int damage, float maxDistance, std::string sprite, int frameCount, float frameTime, bool targetsPlayer) : Component(associated) {
 	Sprite* sp = new Sprite(associated, sprite, frameCount, frameTime);
-	sp->SetScale(2, 2);
+	sp->SetScale(1, 1);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(sp);
 	associated.AddComponent(cl);
