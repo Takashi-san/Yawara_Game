@@ -25,9 +25,9 @@
 #define TAPU_DR			"assets/img/tapu/tapu_down_right.png"
 #define TAPU_DL			"assets/img/tapu/tapu_down_left.png"
 
-#define TAPU_BULLET			"assets/penguin/img/minionbullet2.png"
-#define TAPU_BULLET_FRAME	3
-#define TAPU_BULLET_TIME	0.04
+#define TAPU_BULLET			"assets/img/tapu/disparo.png"
+#define TAPU_BULLET_FRAME	1
+#define TAPU_BULLET_TIME	0
 
 Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component(associated) {
 
