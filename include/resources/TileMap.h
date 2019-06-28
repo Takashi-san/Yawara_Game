@@ -40,5 +40,5 @@ public:
 	void Update(float dt);
 	bool Is(std::string type);
 
-	static void SetMapLayer(State&, std::string, int, int, std::string, int, int, int, int);
+	static void SetMapLayer(State&, std::string, int, int, int, int, std::string, int, int, int = 0, int = 0);
 };
