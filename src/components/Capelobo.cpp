@@ -28,14 +28,14 @@
 
 // Movement sprites
 
-const std::string MOVE_RIGHT 	 = "";
-const std::string MOVE_RIGHT_DOWN = "";
-const std::string MOVE_DOWN		 = "";
-const std::string MOVE_LEFT_DOWN	 = "";
-const std::string MOVE_LEFT		 = "assets/img/capelobo/capelobo_animacao_correndo.png";
-const std::string MOVE_LEFT_UP	 = "";
-const std::string MOVE_UP		 = "";
-const std::string MOVE_RIGHT_UP	 = "";
+const std::string MOVE_RIGHT 	  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
+const std::string MOVE_RIGHT_DOWN = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
+const std::string MOVE_DOWN		  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
+const std::string MOVE_LEFT_DOWN  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
+const std::string MOVE_LEFT		  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
+const std::string MOVE_LEFT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
+const std::string MOVE_UP		  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
+const std::string MOVE_RIGHT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
 
 // Resting sprites
 
@@ -475,8 +475,8 @@ void Capelobo::Render()
 			switch (dir)
 			{
 			case RIGHT:
-				// sp->Open(MOVE_RIGHT);
-				// sp->SetFrameCount(8);
+				sp->Open(MOVE_RIGHT);
+				sp->SetFrameCount(12);
 				break;
 
 			case LEFT:
@@ -485,33 +485,33 @@ void Capelobo::Render()
 				break;
 
 			case UP:
-				// sp->Open(MOVE_UP);
-				// sp->SetFrameCount(1);
+				sp->Open(MOVE_UP);
+				sp->SetFrameCount(12);
 				break;
 
 			case DOWN:
-				// sp->Open(MOVE_DOWN);
-				// sp->SetFrameCount(1);
+				sp->Open(MOVE_DOWN);
+				sp->SetFrameCount(12);
 				break;
 
 			case RIGHT_UP:
-				// sp->Open(MOVE_RIGHT_UP);
-				// sp->SetFrameCount(1);
+				sp->Open(MOVE_RIGHT_UP);
+				sp->SetFrameCount(12);
 				break;
 
 			case RIGHT_DOWN:
-				// sp->Open(MOVE_RIGHT_DOWN);
-				// sp->SetFrameCount(1);
+				sp->Open(MOVE_RIGHT_DOWN);
+				sp->SetFrameCount(12);
 				break;
 
 			case LEFT_UP:
-				// sp->Open(MOVE_LEFT_UP);
-				// sp->SetFrameCount(1);
+				sp->Open(MOVE_LEFT_UP);
+				sp->SetFrameCount(12);
 				break;
 
 			case LEFT_DOWN:
-				// sp->Open(MOVE_LEFT_DOWN);
-				// sp->SetFrameCount(1);
+				sp->Open(MOVE_LEFT_DOWN);
+				sp->SetFrameCount(12);
 				break;
 
 			default:
