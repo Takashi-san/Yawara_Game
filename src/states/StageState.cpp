@@ -17,6 +17,9 @@
 #include "Cursor.h"
 #include "Yawara.h"
 #include "Floor.h"
+#include "HealthRune.h"
+#include "AttackRune.h"
+#include "DefenseRune.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -31,6 +34,8 @@ StageState::StageState()
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
+	Floor::Load(CL_MAP1, TILE, TILE);
+
 	// Background
 	GameObject *gobg = new GameObject();
 	weak_ptr = AddObject(gobg);
@@ -43,6 +48,12 @@ StageState::StageState()
 	ptr->AddComponent(cmfl);
 
 	// TileMap
+	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_1_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_2_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_3_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_4_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_5_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
+	/*
 	GameObject *gomp1 = new GameObject();
 	weak_ptr = AddObject(gomp1);
 	ptr = weak_ptr.lock();
@@ -93,8 +104,28 @@ StageState::StageState()
 	ptr->box.x = 0;
 	ptr->box.y = 0;
 	ptr->AddComponent(tlmp5);
+	*/
+	//Runas
+	GameObject *gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	HealthRune *rune1 = new HealthRune(*ptr, 1.5);
+	ptr->box.Centered(550,1200);
+	ptr->AddComponent(rune1);
 
-	Floor::Load(CL_MAP1, TILE, TILE);
+	GameObject *gorune2 = new GameObject();
+	weak_ptr = AddObject(gorune2);
+	ptr = weak_ptr.lock();
+	AttackRune *rune2 = new AttackRune(*ptr, 1.5);
+	ptr->box.Centered(1000,850);
+	ptr->AddComponent(rune2);
+	
+	GameObject *gorune3 = new GameObject();
+	weak_ptr = AddObject(gorune3);
+	ptr = weak_ptr.lock();
+	DefenseRune *rune3 = new DefenseRune(*ptr, 1.5);
+	ptr->box.Centered(1300,500);
+	ptr->AddComponent(rune3);
 
 	// Capelobo
 	GameObject *goali1 = new GameObject();
@@ -140,13 +171,19 @@ void StageState::Update(float dt)
 	InputManager &input = InputManager::GetInstance();
 
 	// verifica fechamento do jogo.
-	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY))
+	if (input.KeyPress(ESCAPE_KEY))
 	{
 		PauseState *stage = new PauseState();
 		Game::GetInstance().Push(stage);
 	}
 
+	if(input.QuitRequested()){
+		quitRequested = true;
+	}
+
+
 	// verifica condições de vitoria.
+	/*
 	if (Yawara::player == nullptr)
 	{
 		popRequested = true;
@@ -161,6 +198,7 @@ void StageState::Update(float dt)
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
 	}
+	*/
 
 	UpdateArray(dt);
 

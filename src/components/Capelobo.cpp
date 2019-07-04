@@ -4,7 +4,6 @@
 #include "Camera.h"
 #include "State.h"
 #include "Game.h"
-#include "Minion.h"
 #include "Collider.h"
 #include "Bullet.h"
 #include "Sound.h"
@@ -22,49 +21,51 @@
 #define L_ATTACK_H 20
 #define L_ATTACK_W 20
 
+#define HIT_COOL_DOWN 1
+
 // Movement sprites
 
-const string MOVE_RIGHT 	 = "assets/img/capelobo/capelobo_idle_left.png";
-const string MOVE_RIGHT_DOWN = "";
-const string MOVE_DOWN		 = "";
-const string MOVE_LEFT_DOWN	 = "";
-const string MOVE_LEFT		 = "assets/img/capelobo/capelobo_animacao_correndo.png";
-const string MOVE_LEFT_UP	 = "";
-const string MOVE_UP		 = "";
-const string MOVE_RIGHT_UP	 = "";
+const std::string MOVE_RIGHT 	 = "assets/img/capelobo/capelobo_idle_left.png";
+const std::string MOVE_RIGHT_DOWN = "";
+const std::string MOVE_DOWN		 = "";
+const std::string MOVE_LEFT_DOWN	 = "";
+const std::string MOVE_LEFT		 = "assets/img/capelobo/capelobo_animacao_correndo.png";
+const std::string MOVE_LEFT_UP	 = "";
+const std::string MOVE_UP		 = "";
+const std::string MOVE_RIGHT_UP	 = "";
 
 // Resting sprites
 
-const string REST_RIGHT		 = "assets/img/capelobo/capelobo_idle_left.png";
-const string REST_RIGHT_DOWN = "assets/img/capelobo/capelobo_idle_left.png";
-const string REST_DOWN		 = "assets/img/capelobo/capelobo_idle_left.png";
-const string REST_LEFT_DOWN	 = "assets/img/capelobo/capelobo_idle_left.png";
-const string REST_LEFT		 = "assets/img/capelobo/capelobo_idle_left.png";
-const string REST_LEFT_UP	 = "assets/img/capelobo/capelobo_idle_left.png";
-const string REST_UP		 = "assets/img/capelobo/capelobo_idle_left.png";
-const string REST_RIGHT_UP	 = "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_RIGHT		 = "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_RIGHT_DOWN = "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_DOWN		 = "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_LEFT_DOWN	 = "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_LEFT		 = "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_LEFT_UP	 = "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_UP		 = "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_RIGHT_UP	 = "assets/img/capelobo/capelobo_idle_left.png";
 
 // Attacking sprites
 
-const string ATTACK_RIGHT		= "assets/img/capelobo/capelobo_attack_r.png";
-const string ATTACK_RIGHT_DOWN	= "";
-const string ATTACK_DOWN		= "";
-const string ATTACK_LEFT_DOWN	= "";
-const string ATTACK_LEFT		= "";
-const string ATTACK_LEFT_UP		= "";
-const string ATTACK_UP			= "";
-const string ATTACK_RIGHT_UP	= "";
+const std::string ATTACK_RIGHT		= "assets/img/capelobo/capelobo_attack_r.png";
+const std::string ATTACK_RIGHT_DOWN	= "";
+const std::string ATTACK_DOWN		= "";
+const std::string ATTACK_LEFT_DOWN	= "";
+const std::string ATTACK_LEFT		= "";
+const std::string ATTACK_LEFT_UP		= "";
+const std::string ATTACK_UP			= "";
+const std::string ATTACK_RIGHT_UP	= "";
 
 // Load attack sprites
 
-const string LOAD_RIGHT		 = "";
-const string LOAD_RIGHT_DOWN = "";
-const string LOAD_DOWN		 = "";
-const string LOAD_LEFT_DOWN	 = "";
-const string LOAD_LEFT		 = "";
-const string LOAD_LEFT_UP	 = "";
-const string LOAD_UP		 = "";
-const string LOAD_RIGHT_UP	 = "";
+const std::string LOAD_RIGHT		 = "";
+const std::string LOAD_RIGHT_DOWN = "";
+const std::string LOAD_DOWN		 = "";
+const std::string LOAD_LEFT_DOWN	 = "";
+const std::string LOAD_LEFT		 = "";
+const std::string LOAD_LEFT_UP	 = "";
+const std::string LOAD_UP		 = "";
+const std::string LOAD_RIGHT_UP	 = "";
 
 Capelobo *Capelobo::boss;
 
@@ -95,7 +96,10 @@ void Capelobo::Start()
 {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
-	float offset;
+	restTimer.Restart();
+	moveTimer.Restart();
+	attackTimer.Restart();
+	hitTimer.Restart();
 }
 
 Capelobo::~Capelobo()
@@ -105,13 +109,12 @@ Capelobo::~Capelobo()
 
 void Capelobo::Update(float dt)
 {
-	float dst = 999999;
-
 	associated.angleDeg += (BOSS_VEL_ANG / (PI / 180)) * dt;
+
+	hitTimer.Update(dt);
 
 	if (Yawara::player != nullptr)
 	{
-		int j;
 		switch (state)
 		{
 		case MOVING:
@@ -204,7 +207,8 @@ void Capelobo::Update(float dt)
 				else
 					safeX = associated.box.Center().x;
 
-				moveAllowed = (Floor::loaded && Floor::AtAllowedArea(safeX, safeY, 0));
+				// moveAllowed = (Floor::loaded && Floor::AtAllowedArea(safeX, safeY, 0));
+				moveAllowed = 1;
 				if (!moveAllowed)
 				{
 					state = RESTING;
@@ -268,18 +272,18 @@ void Capelobo::Update(float dt)
 			if (!startedAttack)
 			{
 				GameObject *clawGO = new GameObject();
-				weak_ptr<GameObject> weak_claw1 = Game::GetInstance().GetCurrentState().AddObject(clawGO);
-				shared_ptr<GameObject> shared_claw1 = weak_claw1.lock();
+				std::weak_ptr<GameObject> weak_claw1 = Game::GetInstance().GetCurrentState().AddObject(clawGO);
+				std::shared_ptr<GameObject> shared_claw1 = weak_claw1.lock();
 				Claw *theClaw1;
 
 				GameObject *clawGO2 = new GameObject();
-				weak_ptr<GameObject> weak_claw2 = Game::GetInstance().GetCurrentState().AddObject(clawGO2);
-				shared_ptr<GameObject> shared_claw2 = weak_claw2.lock();
+				std::weak_ptr<GameObject> weak_claw2 = Game::GetInstance().GetCurrentState().AddObject(clawGO2);
+				std::shared_ptr<GameObject> shared_claw2 = weak_claw2.lock();
 				Claw *theClaw2;
 
 				startedAttack = 1;
 
-				weak_ptr<GameObject> weak_Boss = Game::GetInstance().GetCurrentState().GetObjectPtr(&associated);
+				std::weak_ptr<GameObject> weak_Boss = Game::GetInstance().GetCurrentState().GetObjectPtr(&associated);
 
 				int angle = (Yawara::player->GetPos() - associated.box.Center()).Inclination();
 				if (angle < 0)
@@ -299,7 +303,7 @@ void Capelobo::Update(float dt)
 					break;
 
 				case UP:
-					swap(shared_claw1->box.h, shared_claw1->box.w);
+					std::swap(shared_claw1->box.h, shared_claw1->box.w);
 					shared_claw1->box.Centered(associated.box.Center()-Vec2({0,DISTANCE_X}));
 					break;
 
@@ -308,12 +312,12 @@ void Capelobo::Update(float dt)
 					break;
 
 				case DOWN:
-					swap(shared_claw1->box.h, shared_claw1->box.w);
+					std::swap(shared_claw1->box.h, shared_claw1->box.w);
 					shared_claw1->box.Centered(associated.box.Center()+Vec2({0,DISTANCE_X}));
 					break;
 
 				case LEFT_DOWN:
-					swap(shared_claw2->box.h, shared_claw2->box.w);
+					std::swap(shared_claw2->box.h, shared_claw2->box.w);
 					shared_claw2->box.Centered(associated.box.Center()+Vec2({-shared_claw1->box.w/4,DISTANCE_Y}));
 					
 					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
@@ -324,7 +328,7 @@ void Capelobo::Update(float dt)
 					break;
 
 				case LEFT_UP:
-					swap(shared_claw2->box.h, shared_claw2->box.w);
+					std::swap(shared_claw2->box.h, shared_claw2->box.w);
 					shared_claw2->box.Centered(associated.box.Center()-Vec2({shared_claw1->box.w/4,DISTANCE_Y}));
 					
 					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
@@ -335,7 +339,7 @@ void Capelobo::Update(float dt)
 					break;
 
 				case RIGHT_DOWN:
-					swap(shared_claw2->box.h, shared_claw2->box.w);
+					std::swap(shared_claw2->box.h, shared_claw2->box.w);
 					shared_claw2->box.Centered(associated.box.Center()+Vec2({shared_claw1->box.w/4,DISTANCE_Y}));
 					
 					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
@@ -346,7 +350,7 @@ void Capelobo::Update(float dt)
 					break;
 
 				case RIGHT_UP:
-					swap(shared_claw2->box.h, shared_claw2->box.w);
+					std::swap(shared_claw2->box.h, shared_claw2->box.w);
 					shared_claw2->box.Centered(associated.box.Center()+Vec2({shared_claw1->box.w/4,-DISTANCE_Y}));
 					
 					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
@@ -385,8 +389,8 @@ void Capelobo::Update(float dt)
 				startedAttack = 1;
 
 				GameObject *tongueGO = new GameObject();
-				weak_ptr<GameObject> weak_tongue = Game::GetInstance().GetCurrentState().AddObject(tongueGO);
-				shared_ptr<GameObject> shared_tongue = weak_tongue.lock();
+				std::weak_ptr<GameObject> weak_tongue = Game::GetInstance().GetCurrentState().AddObject(tongueGO);
+				std::shared_ptr<GameObject> shared_tongue = weak_tongue.lock();
 
 				shared_tongue->box.w = L_ATTACK_W;
 				shared_tongue->box.h = L_ATTACK_H;
@@ -419,7 +423,7 @@ void Capelobo::Update(float dt)
 	if (hp <= 0)
 	{
 		associated.RequestDelete();
-
+		/*
 		GameObject *go = new GameObject();
 		std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 		std::shared_ptr<GameObject> ptr = weak_ptr.lock();
@@ -431,6 +435,7 @@ void Capelobo::Update(float dt)
 		ptr->AddComponent(so);
 
 		so->Play(1);
+		*/
 	}
 }
 
@@ -651,4 +656,10 @@ void Capelobo::NotifyCollision(GameObject &other)
 {
 	if (other.GetComponent("Bullet") && !static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer)
 		hp -= static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
+
+	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
+	if (hitbox && !(hitbox->targetsPlayer) && hitTimer.Get() > HIT_COOL_DOWN) {
+		hp -= hitbox->GetDamage();
+		hitTimer.Restart();
+	}
 }

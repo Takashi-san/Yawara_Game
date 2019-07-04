@@ -9,11 +9,10 @@
 
 #include "Fonts.h"
 
-#define TITLE_STT_BG "assets/img/background/main_menu.png"
-#define TITLE_STT_BGM "assets/audio/musica/main_menu.mp3"
+#define TITLE_STT_BG	"assets/img/background/main_menu.png"
+#define TITLE_STT_BGM	"assets/audio/musica/main_menu.mp3"
 
-TitleState::TitleState()
-{
+TitleState::TitleState() {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
@@ -32,14 +31,14 @@ TitleState::TitleState()
 	GameObject *t1go = new GameObject();
 	weak_ptr = AddObject(t1go);
 	ptr = weak_ptr.lock();
-	Text *tx1 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Play", {255, 255, 255, 255});
+	Text* tx1 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Play", {255, 255, 255, 255});
 	ptr->box.Centered({341, 500});
 	ptr->AddComponent(tx1);
 
 	GameObject *t2go = new GameObject();
 	weak_ptr = AddObject(t2go);
 	ptr = weak_ptr.lock();
-	Text *tx2 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Quit", {255, 255, 255, 255});
+	Text* tx2 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Quit", {255, 255, 255, 255});
 	ptr->box.Centered({683, 500});
 	ptr->AddComponent(tx2);
 
@@ -48,7 +47,7 @@ TitleState::TitleState()
 	weak_ptr = AddObject(sgo);
 	ptr = weak_ptr.lock();
 	selection = sgo;
-	Text *txs = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, ">>", {255, 255, 255, 255}, 0.3);
+	Text* txs = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, ">>", {255, 255, 255, 255}, 0.3);
 	ptr->box.Centered({280, 500});
 	ptr->AddComponent(txs);
 
@@ -59,46 +58,39 @@ TitleState::TitleState()
 	opt = PLAY;
 }
 
-TitleState::~TitleState()
-{
+TitleState::~TitleState() {
 	objectArray.clear();
 }
 
-void TitleState::Update(float dt)
-{
-	InputManager &input = InputManager::GetInstance();
+void TitleState::Update(float dt) {
+	InputManager& input = InputManager::GetInstance();
 
 	// Fecha o jogo.
-	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY))
-	{
+	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY)) {
 		quitRequested = true;
 	}
 
-	if (input.KeyPress(A_KEY) || input.KeyPress(LEFT_ARROW_KEY))
-	{
+	if (input.KeyPress(A_KEY) || input.KeyPress(LEFT_ARROW_KEY)) {
 		opt = PLAY;
 		selection->box.Centered({260, 500});
 	}
-	if (input.KeyPress(D_KEY) || input.KeyPress(RIGHT_ARROW_KEY))
-	{
+	if (input.KeyPress(D_KEY) || input.KeyPress(RIGHT_ARROW_KEY)) {
 		opt = QUIT;
 		selection->box.Centered({600, 500});
 	}
 
-	if (input.KeyPress(ENTER_KEY))
-	{
+	if (input.KeyPress(ENTER_KEY) || input.KeyPress(ENTER_KEY2)) {
 		StageState *stage = new StageState();
-		switch (opt)
-		{
-		case PLAY:
-			Game::GetInstance().Push(stage);
+		switch (opt) {
+			case PLAY:
+				Game::GetInstance().Push(stage);
 			break;
 
-		case QUIT:
-			quitRequested = true;
+			case QUIT:
+				quitRequested = true;
 			break;
 
-		default:
+			default:
 			break;
 		}
 	}
@@ -106,19 +98,17 @@ void TitleState::Update(float dt)
 	UpdateArray(dt);
 }
 
-void TitleState::Render()
-{
+void TitleState::Render() {
 	RenderArray();
 }
 
-void TitleState::LoadAssets()
-{
+void TitleState::LoadAssets() {
+
 }
 
-void TitleState::Start()
-{
+void TitleState::Start(){
 	LoadAssets();
-
+	
 	StartArray();
 
 	bgMusic.Play();
@@ -126,12 +116,11 @@ void TitleState::Start()
 	started = true;
 }
 
-void TitleState::Pause()
-{
+void TitleState::Pause() {
+
 }
 
-void TitleState::Resume()
-{
+void TitleState::Resume() {
 	Camera::pos.x = 0;
 	Camera::pos.y = 0;
 

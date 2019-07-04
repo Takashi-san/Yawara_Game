@@ -9,31 +9,23 @@
 #include <iostream>
 #include <stdbool.h>
 #include <memory>
+#include <unordered_map>
+#include <vector>
 
-#define YAWARA_SPEED 500
 #define SAFE_DISTANCE_UP 16 * 0.7
 #define SAFE_DISTANCE_DOWN 48 * 0.7
 #define HIT_COOL_DOWN 1
 
-
-class Yawara : public Component
-{
+class Yawara : public Component{
 private:
 	Vec2 speed;
-	int hp;
+	int hp, att;
+	float def;
 	bool idle, change_sprite;
-	enum Direction
-	{
-		RIGHT,
-		UP,
-		LEFT,
-		DOWN,
-		LEFT_DOWN,
-		LEFT_UP,
-		RIGHT_DOWN,
-		RIGHT_UP
-	};
+	enum Direction { RIGHT, LEFT, DOWN, DOWN_LEFT, DOWN_RIGHT, UP, UP_LEFT, UP_RIGHT };
+	enum Action { MOV, ATK, DGE };
 	Direction dir;
+	Action act;
 
 	Timer hitTime;
 
@@ -42,10 +34,30 @@ private:
 
 	std::weak_ptr<GameObject> tapu;
 
-public:
-	static Yawara *player;
+	typedef struct
+	{
+		bool isBoosted;
+		float factor;
+	} boosters;
+	
 
-	Yawara(GameObject &);
+	std::unordered_map<int, boosters> boostMap;
+
+	void Comand(float);
+	void DoAction(float);
+	void SetMov();
+	void SetDge();
+	void SetAtk();
+
+	Timer dge_cd;
+	Timer dge_act;
+	Timer atk_cd;
+	Timer atk_act;
+
+public:
+	static Yawara* player;
+	
+	Yawara(GameObject&);
 	~Yawara();
 
 	void Start();
@@ -53,7 +65,12 @@ public:
 	void Render();
 	bool Is(std::string);
 
-	void NotifyCollision(GameObject &);
+	void NotifyCollision(GameObject&);
 
 	Vec2 GetPos();
+	Vec2 GetCenterPos();
+
+	enum Boosts { HPBOOST, ATTBOOST, DEFBOOST };
+
+	void Boost(Boosts, float);
 };

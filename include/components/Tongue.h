@@ -10,8 +10,6 @@
 #include <iostream>
 #include <memory>
 
-using namespace std;
-
 // class Hitbox;
 
 class Tongue : public Hitbox
@@ -22,7 +20,7 @@ private:
 	float distanceLeft;
 	float maxDistance;
 	float radius;
-	weak_ptr<GameObject> center;
+	std::weak_ptr<GameObject> center;
 
 
 public:

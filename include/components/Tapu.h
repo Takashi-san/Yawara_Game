@@ -13,12 +13,15 @@ class Tapu : public Component
 {
     private:
         std::weak_ptr<GameObject> yawara;
-        float angle;
-        int radius;
+        float angle, height;
 
         enum Direction {LEFT, RIGHT, UP, DOWN, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT};
         Direction dir;
         bool changedDir;
+
+        std::weak_ptr<GameObject> shadow_ptr;
+
+        float damageFactor;
 
     public:
         Tapu(GameObject &, std::weak_ptr<GameObject>);
@@ -29,4 +32,6 @@ class Tapu : public Component
         void NotifyCollision(GameObject &);
 
         void Shoot();
+
+        void SetDamageFactor(float);
 };
