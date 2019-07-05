@@ -82,7 +82,7 @@ Capelobo::Capelobo(GameObject &associated, float restOffset) : Component(associa
 {
 	boss = this;
 
-	hp = 70;
+	hp = 600;
 	speed.x = 0;
 	speed.y = 0;
 	this->restOffset = restOffset;
@@ -100,6 +100,8 @@ void Capelobo::Start()
 {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
+	
+	// Reset all timers
 	restTimer.Restart();
 	moveTimer.Restart();
 	attackTimer.Restart();
@@ -108,6 +110,7 @@ void Capelobo::Start()
 
 Capelobo::~Capelobo()
 {
+	// Capelobo is dead
 	boss = nullptr;
 }
 
@@ -133,21 +136,21 @@ void Capelobo::Update(float dt)
 				else
 					speed = {0, 0};
 
-				// Se chegou no destino.
+				// Yawara is nearby the Capelobo.
 				if (((associated.box.Center().x <= CPLB_ENEMY_DIST_X + enemyPos.x + dt * abs(speed.x)) && (associated.box.Center().x >= -CPLB_ENEMY_DIST_X + enemyPos.x - dt * abs(speed.x)) &&
 					 (associated.box.Center().y <= CPLB_ENEMY_DIST_Y + enemyPos.y + dt * abs(speed.y)) && (associated.box.Center().y >= -CPLB_ENEMY_DIST_Y + enemyPos.y - dt * abs(speed.y))) ||
 					!moveAllowed)
 				{
+					// Stop moving
 					speed.x = 0;
 					speed.y = 0;
 
-					// Muda estado.
+					// Change to BASIC_ATTACK state.
 					state = BASIC_ATTACK;
-					// state = LOAD_ATTACK;
 					break;
 				}
 
-				// Corrigindo rota pra andar em 45 graus
+				// Correct root to move in 45 degrees
 				if (abs(speed.x) > abs(speed.y) && (speed.y < -10 || speed.y > 10))
 				{
 					int signalY = speed.y / abs(speed.y);
@@ -161,7 +164,7 @@ void Capelobo::Update(float dt)
 					speed = {signalY * signalX * speed.y, speed.y};
 				}
 
-				// Seta direção para sprite
+				// Set dir to the direction that Capelobo is facing
 
 				Direction lastDir = dir;
 
@@ -193,7 +196,7 @@ void Capelobo::Update(float dt)
 				if (dir != lastDir)
 					change_sprite = true;
 
-				// Verifica se pode andar
+				// Verify if Capelobo is allowed to move
 
 				if (speed.y > 0.1)
 				{
@@ -213,12 +216,12 @@ void Capelobo::Update(float dt)
 
 				// moveAllowed = (Floor::loaded && Floor::AtAllowedArea(safeX, safeY, 0));
 				moveAllowed = 1;
-				if (!moveAllowed)
+				if (!moveAllowed) // If he can't move, he will rest
 				{
 					state = RESTING;
 					restTimer.Restart();
 				}
-				// Anda.
+				// Move.
 				else
 				{
 					associated.box.x += speed.x * dt;
@@ -227,11 +230,11 @@ void Capelobo::Update(float dt)
 			}
 			else
 			{
-				// Zera velocidade.
+				// Stop moving.
 				speed.x = 0;
 				speed.y = 0;
 
-				// Muda estado.
+				// Change to LOAD_ATTACK state.
 				state = LOAD_ATTACK;
 				restTimer.Restart();
 				moveTimer.Restart();
@@ -243,6 +246,7 @@ void Capelobo::Update(float dt)
 			if (!change_sprite)
 				change_sprite = true;
 
+			// Rest for a determinated time
 			if (restTimer.Get() > BOSS_REST_BASE + restOffset)
 			{
 				enemyPos = Yawara::player->GetCenterPos();
@@ -254,7 +258,6 @@ void Capelobo::Update(float dt)
 				temp_speed = speed;
 
 				state = MOVING;
-				// state = LOAD_ATTACK;
 				moveAllowed = 1;
 				moveTimer.Restart();
 			}
@@ -263,6 +266,7 @@ void Capelobo::Update(float dt)
 		case SLEEPING:
 			enemyPos = Yawara::player->GetCenterPos();
 
+			// Stay asleep if Yawara don't get closer
 			if ((enemyPos - associated.box.Center()).Modulo() <= 450)
 				state = MOVING;
 
@@ -270,6 +274,8 @@ void Capelobo::Update(float dt)
 
 		case BASIC_ATTACK:
 			attackTimer.Update(dt);
+
+			// Make change sprite just when the attack start and if it hasn't changed yet
 			if (change_sprite && !startedAttack){
 				change_sprite = false;
 				changed = false;
@@ -280,13 +286,16 @@ void Capelobo::Update(float dt)
 				changed = true;
 			}
 
+			// Create Hitbox if it wasn't created yet. Create it 0.3s after render the sprite (time that he actualy attack on the sprite)
 			if (!startedAttack && attackTimer.Get() > 0.3)
 			{
+				// Create first Claw hitbox
 				GameObject *clawGO = new GameObject();
 				std::weak_ptr<GameObject> weak_claw1 = Game::GetInstance().GetCurrentState().AddObject(clawGO);
 				std::shared_ptr<GameObject> shared_claw1 = weak_claw1.lock();
 				Claw *theClaw1;
 
+				// Create second Claw hitbox. It'll be used when diagonal attack
 				GameObject *clawGO2 = new GameObject();
 				std::weak_ptr<GameObject> weak_claw2 = Game::GetInstance().GetCurrentState().AddObject(clawGO2);
 				std::shared_ptr<GameObject> shared_claw2 = weak_claw2.lock();
@@ -307,6 +316,7 @@ void Capelobo::Update(float dt)
 				shared_claw2->box.h = CPLB_B_ATTACK_H + CPLB_B_ATTACK_W / 2;
 				shared_claw2->box.w = CPLB_B_ATTACK_W;
 
+				// Verify which direction Capelobo is facing to create the hitbox on the right position
 				switch (dir)
 				{
 				case RIGHT:
@@ -377,10 +387,9 @@ void Capelobo::Update(float dt)
 				theClaw1 = new Claw(*shared_claw1, CLAW_DAMAGE, true);
 
 				shared_claw1->AddComponent(theClaw1);
-				// if(shared_claw1 != nullptr)
-				// 	change_sprite = true;
 			}
 
+			// End attack
 			if (attackTimer.Get() > 1)
 			{
 				state = RESTING;
@@ -394,6 +403,8 @@ void Capelobo::Update(float dt)
 		case LOAD_ATTACK:
 			
 			attackTimer.Update(dt);
+
+			// Make change sprite just when the attack start and if it hasn't changed yet
 			if (change_sprite && !startedAttack){
 				change_sprite = false;
 				changed = false;
@@ -404,7 +415,8 @@ void Capelobo::Update(float dt)
 				changed = true;
 			}
 
-			if (!startedAttack)
+			// Create Hitbox if it wasn't created yet. Create it 0.3s after render the sprite (time that he actualy attack on the sprite)
+			if (!startedAttack && attackTimer.Get() > 0.3)
 			{
 				startedAttack = true;
 
@@ -430,6 +442,7 @@ void Capelobo::Update(float dt)
 					change_sprite = true;
 			}
 
+			// End attack
 			if (attackTimer.Get() > 1.5)
 			{
 				state = MOVING;
@@ -442,6 +455,7 @@ void Capelobo::Update(float dt)
 		}
 	}
 
+	// Capelobo is dead
 	if (hp <= 0)
 	{
 		associated.RequestDelete();
