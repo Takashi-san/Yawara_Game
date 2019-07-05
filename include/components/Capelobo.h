@@ -57,6 +57,7 @@ private:
 	Timer restTimer;
 	Timer moveTimer;
 	Timer attackTimer;
+	Timer hitTimer;
 	float restOffset;
 	Vec2 enemyPos;
 

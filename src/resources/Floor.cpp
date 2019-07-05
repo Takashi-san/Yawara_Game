@@ -1,6 +1,6 @@
 #include "Floor.h"
 
-vector<int> Floor::floorMatrix;
+std::vector<int> Floor::floorMatrix;
 int Floor::mapWidth;
 int Floor::mapHeight;
 int Floor::tileWidth;
@@ -10,13 +10,13 @@ Vec2 Floor::pos;
 Vec2 Floor::speed;
 float Floor::ratio;
 
-void Floor::Load(string file, int tileWidth, int tileHeight)
+void Floor::Load(std::string file, int tileWidth, int tileHeight)
 {
     Floor::tileWidth = tileWidth;
     Floor::tileHeight = tileHeight;
-    ifstream input;
-    string in;
-    input.open(file.c_str(), ios::in);
+    std::ifstream input;
+    std::string in;
+    input.open(file.c_str(), std::ios::in);
 
     if (!input.fail())
     {
@@ -40,7 +40,7 @@ void Floor::Load(string file, int tileWidth, int tileHeight)
     }
     else
     {
-        cout << "Fale to load floor: " << file.c_str() << "\n";
+        std::cout << "Fail to load floor: " << file.c_str() << "\n";
     }
 
     input.close();
@@ -65,7 +65,7 @@ void Floor::Render()
 {
 }
 
-bool Floor::Is(string type)
+bool Floor::Is(std::string type)
 {
     return !strcmp(type.c_str(), "Floor");
 }
@@ -80,7 +80,7 @@ int Floor::GetHeight()
     return tileHeight;
 }
 
-vector<int> Floor::GetMatrix()
+std::vector<int> Floor::GetMatrix()
 {
     return floorMatrix;
 }

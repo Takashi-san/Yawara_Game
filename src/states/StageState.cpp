@@ -25,7 +25,7 @@
 #include "Tilemaps.h"
 
 #define STAGE_STT_BG "assets/penguin/img/ocean.jpg"
-#define STAGE_STT_BGM "assets/penguin/audio/stageState.ogg"
+#define STAGE_STT_BGM "assets/audio/musica/tema_triste.ogg"
 #define STAGE_STT_CURSOR_SPRITE "assets/penguin/img/penguinface.png"
 #define STAGE_STT_CAMERA_RATIO 0.37
 
@@ -183,7 +183,6 @@ void StageState::Update(float dt)
 
 
 	// verifica condições de vitoria.
-	/*
 	if (Yawara::player == nullptr)
 	{
 		popRequested = true;
@@ -191,7 +190,7 @@ void StageState::Update(float dt)
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
 	}
-	else if (Capelobo::boss == nullptr)
+	/*else if (Capelobo::boss == nullptr)
 	{
 		popRequested = true;
 		Data::playerVictory = true;
