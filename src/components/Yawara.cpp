@@ -46,8 +46,8 @@
 #define YWR_RUN_UL			"assets/img/yawara/yawara_run_up_left.png"
 #define YWR_RUN_UR			"assets/img/yawara/yawara_run_up_right.png"
 
-#define YWR_DEATH		"assets/penguin/img/penguindeath.png"
 #define YWR_DEATH_FRAME	5
+#define YWR_DEATH		"assets/penguin/img/penguindeath.png"
 #define YWR_DEATH_SOUND	"assets/penguin/audio/boom.wav"
 
 Yawara* Yawara::player;
@@ -197,6 +197,10 @@ Vec2 Yawara::GetPos() {
 
 Vec2 Yawara::GetCenterPos() {
 	return associated.box.Center();
+}
+
+int Yawara::GetHP() {
+	return hp;
 }
 
 void Yawara::Comand(float dt) {
