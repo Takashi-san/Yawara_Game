@@ -26,39 +26,25 @@
 
 #define YWR_ANI_TIME	0.070
 
+#define YWR_IDLE_FRAME		1
 #define YWR_IDLE_D			"assets/img/yawara/yawara_idle_down.png"
-#define YWR_IDLE_D_FRAME	1
 #define YWR_IDLE_U			"assets/img/yawara/yawara_idle_up.png"
-#define YWR_IDLE_U_FRAME	1
-#define YWR_IDLE_L			"assets/img/yawara/yawara_walk_left.png"
-#define YWR_IDLE_L_FRAME	12
-#define YWR_IDLE_R			"assets/img/yawara/yawara_walk_right.png"
-#define YWR_IDLE_R_FRAME	12
+#define YWR_IDLE_L			"assets/img/yawara/yawara_idle_left.png"
+#define YWR_IDLE_R			"assets/img/yawara/yawara_idle_right.png"
 #define YWR_IDLE_DL			"assets/img/yawara/yawara_idle_down_left.png"
-#define YWR_IDLE_DL_FRAME	1
 #define YWR_IDLE_DR			"assets/img/yawara/yawara_idle_down_right.png"
-#define YWR_IDLE_DR_FRAME	1
 #define YWR_IDLE_UL			"assets/img/yawara/yawara_idle_up_left.png"
-#define YWR_IDLE_UL_FRAME	1
 #define YWR_IDLE_UR			"assets/img/yawara/yawara_idle_up_right.png"
-#define YWR_IDLE_UR_FRAME	1
 
+#define YWR_RUN_FRAME		9
 #define YWR_RUN_D			"assets/img/yawara/yawara_run_down.png"
-#define YWR_RUN_D_FRAME		9
 #define YWR_RUN_U			"assets/img/yawara/yawara_run_up.png"
-#define YWR_RUN_U_FRAME		9
 #define YWR_RUN_L			"assets/img/yawara/yawara_run_left.png"
-#define YWR_RUN_L_FRAME		9
 #define YWR_RUN_R			"assets/img/yawara/yawara_run_right.png"
-#define YWR_RUN_R_FRAME		9
 #define YWR_RUN_DL			"assets/img/yawara/yawara_run_down_left.png"
-#define YWR_RUN_DL_FRAME	9
 #define YWR_RUN_DR			"assets/img/yawara/yawara_run_down_right.png"
-#define YWR_RUN_DR_FRAME	9
 #define YWR_RUN_UL			"assets/img/yawara/yawara_run_up_left.png"
-#define YWR_RUN_UL_FRAME	9
 #define YWR_RUN_UR			"assets/img/yawara/yawara_run_up_right.png"
-#define YWR_RUN_UR_FRAME	9
 
 #define YWR_DEATH		"assets/penguin/img/penguindeath.png"
 #define YWR_DEATH_FRAME	5
@@ -69,7 +55,7 @@ Yawara* Yawara::player;
 Yawara::Yawara(GameObject& associated) : Component(associated) {
 	player = this;
 
-	Sprite* sp = new Sprite(associated, YWR_IDLE_R, YWR_IDLE_R_FRAME, YWR_ANI_TIME);
+	Sprite* sp = new Sprite(associated, YWR_IDLE_R, YWR_IDLE_FRAME, YWR_ANI_TIME);
 	associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
@@ -368,47 +354,40 @@ void Yawara::SetMov() {
 				switch (dir) {
 					case RIGHT:
 						sp->Open(YWR_IDLE_R);
-						sp->SetFrameCount(YWR_IDLE_R_FRAME);
 					break;
 
 					case LEFT:
 						sp->Open(YWR_IDLE_L);
-						sp->SetFrameCount(YWR_IDLE_L_FRAME);
 					break;
 
 					case UP:
 						sp->Open(YWR_IDLE_U);
-						sp->SetFrameCount(YWR_IDLE_U_FRAME);
 					break;
 
 					case DOWN:
 						sp->Open(YWR_IDLE_D);
-						sp->SetFrameCount(YWR_IDLE_D_FRAME);
 					break;
 
 					case UP_RIGHT:
 						sp->Open(YWR_IDLE_UR);
-						sp->SetFrameCount(YWR_IDLE_UR_FRAME);
 					break;
 
 					case DOWN_RIGHT:
 						sp->Open(YWR_IDLE_DR);
-						sp->SetFrameCount(YWR_IDLE_DR_FRAME);
 					break;
 
 					case UP_LEFT:
 						sp->Open(YWR_IDLE_UL);
-						sp->SetFrameCount(YWR_IDLE_UL_FRAME);
 					break;
 
 					case DOWN_LEFT:
 						sp->Open(YWR_IDLE_DL);
-						sp->SetFrameCount(YWR_IDLE_DL_FRAME);
 					break;
 
 					default:
 					break;
 				}
+				sp->SetFrameCount(YWR_IDLE_FRAME);
 			}
 		} else {
 			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
@@ -417,55 +396,48 @@ void Yawara::SetMov() {
 					case RIGHT:
 						speed = {YWR_SPEED, 0};
 						sp->Open(YWR_RUN_R);
-						sp->SetFrameCount(YWR_RUN_R_FRAME);
 					break;
 
 					case LEFT:
 						speed = {-YWR_SPEED, 0};
 						sp->Open(YWR_RUN_L);
-						sp->SetFrameCount(YWR_RUN_L_FRAME);
 					break;
 
 					case DOWN:
 						speed = {0, YWR_SPEED};
 						sp->Open(YWR_RUN_D);
-						sp->SetFrameCount(YWR_RUN_D_FRAME);
 					break;
 
 					case DOWN_RIGHT:
 						speed = {YWR_SPEED/2, YWR_SPEED/2};
 						sp->Open(YWR_RUN_DR);
-						sp->SetFrameCount(YWR_RUN_DR_FRAME);
 					break;
 
 					case DOWN_LEFT:
 						speed = {-YWR_SPEED/2, YWR_SPEED/2};
 						sp->Open(YWR_RUN_DL);
-						sp->SetFrameCount(YWR_RUN_DL_FRAME);
 					break;
 
 					case UP:
 						speed = {0, -YWR_SPEED};
 						sp->Open(YWR_RUN_U);
-						sp->SetFrameCount(YWR_RUN_U_FRAME);
 					break;
 
 					case UP_RIGHT:
 						speed = {YWR_SPEED/2, -YWR_SPEED/2};
 						sp->Open(YWR_RUN_UR);
-						sp->SetFrameCount(YWR_RUN_UR_FRAME);
 					break;
 
 					case UP_LEFT:
 						speed = {-YWR_SPEED/2, -YWR_SPEED/2};
 						sp->Open(YWR_RUN_UL);
-						sp->SetFrameCount(YWR_RUN_UL_FRAME);
 					break;
 
 					default:
 						speed = {0, 0};
 					break;
 				}
+				sp->SetFrameCount(YWR_RUN_FRAME);
 			}
 		}
 		associated.box.Centered(position);
