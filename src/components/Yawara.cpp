@@ -94,6 +94,45 @@ void Yawara::Start() {
 	ptr->AddComponent(tp);
 }
 
+void Yawara::Render() {
+	
+}
+
+bool Yawara::Is(std::string type) {
+	return !strcmp(type.c_str(), "Yawara");
+}
+
+void Yawara::NotifyCollision(GameObject& other) {
+	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
+	
+	if (hitbox && hitbox->targetsPlayer && hitTime.Get() >= HIT_COOL_DOWN)
+	{
+		float defended = def - 1;
+
+		if(defended > 1)
+			defended = 1;
+		
+		hp -= (1 - defended) * hitbox->GetDamage();
+		hitTime.Restart();
+	}
+}
+
+void Yawara::Boost(Boosts which, float factor){
+	boostMap[which] = {true, factor};
+}
+
+Vec2 Yawara::GetPos() {
+	return {associated.box.x, associated.box.y};
+}
+
+Vec2 Yawara::GetCenterPos() {
+	return associated.box.Center();
+}
+
+int Yawara::GetHP() {
+	return hp;
+}
+
 int Yawara::GetMaxHP() {
 	return YWR_HP;
 }
@@ -169,41 +208,6 @@ void Yawara::Update(float dt) {
 		Comand(dt);
 		DoAction(dt);
 	}
-}
-
-void Yawara::Render() {
-
-}
-
-bool Yawara::Is(std::string type) {
-	return !strcmp(type.c_str(), "Yawara");
-}
-
-void Yawara::NotifyCollision(GameObject& other) {
-	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
-	
-	if (hitbox && hitbox->targetsPlayer && hitTime.Get() >= HIT_COOL_DOWN)
-	{
-		float defended = def - 1;
-
-		if(defended > 1)
-			defended = 1;
-		
-		hp -= (1 - defended) * hitbox->GetDamage();
-		hitTime.Restart();
-	}
-}
-
-Vec2 Yawara::GetPos() {
-	return {associated.box.x, associated.box.y};
-}
-
-Vec2 Yawara::GetCenterPos() {
-	return associated.box.Center();
-}
-
-int Yawara::GetHP() {
-	return hp;
 }
 
 void Yawara::Comand(float dt) {
@@ -572,9 +576,4 @@ void Yawara::SetAtk() {
 			std::cout << "Unknow direction to atack!\n";
 		break;
 	}
-}
-
-void Yawara::Boost(Boosts which, float factor){
-
-	boostMap[which] = {true, factor};
 }
