@@ -30,11 +30,19 @@
 #define TAPU_BULLET_TIME	0
 
 Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component(associated) {
+	angle = 0;
+	this->yawara = Yawara;
+	dir = RIGHT;
+	changedDir = false;
+	damageFactor = 1;
+}
 
+void Tapu::Start() {
 	Sprite* sp = new Sprite(associated, TAPU_R, TAPU_FRAMES, TAPU_ANI_TIME);
 	associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
+	height = sp->GetHeight();
 
 	GameObject* go = new GameObject();
 	shadow_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
@@ -42,13 +50,6 @@ Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component
 	Sprite* shadow = new Sprite(*ptr, "assets/img/tapu/shadow.png");
 	ptr->box.Centered(associated.box.Center());
 	ptr->AddComponent(shadow);
-
-	angle = 0;
-	this->yawara = Yawara;
-	dir = RIGHT;
-	changedDir = false;
-	height = sp->GetHeight();
-	damageFactor = 1;
 }
 
 void Tapu::Update(float dt)
@@ -94,7 +95,7 @@ void Tapu::Update(float dt)
 
 		std::shared_ptr<GameObject> shadow = shadow_ptr.lock();
 		if(shadow){
-			shadow->box.Centered(TapuCenter.x, (height) + TapuCenter.y - (ease * 10));
+			shadow->box.Centered(associated.box.Center().x, (height) + associated.box.Center().y - (ease * 10));
 			Sprite* shadow_sprite = static_cast<Sprite*> (shadow->GetComponent("Sprite"));
 			if(shadow_sprite){
 				shadow_sprite->SetScale(1 + (0.45 * ease), 1 + (0.45 * ease));
