@@ -14,7 +14,11 @@
 #define TITLE_STT_PLAY	"assets/img/background/main_menu_jogar.png"
 #define TITLE_STT_QUIT	"assets/img/background/main_menu_sair.png"
 #define TITLE_STT_ARROW	"assets/img/background/main_menu_selection.png"
-#define TITLE_STT_BGM	"assets/audio/musica/main_menu.mp3"
+
+#define TITLE_STT_BGM			"assets/audio/musica/main_menu.mp3"
+#define TITLE_STT_SLCT_SOUND	"assets/audio/sons/menu-selecionar_opcao.ogg"
+#define TITLE_STT_CHNG_SLCT		"assets/audio/sons/menu-mover.ogg"
+#define TITLE_STT_PLAY_SOUND	"assets/audio/sons/menu-jogar.ogg"
 
 TitleState::TitleState() {
 	std::weak_ptr<GameObject> weak_ptr;
@@ -71,6 +75,22 @@ TitleState::TitleState() {
 	bgMusic.Open(TITLE_STT_BGM);
 	bgMusic.Play();
 
+	//Sounds
+	GameObject *chngslctgo = new GameObject();
+	weak_ptr = AddObject(chngslctgo);
+	ptr = weak_ptr.lock();
+	changeSelection = new Sound(*ptr, TITLE_STT_CHNG_SLCT);
+
+	GameObject *slctgo = new GameObject();
+	weak_ptr = AddObject(slctgo);
+	ptr = weak_ptr.lock();
+	select = new Sound(*ptr, TITLE_STT_SLCT_SOUND);
+
+	GameObject *playgo = new GameObject();
+	weak_ptr = AddObject(playgo);
+	ptr = weak_ptr.lock();
+	play = new Sound(*ptr, TITLE_STT_PLAY_SOUND);
+
 	opt = PLAY;
 }
 
@@ -94,6 +114,9 @@ void TitleState::Update(float dt) {
 			opt = PLAY;
 		else if(opt == QUIT)
 			opt = OPTIONS;
+
+	if(changeSelection)
+		changeSelection->Play(1);
 		
 	}
 	if (input.KeyPress(D_KEY) || input.KeyPress(RIGHT_ARROW_KEY)) {
@@ -101,6 +124,9 @@ void TitleState::Update(float dt) {
 			opt = OPTIONS;
 		else if(opt == OPTIONS)
 			opt = QUIT;
+
+		if(changeSelection)
+			changeSelection->Play(1);
 	}
 
 	switch (opt)
@@ -126,13 +152,19 @@ void TitleState::Update(float dt) {
 		switch (opt) {
 			case PLAY:
 				Game::GetInstance().Push(stage);
+				if(play)
+					play->Play(1);
 			break;
 
 			case QUIT:
 				quitRequested = true;
+				if(select)
+					select->Play(1);
 			break;
 
 			default:
+				if(select)
+					select->Play(1);
 			break;
 		}
 	}
