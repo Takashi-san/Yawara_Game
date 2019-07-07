@@ -92,7 +92,10 @@ void Yawara::Start() {
 	ptr->box.x = associated.box.x;
 	ptr->box.y = associated.box.y;
 	ptr->AddComponent(tp);
+}
 
+int Yawara::GetMaxHP() {
+	return YWR_HP;
 }
 
 void Yawara::Update(float dt) {

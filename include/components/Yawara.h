@@ -69,6 +69,7 @@ public:
 	Vec2 GetPos();
 	Vec2 GetCenterPos();
 	int GetHP();
+	int GetMaxHP();
 
 	enum Boosts { HPBOOST, ATTBOOST, DEFBOOST };
 
