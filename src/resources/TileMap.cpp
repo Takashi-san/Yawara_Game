@@ -39,7 +39,9 @@ void TileMap::Load(std::string file){
 			}
 		}
 	} else {
+		#ifdef DEBUG
 		std::cout << "Falha em carregar tilemap: " << file.c_str() << "\n";
+		#endif
 	}
 
 	input.close();
