@@ -26,7 +26,7 @@
 
 #define STAGE_STT_BG "assets/penguin/img/ocean.jpg"
 #define STAGE_STT_BGM "assets/audio/musica/tema_triste.ogg"
-#define STAGE_STT_CURSOR_SPRITE "assets/penguin/img/penguinface.png"
+#define STAGE_STT_CURSOR_SPRITE "assets/img/cursor/cursor.png"
 #define STAGE_STT_CAMERA_RATIO 0.37
 
 StageState::StageState()
@@ -149,7 +149,7 @@ StageState::StageState()
 	ptr = weak_ptr.lock();
 	Cursor *cur = new Cursor(*ptr);
 	Sprite *spcur = new Sprite(*ptr, STAGE_STT_CURSOR_SPRITE);
-	spcur->SetScale(0.1, 0.1);
+	spcur->SetScale(1, 1);
 	ptr->AddComponent(cur);
 	ptr->AddComponent(spcur);
 

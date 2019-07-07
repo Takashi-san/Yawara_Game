@@ -27,7 +27,7 @@
 
 #define TAPU_BULLET			"assets/img/tapu/disparo.png"
 #define TAPU_BULLET_FRAME	5
-#define TAPU_BULLET_TIME	0.03
+#define TAPU_BULLET_TIME	0.05
 
 Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component(associated) {
 	angle = 0;
