@@ -2,6 +2,7 @@
 
 #include "Item.h"
 #include "Sprite.h"
+#include "Sound.h"
 
 #include <string>
 
@@ -12,6 +13,7 @@ class AttackRune : public Item
 private:
     float attFactor;
     Sprite* sp, *top_layer_sprite;
+    Sound* activationSound;
     
 public:
     AttackRune(GameObject&, float);
