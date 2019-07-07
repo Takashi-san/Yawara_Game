@@ -18,7 +18,7 @@ public:
 	Music();
 	Music(std::string);
 	~Music();
-	void Play(int = -1);
+	void Play(int = -1, int = MIX_MAX_VOLUME/2);
 	void Stop(int = 1500);
 	void Open(std::string);
 	bool IsOpen();
