@@ -22,7 +22,6 @@
 #define YWR_DGE_ACT		0.2
 
 #define YWR_ATK_CD		0.5
-#define YWR_ATK_ACT		4*0.05
 
 #define YWR_ANI_TIME	0.070
 
@@ -45,6 +44,11 @@
 #define YWR_RUN_DR			"assets/img/yawara/yawara_run_down_right.png"
 #define YWR_RUN_UL			"assets/img/yawara/yawara_run_up_left.png"
 #define YWR_RUN_UR			"assets/img/yawara/yawara_run_up_right.png"
+
+#define YWR_BITE_FX_FRAME	8
+#define YWR_BITE_FX_TIME	0.05
+#define YWR_BITE_FX			"assets/img/yawara/yawara_bite.png"
+#define YWR_BITE_FX_RADIUS	100
 
 #define YWR_DEATH_FRAME	5
 #define YWR_DEATH		"assets/penguin/img/penguindeath.png"
@@ -298,7 +302,7 @@ void Yawara::Comand(float dt) {
 
 		case ATK:
 			atk_act.Update(dt);
-			if (atk_act.Get() > YWR_ATK_ACT) {
+			if (atk_act.Get() > YWR_BITE_FX_TIME * YWR_BITE_FX_FRAME) {
 				act = MOV;
 
 				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
@@ -517,11 +521,11 @@ void Yawara::SetAtk() {
 	std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
 
-	Sprite* sp = new Sprite(*ptr, "assets/penguin/img/slash.png", 5, 0.05, 5*0.05);
+	Sprite* sp = new Sprite(*ptr, YWR_BITE_FX, YWR_BITE_FX_FRAME, YWR_BITE_FX_TIME, YWR_BITE_FX_FRAME * YWR_BITE_FX_TIME);
 	Hitbox* hit = new Hitbox(*ptr);
 	ptr->AddComponent(sp);
 	ptr->AddComponent(hit);
-	hit->colisor->SetScale({0.55, 0.85});
+	hit->colisor->SetScale({0.50, 0.85});
 	hit->colisor->SetOffset({0, 0});
 	hit->SetDamage(att);
 	hit->hitDie = false;
@@ -529,47 +533,47 @@ void Yawara::SetAtk() {
 
 	switch (dir) {
 		case RIGHT:
-			ptr->box.x += 100;
-			ptr->angleDeg = 0;
-		break;
-
-		case LEFT:
-			ptr->box.x -= 100;
+			ptr->box.x += YWR_BITE_FX_RADIUS;
 			ptr->angleDeg = 180;
 		break;
 
+		case LEFT:
+			ptr->box.x -= YWR_BITE_FX_RADIUS;
+			ptr->angleDeg = 0;
+		break;
+
 		case DOWN:
-			ptr->box.y += 100;
-			ptr->angleDeg = 90;
-		break;
-
-		case DOWN_RIGHT:
-			ptr->box.x += 50;
-			ptr->box.y += 50;
-			ptr->angleDeg = 45;
-		break;
-
-		case DOWN_LEFT:
-			ptr->box.x -= 50;
-			ptr->box.y += 50;
-			ptr->angleDeg = 135;
-		break;
-
-		case UP:
-			ptr->box.y -= 100;
+			ptr->box.y += YWR_BITE_FX_RADIUS;
 			ptr->angleDeg = 270;
 		break;
 
-		case UP_RIGHT:
-			ptr->box.x += 50;
-			ptr->box.y -= 50;
+		case DOWN_RIGHT:
+			ptr->box.x += YWR_BITE_FX_RADIUS * 0.666;
+			ptr->box.y += YWR_BITE_FX_RADIUS * 0.666;
+			ptr->angleDeg = 225;
+		break;
+
+		case DOWN_LEFT:
+			ptr->box.x -= YWR_BITE_FX_RADIUS * 0.666;
+			ptr->box.y += YWR_BITE_FX_RADIUS * 0.666;
 			ptr->angleDeg = 315;
 		break;
 
+		case UP:
+			ptr->box.y -= YWR_BITE_FX_RADIUS;
+			ptr->angleDeg = 90;
+		break;
+
+		case UP_RIGHT:
+			ptr->box.x += YWR_BITE_FX_RADIUS * 0.666;
+			ptr->box.y -= YWR_BITE_FX_RADIUS * 0.666;
+			ptr->angleDeg = 135;
+		break;
+
 		case UP_LEFT:
-			ptr->box.x -= 50;
-			ptr->box.y -= 50;
-			ptr->angleDeg = 225;
+			ptr->box.x -= YWR_BITE_FX_RADIUS * 0.666;
+			ptr->box.y -= YWR_BITE_FX_RADIUS * 0.666;
+			ptr->angleDeg = 45;
 		break;
 
 		default:
