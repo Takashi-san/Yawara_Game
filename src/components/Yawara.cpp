@@ -23,7 +23,7 @@
 
 #define YWR_ATK_CD		0.5
 
-#define YWR_ANI_TIME	0.070
+#define YWR_ANI_TIME	0.07
 
 #define YWR_IDLE_FRAME		1
 #define YWR_IDLE_D			"assets/img/yawara/yawara_idle_down.png"
@@ -50,8 +50,19 @@
 #define YWR_BITE_FX			"assets/img/yawara/yawara_bite.png"
 #define YWR_BITE_FX_RADIUS	100
 
-#define YWR_DEATH_FRAME	5
-#define YWR_DEATH		"assets/penguin/img/penguindeath.png"
+#define YWR_BITE_FRAME		5
+#define YWR_BITE_TIME		0.07
+#define YWR_BITE_D			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_U			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_L			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_R			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_DL			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_DR			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_UL			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_UR			"assets/img/yawara/yawara_bite_left.png"
+
+#define YWR_DEATH_FRAME	4
+#define YWR_DEATH		"assets/img/yawara/yawara_death_right.png"
 #define YWR_DEATH_SOUND	"assets/penguin/audio/boom.wav"
 
 Yawara* Yawara::player;
@@ -305,10 +316,12 @@ void Yawara::Comand(float dt) {
 			if (atk_act.Get() > YWR_BITE_FX_TIME * YWR_BITE_FX_FRAME) {
 				act = MOV;
 
+				// Change back sprite.
 				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 				sp->SetFrameTime(YWR_ANI_TIME);
 				change_sprite = true;
 
+				// Reset attack.
 				atk_act.Restart();
 				atk_cd.Restart();
 			}
@@ -319,14 +332,18 @@ void Yawara::Comand(float dt) {
 			if (dge_act.Get() > YWR_DGE_ACT) {
 				act = MOV;
 
+				// Change back sprite.
 				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 				sp->SetFrameTime(YWR_ANI_TIME);
+				change_sprite = true;
+
+				// Return collider.
 				Collider *cl = new Collider(associated);
 				associated.AddComponent(cl);
-				change_sprite = true;
 				speed = {0, 0};
 				associated.angleDeg = 0;
 
+				// Reset dodge.
 				dge_act.Restart();
 				dge_cd.Restart();
 			}
@@ -517,6 +534,7 @@ void Yawara::SetDge() {
 }
 
 void Yawara::SetAtk() {
+	// Create attack.
 	GameObject *go = new GameObject();
 	std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
@@ -531,53 +549,79 @@ void Yawara::SetAtk() {
 	hit->hitDie = false;
 	ptr->box.Centered(associated.box.Center());
 
-	switch (dir) {
-		case RIGHT:
-			ptr->box.x += YWR_BITE_FX_RADIUS;
-			ptr->angleDeg = 180;
-		break;
+	// Get yawara sprite.
+	sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 
-		case LEFT:
-			ptr->box.x -= YWR_BITE_FX_RADIUS;
-			ptr->angleDeg = 0;
-		break;
+	// Set offset, rotation and yawara sprite.
+	if (sp) {
+		Vec2 position = associated.box.Center();
+		sp->SetFrameCount(YWR_BITE_FRAME);
+		sp->SetFrameTime(YWR_BITE_TIME);
+		switch (dir) {
+			case RIGHT:
+				ptr->box.x += YWR_BITE_FX_RADIUS;
+				ptr->angleDeg = 180;
 
-		case DOWN:
-			ptr->box.y += YWR_BITE_FX_RADIUS;
-			ptr->angleDeg = 270;
-		break;
+				sp->Open(YWR_BITE_R);
+			break;
 
-		case DOWN_RIGHT:
-			ptr->box.x += YWR_BITE_FX_RADIUS * 0.666;
-			ptr->box.y += YWR_BITE_FX_RADIUS * 0.666;
-			ptr->angleDeg = 225;
-		break;
+			case LEFT:
+				ptr->box.x -= YWR_BITE_FX_RADIUS;
+				ptr->angleDeg = 0;
 
-		case DOWN_LEFT:
-			ptr->box.x -= YWR_BITE_FX_RADIUS * 0.666;
-			ptr->box.y += YWR_BITE_FX_RADIUS * 0.666;
-			ptr->angleDeg = 315;
-		break;
+				sp->Open(YWR_BITE_L);
+			break;
 
-		case UP:
-			ptr->box.y -= YWR_BITE_FX_RADIUS;
-			ptr->angleDeg = 90;
-		break;
+			case DOWN:
+				ptr->box.y += YWR_BITE_FX_RADIUS;
+				ptr->angleDeg = 270;
 
-		case UP_RIGHT:
-			ptr->box.x += YWR_BITE_FX_RADIUS * 0.666;
-			ptr->box.y -= YWR_BITE_FX_RADIUS * 0.666;
-			ptr->angleDeg = 135;
-		break;
+				sp->Open(YWR_BITE_D);
+			break;
 
-		case UP_LEFT:
-			ptr->box.x -= YWR_BITE_FX_RADIUS * 0.666;
-			ptr->box.y -= YWR_BITE_FX_RADIUS * 0.666;
-			ptr->angleDeg = 45;
-		break;
+			case DOWN_RIGHT:
+				ptr->box.x += YWR_BITE_FX_RADIUS * 0.666;
+				ptr->box.y += YWR_BITE_FX_RADIUS * 0.666;
+				ptr->angleDeg = 225;
 
-		default:
-			std::cout << "Unknow direction to atack!\n";
-		break;
+				sp->Open(YWR_BITE_DR);
+			break;
+
+			case DOWN_LEFT:
+				ptr->box.x -= YWR_BITE_FX_RADIUS * 0.666;
+				ptr->box.y += YWR_BITE_FX_RADIUS * 0.666;
+				ptr->angleDeg = 315;
+
+				sp->Open(YWR_BITE_DL);
+			break;
+
+			case UP:
+				ptr->box.y -= YWR_BITE_FX_RADIUS;
+				ptr->angleDeg = 90;
+
+				sp->Open(YWR_BITE_U);
+			break;
+
+			case UP_RIGHT:
+				ptr->box.x += YWR_BITE_FX_RADIUS * 0.666;
+				ptr->box.y -= YWR_BITE_FX_RADIUS * 0.666;
+				ptr->angleDeg = 135;
+
+				sp->Open(YWR_BITE_UR);
+			break;
+
+			case UP_LEFT:
+				ptr->box.x -= YWR_BITE_FX_RADIUS * 0.666;
+				ptr->box.y -= YWR_BITE_FX_RADIUS * 0.666;
+				ptr->angleDeg = 45;
+
+				sp->Open(YWR_BITE_UL);
+			break;
+
+			default:
+				std::cout << "Unknow direction to attack!\n";
+			break;
+		}
+		associated.box.Centered(position);
 	}
 }
