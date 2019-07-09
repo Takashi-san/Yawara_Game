@@ -11,9 +11,9 @@
 #include "Fonts.h"
 
 #define TITLE_STT_BG	"assets/img/background/main_menu.png"
-#define TITLE_STT_PLAY	"assets/img/background/main_menu_jogar.png"
-#define TITLE_STT_QUIT	"assets/img/background/main_menu_sair.png"
-#define TITLE_STT_ARROW	"assets/img/background/main_menu_selection.png"
+#define TITLE_STT_PLAY	"assets/img/text/main_menu_jogar.png"
+#define TITLE_STT_QUIT	"assets/img/text/main_menu_sair.png"
+#define TITLE_STT_ARROW	"assets/img/text/main_menu_selection.png"
 
 #define TITLE_STT_BGM			"assets/audio/musica/main_menu.mp3"
 #define TITLE_STT_SLCT_SOUND	"assets/audio/sons/menu-selecionar_opcao.ogg"
