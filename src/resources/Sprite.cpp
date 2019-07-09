@@ -244,6 +244,11 @@ void Sprite::SetStopFrame(int stopFrame) {
 	}
 }
 
+int Sprite::GetFrame(){
+	return currentFrame;
+}
+
+
 void Sprite::Stop() {
 	stopFlag = true;
 }

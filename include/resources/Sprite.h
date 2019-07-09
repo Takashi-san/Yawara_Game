@@ -67,6 +67,7 @@ public:
 	void SetFrameCount(int);
 	void SetFrameTime(float);
 	void SetStopFrame(int);
+	int GetFrame();
 
 	void Stop();
 	void Resume();
