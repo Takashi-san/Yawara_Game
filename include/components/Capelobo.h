@@ -38,5 +38,4 @@ public:
 	void Update(float) override;
 	void Render() override;
 	bool Is(std::string);
-	void NotifyCollision(GameObject &);
 };
