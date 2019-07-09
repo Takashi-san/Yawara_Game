@@ -8,7 +8,6 @@
 #include "Bullet.h"
 #include "Sound.h"
 #include "Yawara.h"
-#include "Floor.h"
 #include "Claw.h"
 #include "Tongue.h"
 
@@ -20,8 +19,6 @@
 
 #define CPLB_L_ATTACK_H 20
 #define CPLB_L_ATTACK_W 20
-
-#define CPLB_HIT_COOL_DOWN 1
 
 #define CPLB_ENEMY_DIST_Y 150
 #define CPLB_ENEMY_DIST_X 150
@@ -64,7 +61,7 @@ const std::string ATTACK_RIGHT_UP	= "assets/img/capelobo/capelobo_attack_r.png";
 const std::string LOAD_RIGHT		 = "";
 const std::string LOAD_RIGHT_DOWN = "";
 const std::string LOAD_DOWN		 = "";
-const std::string LOAD_LEFT_DOWN	 = "";
+const std::string LOAD_LEFT_DOWN	 = "assets/img/capelobo/capelobo_ataque_lingua_ld.png";
 const std::string LOAD_LEFT		 = "";
 const std::string LOAD_LEFT_UP	 = "";
 const std::string LOAD_UP		 = "";
@@ -78,7 +75,7 @@ bool changed = false;
 
 Vec2 temp_speed;
 
-Capelobo::Capelobo(GameObject &associated, float restOffset) : Component(associated)
+Capelobo::Capelobo(GameObject &associated, float restOffset) : Enemy(associated)
 {
 	boss = this;
 
@@ -129,16 +126,16 @@ void Capelobo::Update(float dt)
 
 			if (moveTimer.Get() < BOSS_MOVEMENT && moveAllowed)
 			{
-				enemyPos = Yawara::player->GetCenterPos();
+				yawaraPos = Yawara::player->GetCenterPos();
 
-				if ((enemyPos - associated.box.Center()).Modulo() != 0)
-					speed = ((enemyPos - associated.box.Center()) / ((enemyPos - associated.box.Center()).Modulo())) * BOSS_SPEED;
+				if ((yawaraPos - associated.box.Center()).Modulo() != 0)
+					speed = ((yawaraPos - associated.box.Center()) / ((yawaraPos - associated.box.Center()).Modulo())) * BOSS_SPEED;
 				else
 					speed = {0, 0};
 
 				// Yawara is nearby the Capelobo.
-				if (((associated.box.Center().x <= CPLB_ENEMY_DIST_X + enemyPos.x + dt * abs(speed.x)) && (associated.box.Center().x >= -CPLB_ENEMY_DIST_X + enemyPos.x - dt * abs(speed.x)) &&
-					 (associated.box.Center().y <= CPLB_ENEMY_DIST_Y + enemyPos.y + dt * abs(speed.y)) && (associated.box.Center().y >= -CPLB_ENEMY_DIST_Y + enemyPos.y - dt * abs(speed.y))) ||
+				if (((associated.box.Center().x <= CPLB_ENEMY_DIST_X + yawaraPos.x + dt * abs(speed.x)) && (associated.box.Center().x >= -CPLB_ENEMY_DIST_X + yawaraPos.x - dt * abs(speed.x)) &&
+					 (associated.box.Center().y <= CPLB_ENEMY_DIST_Y + yawaraPos.y + dt * abs(speed.y)) && (associated.box.Center().y >= -CPLB_ENEMY_DIST_Y + yawaraPos.y - dt * abs(speed.y))) ||
 					!moveAllowed)
 				{
 					// Stop moving
@@ -196,26 +193,8 @@ void Capelobo::Update(float dt)
 				if (dir != lastDir)
 					change_sprite = true;
 
-				// Verify if Capelobo is allowed to move
-
-				if (speed.y > 0.1)
-				{
-					safeY = associated.box.Center().y + SAFE_UP + SAFE_DOWN;
-				}
-				else if (speed.y < -0.1)
-					safeY = associated.box.Center().y + SAFE_UP;
-				else
-					safeY = associated.box.Center().y + SAFE_DOWN;
-
-				if (speed.x > 0.1)
-					safeX = associated.box.Center().x + SAFE_SIDE;
-				else if (speed.x < -0.1)
-					safeX = associated.box.Center().x - SAFE_SIDE;
-				else
-					safeX = associated.box.Center().x;
-
-				// moveAllowed = (Floor::loaded && Floor::AtAllowedArea(safeX, safeY, 0));
-				moveAllowed = 1;
+				moveAllowed = AllowedToMove(speed);
+				
 				if (!moveAllowed) // If he can't move, he will rest
 				{
 					state = RESTING;
@@ -249,9 +228,9 @@ void Capelobo::Update(float dt)
 			// Rest for a determinated time
 			if (restTimer.Get() > BOSS_REST_BASE + restOffset)
 			{
-				enemyPos = Yawara::player->GetCenterPos();
-				if ((enemyPos - associated.box.Center()).Modulo() != 0)
-					speed = ((enemyPos - associated.box.Center()) / ((enemyPos - associated.box.Center()).Modulo())) * BOSS_SPEED;
+				yawaraPos = Yawara::player->GetCenterPos();
+				if ((yawaraPos - associated.box.Center()).Modulo() != 0)
+					speed = ((yawaraPos - associated.box.Center()) / ((yawaraPos - associated.box.Center()).Modulo())) * BOSS_SPEED;
 				else
 					speed = {0, 0};
 
@@ -264,10 +243,10 @@ void Capelobo::Update(float dt)
 			break;
 
 		case SLEEPING:
-			enemyPos = Yawara::player->GetCenterPos();
+			yawaraPos = Yawara::player->GetCenterPos();
 
 			// Stay asleep if Yawara don't get closer
-			if ((enemyPos - associated.box.Center()).Modulo() <= 450)
+			if ((yawaraPos - associated.box.Center()).Modulo() <= 700)
 				state = MOVING;
 
 			break;
@@ -671,8 +650,8 @@ void Capelobo::Render()
 				break;
 
 			case LEFT_DOWN:
-				// sp->Open(LOAD_LEFT_DOWN);
-				// sp->SetFrameCount(16);
+				sp->Open(LOAD_LEFT_DOWN);
+				sp->SetFrameCount(4);
 				break;
 
 			default:
@@ -690,12 +669,5 @@ bool Capelobo::Is(std::string type)
 
 void Capelobo::NotifyCollision(GameObject &other)
 {
-	if (other.GetComponent("Bullet") && !static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer)
-		hp -= static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
-
-	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
-	if (hitbox && !(hitbox->targetsPlayer) && hitTimer.Get() > CPLB_HIT_COOL_DOWN) {
-		hp -= hitbox->GetDamage();
-		hitTimer.Restart();
-	}
+	
 }

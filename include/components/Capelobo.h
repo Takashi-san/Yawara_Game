@@ -1,6 +1,6 @@
 #pragma once // Alows to initializate the header just once
 
-#include "Component.h"
+#include "Enemy.h"
 #include "GameObject.h"
 #include "Vec2.h"
 #include "State.h"
@@ -19,47 +19,16 @@
 #define BOSS_REST_BASE 0.5
 #define BOSS_MOVEMENT 1
 
-#define SAFE_UP 16
-#define SAFE_DOWN 142
-#define SAFE_SIDE 128
-
 #define CLAW_DAMAGE 10
 #define TONGUE_DAMAGE 50
 #define TONGUE_SPEED 800
 #define TONGUE_MAX_DIST 400
 
-class Capelobo : public Component
+class Capelobo : public Enemy
 {
 private:
-	enum CapeloboState
-	{
-		MOVING,
-		RESTING,
-		SLEEPING,
-		BASIC_ATTACK,
-		LOAD_ATTACK
-	};
-	CapeloboState state;
-
-	enum Direction
-	{
-		RIGHT,
-		RIGHT_UP,
-		UP,
-		LEFT_UP,
-		LEFT,
-		LEFT_DOWN,
-		DOWN,
-		RIGHT_DOWN
-	};
-	Direction dir;
-
-	Timer restTimer;
-	Timer moveTimer;
-	Timer attackTimer;
-	Timer hitTimer;
+	
 	float restOffset;
-	Vec2 enemyPos;
 
 	Vec2 speed;
 	int hp;
@@ -75,9 +44,9 @@ public:
 	Capelobo(GameObject &, float = 0);
 	~Capelobo();
 
-	void Start();
-	void Update(float);
-	void Render();
+	void Start() override;
+	void Update(float) override;
+	void Render() override;
 	bool Is(std::string);
 	void NotifyCollision(GameObject &);
 };
