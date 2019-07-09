@@ -14,16 +14,6 @@
 #include <queue>
 #include <cmath>
 
-#define BOSS_VEL_ANG 0
-#define BOSS_SPEED 350
-#define BOSS_REST_BASE 0.5
-#define BOSS_MOVEMENT 1
-
-#define CLAW_DAMAGE 10
-#define TONGUE_DAMAGE 50
-#define TONGUE_SPEED 800
-#define TONGUE_MAX_DIST 400
-
 class Capelobo : public Enemy
 {
 private:
