@@ -176,10 +176,10 @@ void Tapu::Update(float dt)
 
 void Tapu::Render()
 {
-
 	Sprite *sp = static_cast<Sprite *>(associated.GetComponent("Sprite"));
 	if (sp && changedDir)
 	{
+	int currFrame = sp->GetFrame();
 
 		switch (dir)
 		{
@@ -215,6 +215,8 @@ void Tapu::Render()
 				sp->Open(TAPU_DR);
 				break;
 		}
+
+		sp->SetFrame(currFrame);
 	}
 }
 
