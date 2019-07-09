@@ -26,7 +26,7 @@
 #define BOSS_VEL_ANG 0
 #define BOSS_SPEED 350
 #define BOSS_REST_BASE 0.5
-#define BOSS_MOVEMENT 1
+#define BOSS_MOVEMENT 1.5
 
 #define CLAW_DAMAGE 10
 #define TONGUE_DAMAGE 50
@@ -43,9 +43,9 @@ const std::string MOVE_RIGHT_DOWN = "assets/img/capelobo/capelobo_correndo_line_
 const std::string MOVE_DOWN		  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
 const std::string MOVE_LEFT_DOWN  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
 const std::string MOVE_LEFT		  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
-const std::string MOVE_LEFT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
+const std::string MOVE_LEFT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_lu.png";
 const std::string MOVE_UP		  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
-const std::string MOVE_RIGHT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
+const std::string MOVE_RIGHT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_ru.png";
 
 // Resting sprites
 
@@ -717,9 +717,4 @@ void Capelobo::Render()
 bool Capelobo::Is(std::string type)
 {
 	return !strcmp(type.c_str(), "Capelobo");
-}
-
-void Capelobo::NotifyCollision(GameObject &other)
-{
-	
 }
