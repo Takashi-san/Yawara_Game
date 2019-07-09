@@ -103,8 +103,8 @@ void Sprite::Open(std::string file) {
 	SetClip(0, 0, width/frameCount, height);
 
 	// seta altura e largura no gameobject.
-	associated.box.w = width/frameCount;
-	associated.box.h = height;
+	associated.box.w = (width/frameCount)*scale.y;
+	associated.box.h = (height)*scale.x;
 }
 
 void Sprite::SetClip(int x, int y, int w, int h) {

@@ -39,7 +39,6 @@ private:
 		bool isBoosted;
 		float factor;
 	} boosters;
-	
 
 	std::unordered_map<int, boosters> boostMap;
 
@@ -69,6 +68,8 @@ public:
 
 	Vec2 GetPos();
 	Vec2 GetCenterPos();
+	int GetHP();
+	int GetMaxHP();
 
 	enum Boosts { HPBOOST, ATTBOOST, DEFBOOST };
 

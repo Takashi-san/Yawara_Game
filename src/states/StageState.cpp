@@ -20,13 +20,14 @@
 #include "HealthRune.h"
 #include "AttackRune.h"
 #include "DefenseRune.h"
+#include "HealthFeedback.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
 
 #define STAGE_STT_BG "assets/penguin/img/ocean.jpg"
 #define STAGE_STT_BGM "assets/audio/musica/tema_triste.ogg"
-#define STAGE_STT_CURSOR_SPRITE "assets/penguin/img/penguinface.png"
+#define STAGE_STT_CURSOR_SPRITE "assets/img/cursor/cursor.png"
 #define STAGE_STT_CAMERA_RATIO 0.37
 
 StageState::StageState()
@@ -53,58 +54,7 @@ StageState::StageState()
 	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_3_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
 	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_4_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
 	TileMap::SetMapLayer(*this, "assets/tilemap/test/dark/camada_5_solo", 4, 8, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	/*
-	GameObject *gomp1 = new GameObject();
-	weak_ptr = AddObject(gomp1);
-	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, TS_SOLO_W, TS_SOLO_H, TS_SOLO);
-	TileMap *tlmp1 = new TileMap(*ptr, TILE, TILE, TM_MAP1_1, tileset);
-	tlmp1->SetParallax(1);
-	ptr->box.x = 0;
-	ptr->box.y = 0;
-	ptr->AddComponent(tlmp1);
-
-	GameObject *gomp2 = new GameObject();
-	weak_ptr = AddObject(gomp2);
-	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, TS_SOLO_W, TS_SOLO_H, TS_SOLO);
-	TileMap *tlmp2 = new TileMap(*ptr, TILE, TILE, TM_MAP1_2, tileset);
-	tlmp2->SetParallax(1);
-	ptr->box.x = 0;
-	ptr->box.y = 0;
-	ptr->AddComponent(tlmp2);
-
-	GameObject *gomp3 = new GameObject();
-	weak_ptr = AddObject(gomp3);
-	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, TS_SOLO_W, TS_SOLO_H, TS_SOLO);
-	TileMap *tlmp3 = new TileMap(*ptr, TILE, TILE, TM_MAP1_3, tileset);
-	// TileMap *tlmp3 = new TileMap(*ptr, TILE, TILE, CL_MAP1, tileset);
-	tlmp3->SetParallax(1);
-	ptr->box.x = 0;
-	ptr->box.y = 0;
-	ptr->AddComponent(tlmp3);
-
-	GameObject *gomp4 = new GameObject();
-	weak_ptr = AddObject(gomp4);
-	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, TS_TREE_W, TS_TREE_H, TS_TREE);
-	TileMap *tlmp4 = new TileMap(*ptr, TILE, TILE, TM_MAP1_4, tileset);
-	tlmp4->SetParallax(1);
-	ptr->box.x = 0;
-	ptr->box.y = 0;
-	ptr->AddComponent(tlmp4);
-
-	GameObject *gomp5 = new GameObject();
-	weak_ptr = AddObject(gomp5);
-	ptr = weak_ptr.lock();
-	tileset = new TileSet(*ptr, TS_PLANT_ROCK_W, TS_PLANT_ROCK_H, TS_PLANT_ROCK);
-	TileMap *tlmp5 = new TileMap(*ptr, TILE, TILE, TM_MAP1_5, tileset);
-	tlmp5->SetParallax(1);
-	ptr->box.x = 0;
-	ptr->box.y = 0;
-	ptr->AddComponent(tlmp5);
-	*/
+	
 	//Runas
 	GameObject *gorune = new GameObject();
 	weak_ptr = AddObject(gorune);
@@ -135,6 +85,13 @@ StageState::StageState()
 	ptr->box.Centered({512, 850});
 	ptr->AddComponent(cape);
 
+	// HealthFeedback.
+	GameObject* go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	HealthFeedback* hfb = new HealthFeedback(*ptr);
+	ptr->AddComponent(hfb);
+
 	// Yawara
 	GameObject *goya = new GameObject();
 	weak_ptr = AddObject(goya);
@@ -149,7 +106,7 @@ StageState::StageState()
 	ptr = weak_ptr.lock();
 	Cursor *cur = new Cursor(*ptr);
 	Sprite *spcur = new Sprite(*ptr, STAGE_STT_CURSOR_SPRITE);
-	spcur->SetScale(0.1, 0.1);
+	spcur->SetScale(1, 1);
 	ptr->AddComponent(cur);
 	ptr->AddComponent(spcur);
 
