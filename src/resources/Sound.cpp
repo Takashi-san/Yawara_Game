@@ -9,11 +9,12 @@ Sound::Sound(GameObject& associated, std::string file) : Sound(associated){
 	Open(file);
 }
 
-void Sound::Play(int times = 1) {
+void Sound::Play(int times, int volume) {
 	if (chunk != nullptr){
 		// Mix_PlayChannel(canal, Mix_Chunk*, loops)
 		if (times > 0) {
 			channel = Mix_PlayChannel(-1, chunk.get(), times-1);
+			Mix_Volume(channel, volume);
 		}
 	} else {
 		// Nenhum som carregado.

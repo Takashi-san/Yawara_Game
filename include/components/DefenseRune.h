@@ -2,6 +2,7 @@
 
 #include "Item.h"
 #include "Sprite.h"
+#include "Sound.h"
 
 #include <string>
 
@@ -12,7 +13,8 @@ class DefenseRune : public Item
 private:
     float defFactor;
     Sprite* sp;
-    
+    Sound* activationSound;
+
 public:
     DefenseRune(GameObject&, float);
     

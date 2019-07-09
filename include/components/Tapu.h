@@ -27,6 +27,7 @@ class Tapu : public Component
         Tapu(GameObject &, std::weak_ptr<GameObject>);
 
         void Update(float);
+        void Start();
         void Render();
         bool Is(std::string);
         void NotifyCollision(GameObject &);

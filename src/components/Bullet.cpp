@@ -41,13 +41,16 @@ int Bullet::GetDamage() {
 
 void Bullet::NotifyCollision(GameObject& other) {
 	if (other.GetComponent("Capelobo") && !targetsPlayer) {
+		Vec2 pos = associated.box.Center();
 		Sprite *sp = static_cast<Sprite *>(associated.GetComponent("Sprite"));
 		sp->Open("assets/img/tapu/disparo_colisão.png");
-		sp->SetFrameCount(4);
+		sp->SetFrameCount(6);
 		sp->SetFrameTime(0.05);
-		sp->SetSelfDestruct(4*0.05);
-		speed.x = speed.x*0.2;
-		speed.y = 0;
+		sp->SetSelfDestruct(6*0.05);
+		speed.x = speed.x*0.3;
+		speed.y = speed.y*0.3;
+		associated.box.Centered(pos);
+
 		Collider *cl = static_cast<Collider *>(associated.GetComponent("Collider"));
 		associated.RemoveComponent(cl);
 	}

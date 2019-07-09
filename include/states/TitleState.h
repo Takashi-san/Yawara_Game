@@ -2,6 +2,8 @@
 
 #include "State.h"
 #include "Music.h"
+#include "Sprite.h"
+#include "Sound.h"
 
 #include <string>
 #include <iostream>
@@ -12,9 +14,11 @@ class TitleState : public State
 {
 private:
 	GameObject* selection;
-	enum Option { PLAY, QUIT };
+	enum Option { PLAY, OPTIONS, QUIT };
 	Option opt;
 	Music bgMusic;
+	Sprite* selectionSprite;
+	Sound *changeSelection, *play, *select;
 
 public:
 
