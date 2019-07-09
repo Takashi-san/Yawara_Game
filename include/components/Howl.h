@@ -5,6 +5,7 @@
 #include "Vec2.h"
 #include "Sprite.h"
 #include "Timer.h"
+#include "Sound.h"
 
 #include <string>
 #include <iostream>
@@ -15,10 +16,11 @@ class Howl : public Component
 {
 private:
 	Sprite* sprite;
-	Timer toActivate;
+	Sound*	sound;
 
-	bool exec, cicle;
+	bool exec;
 	float sec2Activate, activeTime;
+	Timer toActivate;
 public:
 	Howl(GameObject&);
 
