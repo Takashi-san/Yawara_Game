@@ -8,8 +8,7 @@
 #define HOWL_FRAME	7
 
 #define HOWL_MIN_ALPHA	0
-//#define HOWL_MAX_ALPHA	178
-#define HOWL_MAX_ALPHA	255
+#define HOWL_MAX_ALPHA	178
 
 #define HOWL_MIN_SCALE	0.2
 #define HOWL_MAX_SCALE	0.7
