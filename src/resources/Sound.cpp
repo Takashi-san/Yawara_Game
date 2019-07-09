@@ -9,11 +9,13 @@ Sound::Sound(GameObject& associated, std::string file) : Sound(associated){
 	Open(file);
 }
 
-void Sound::Play(int times = 1) {
+void Sound::Play(int times, int volume) {
 	if (chunk != nullptr){
 		// Mix_PlayChannel(canal, Mix_Chunk*, loops)
 		if (times > 0) {
 			channel = Mix_PlayChannel(-1, chunk.get(), times-1);
+			// volume de 0 a 128;
+			Mix_Volume(channel, volume);
 		}
 	} else {
 		// Nenhum som carregado.
@@ -28,14 +30,16 @@ void Sound::Stop() {
 }
 
 void Sound::Open(std::string file) {
-	//chunk = Mix_LoadWAV(file.c_str());
 	chunk = Resources::GetSound(file.c_str());
 	if (chunk == nullptr) {
 		// Falha em carregar o som.
 		std::cout << "Falha em carregar sound: " << file.c_str() << "\n";
 		std::cout << "SDL_GetError: " << SDL_GetError() << "\n";
-		//exit(EXIT_FAILURE);
 	}
+}
+
+void Sound::FadeOut(int ms) {
+	Mix_FadeOutChannel(channel, ms);
 }
 
 bool Sound::IsOpen() {

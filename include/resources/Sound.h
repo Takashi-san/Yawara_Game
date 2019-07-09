@@ -21,10 +21,12 @@ public:
 	Sound(GameObject &, std::string);
 	~Sound();
 
-	void Play(int);
+	void Play(int = 1, int = MIX_MAX_VOLUME/2);
 	void Stop();
 	void Open(std::string);
 	bool IsOpen();
+
+	void FadeOut(int);
 
 	void Update(float);
 	void Render();

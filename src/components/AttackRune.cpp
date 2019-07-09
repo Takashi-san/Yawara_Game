@@ -21,6 +21,9 @@ AttackRune::AttackRune(GameObject& associated, float attFactor) : Item(associate
     sp->SetStopFrame(1);
 	associated.AddComponent(sp);
 
+    activationSound = new Sound(associated, RUNE_SOUND_PATH);
+    associated.AddComponent(activationSound);
+
     top_layer_sprite = nullptr;
 
     this->attFactor = attFactor;
@@ -43,6 +46,7 @@ void AttackRune::Update(float dt){
             top_layer_sprite->SetFrame(0);
             top_layer_sprite->SetStopFrame(0);
             associated.AddComponent(top_layer_sprite);
+            activationSound->Play(1, MIX_MAX_VOLUME);
         }
 
         cooldownTimer.Update(dt);

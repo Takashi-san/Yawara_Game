@@ -4,6 +4,8 @@
 
 #include <string>
 
+#define RUNE_SOUND_PATH "assets/audio/sons/interacao_runa.ogg"
+
 class GameObject;
 
 class Item : public Component

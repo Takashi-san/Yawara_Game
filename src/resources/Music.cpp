@@ -11,9 +11,10 @@ Music::Music(std::string file) {
 	Open(file);
 }
 
-void Music::Play(int times) {
+void Music::Play(int times, int volume) {
 	if (music != nullptr){
 		Mix_PlayMusic(music.get(), times);
+		Mix_VolumeMusic(volume);
 	} else {
 		std::cout << "Nenhuma musica carregada para tocar.\n";
 	}

@@ -20,6 +20,9 @@ DefenseRune::DefenseRune(GameObject& associated, float defFactor) : Item(associa
     sp->SetScale(1, 1);
 	associated.AddComponent(sp);
 
+    activationSound = new Sound(associated, RUNE_SOUND_PATH);
+    associated.AddComponent(activationSound);
+
     this->defFactor = defFactor;
 }
 
@@ -41,6 +44,7 @@ void DefenseRune::Update(float dt){
             associated.box.y += 20;
             cooldownTimer.Restart();
             active = false;
+            activationSound->Play(1, MIX_MAX_VOLUME);
         }
 
         cooldownTimer.Update(dt);
