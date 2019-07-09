@@ -4,7 +4,12 @@
 #include "Tilesets.h"
 #include "Game.h"
 #include "TileSet.h"
+#include "Sprite.h"
 #include <sstream>
+
+TileMap::TileMap(GameObject& associated) : Component(associated) {
+
+}
 
 TileMap::TileMap(GameObject& associated, int tileWidth, int tileHeight, std::string file, TileSet* tileSet): Component(associated) {
 	this->tileSet = tileSet;
@@ -23,6 +28,7 @@ void TileMap::Load(std::string file){
 	std::string in, num;
 	input.open(file.c_str(), std::ios::in);
 
+	tileMatrix.clear();
 	if (!input.fail()) {
 		while (!input.eof()) {
 			std::getline(input, in);
@@ -70,9 +76,9 @@ void TileMap::Render(){
 
 	// Renderiza apenas o que pode ser visível na tela.
 	Vec2 tmp(mapWidth*tileWidth, mapHeight*tileHeight);
-	if ((x < -tmp.x) || (y < -tmp.y)) {
+	if ((x < -(tmp.x + tileSet->GetTileWidth())) || (y < -(tmp.y + tileSet->GetTileHeight()))) {
 		return;
-	} else if ((x > instance.GetWindowSize().x) || (y > instance.GetWindowSize().y)) {
+	} else if ((x > instance.GetWindowSize().x) || (y > instance.GetWindowSize().y + tileSet->GetTileHeight())) {
 		return;
 	}
 
@@ -134,9 +140,45 @@ void TileMap::SetMapLayer(State& state, std::string layer_path, int size_x, int 
 			tilemap += ".csv";
 
 			TileMap* tlmp = new TileMap(*ptr, TILE, TILE, tilemap, tileset);
-			ptr->box.x = offsetX + csv_x*tileset_w*(x-1);
-			ptr->box.y = offsetY + csv_y*tileset_h*(y-1);
+			ptr->box.x = offsetX + csv_x*TILE*(x-1);
+			ptr->box.y = offsetY + csv_y*TILE*(y-1);
 			ptr->AddComponent(tlmp);
 		}
 	}
+}
+
+void TileMap::SetMapLayerAnimation (State& state, std::string layer_path, int size_x, int size_y, int csv_x, int csv_y, std::string animation, int frame, float timeFrame, int offsetX, int offsetY) {
+	GameObject* go;
+	std::weak_ptr<GameObject> weak_ptr;
+	std::shared_ptr<GameObject> ptr;
+	Sprite* sp;
+
+	std::string tilemap;
+
+	for(int y = 1; y <= size_y; y++) {
+		for(int x = 1; x <= size_x; x++) {
+			tilemap = layer_path;
+			tilemap += "/x";
+			tilemap += std::to_string(x);
+			tilemap += "_y";
+			tilemap += std::to_string(y);
+			tilemap += ".csv";
+
+			Load(tilemap);
+			for(int i = 0; i < mapHeight; i++){
+				for(int j = 0; j < mapWidth; j++){
+					if (tileMatrix[j + i*mapWidth] == 0) {
+						go = new GameObject();
+						weak_ptr = state.AddObject(go);
+						ptr = weak_ptr.lock();
+						sp = new Sprite(*ptr, animation, frame, timeFrame);
+						ptr->AddComponent(sp);
+
+						ptr->box.x = offsetX + csv_x*TILE*(x-1) + TILE*j;
+						ptr->box.y = offsetY + csv_y*TILE*(y-1) + TILE*(i+1) - sp->GetHeight();
+					}
+				}
+			}
+		}
+	}	
 }
