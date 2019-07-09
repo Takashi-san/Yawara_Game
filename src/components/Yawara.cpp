@@ -22,9 +22,9 @@
 #define YWR_DGE_ACT		0.2
 
 #define YWR_ATK_CD		0.5
-#define YWR_ATK_ACT		4*0.05
 
-#define YWR_ANI_TIME	0.070
+#define YWR_HOWL_CD		0.5
+
 
 #define YWR_IDLE_FRAME		1
 #define YWR_IDLE_D			"assets/img/yawara/yawara_idle_down.png"
@@ -37,6 +37,7 @@
 #define YWR_IDLE_UR			"assets/img/yawara/yawara_idle_up_right.png"
 
 #define YWR_RUN_FRAME		9
+#define YWR_RUN_TIME		0.07
 #define YWR_RUN_D			"assets/img/yawara/yawara_run_down.png"
 #define YWR_RUN_U			"assets/img/yawara/yawara_run_up.png"
 #define YWR_RUN_L			"assets/img/yawara/yawara_run_left.png"
@@ -46,8 +47,36 @@
 #define YWR_RUN_UL			"assets/img/yawara/yawara_run_up_left.png"
 #define YWR_RUN_UR			"assets/img/yawara/yawara_run_up_right.png"
 
-#define YWR_DEATH_FRAME	5
-#define YWR_DEATH		"assets/penguin/img/penguindeath.png"
+#define YWR_BITE_FX_FRAME	8
+#define YWR_BITE_FX_TIME	0.05
+#define YWR_BITE_FX			"assets/img/yawara/yawara_bite.png"
+#define YWR_BITE_FX_RADIUS	100
+
+#define YWR_BITE_FRAME		5
+#define YWR_BITE_TIME		0.07
+#define YWR_BITE_D			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_U			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_L			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_R			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_DL			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_DR			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_UL			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_UR			"assets/img/yawara/yawara_bite_left.png"
+
+#define YWR_HOWL_FRAME		5
+#define YWR_HOWL_TIME		0.07
+#define YWR_HOWL_EXTRA		1
+#define YWR_HOWL_D			
+#define YWR_HOWL_U			
+#define YWR_HOWL_L			"assets/img/yawara/yawara_howl_left.png"
+#define YWR_HOWL_R			"assets/img/yawara/yawara_howl_right.png"
+#define YWR_HOWL_DL			
+#define YWR_HOWL_DR			
+#define YWR_HOWL_UL			
+#define YWR_HOWL_UR			
+
+#define YWR_DEATH_FRAME	4
+#define YWR_DEATH		"assets/img/yawara/yawara_death_right.png"
 #define YWR_DEATH_SOUND	"assets/penguin/audio/boom.wav"
 
 Yawara* Yawara::player;
@@ -55,7 +84,7 @@ Yawara* Yawara::player;
 Yawara::Yawara(GameObject& associated) : Component(associated) {
 	player = this;
 
-	Sprite* sp = new Sprite(associated, YWR_IDLE_R, YWR_IDLE_FRAME, YWR_ANI_TIME);
+	Sprite* sp = new Sprite(associated, YWR_IDLE_R, YWR_IDLE_FRAME, YWR_RUN_TIME);
 	associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
@@ -82,15 +111,21 @@ Yawara::~Yawara() {
 }
 
 void Yawara::Start() {
-	// Gera Tapu.
+	// Gera efeito uivo.
 	GameObject *go = new GameObject();
 	std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
+
+	howl = new Howl(*ptr);
+	ptr->AddComponent(howl);
+
+	// Gera Tapu.
+	go = new GameObject();
+	weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	ptr = weak_ptr.lock();
 	tapu = weak_ptr;
 
 	Tapu* tp = new Tapu(*ptr, Game::GetInstance().GetCurrentState().GetObjectPtr(&associated));
-	ptr->box.x = associated.box.x;
-	ptr->box.y = associated.box.y;
 	ptr->AddComponent(tp);
 }
 
@@ -138,10 +173,13 @@ int Yawara::GetMaxHP() {
 }
 
 void Yawara::Update(float dt) {
+	// Update cooldowns.
 	dge_cd.Update(dt);
 	atk_cd.Update(dt);
+	howl_cd.Update(dt);
 	hitTime.Update(dt);
 
+	// Boosters.
 	if(boostMap[HPBOOST].isBoosted){
 		static Timer hpTimer;
 
@@ -201,6 +239,7 @@ void Yawara::Update(float dt) {
 		}
 	}
 
+	// Act or dead.
 	if (hp <= 0) {
 		Camera::Unfollow();
 		associated.RequestDelete();
@@ -294,17 +333,27 @@ void Yawara::Comand(float dt) {
 					break;
 				}
 			}
+
+			if (input.KeyPress(E_KEY)) {
+				if (howl_cd.Get() > YWR_HOWL_CD) {
+					SetHowl();
+					act = HOWL;
+					break;
+				}
+			}
 		break;
 
 		case ATK:
 			atk_act.Update(dt);
-			if (atk_act.Get() > YWR_ATK_ACT) {
+			if (atk_act.Get() > YWR_BITE_FX_TIME * YWR_BITE_FX_FRAME) {
 				act = MOV;
 
+				// Change back sprite.
 				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
-				sp->SetFrameTime(YWR_ANI_TIME);
+				sp->SetFrameTime(YWR_RUN_TIME);
 				change_sprite = true;
 
+				// Reset attack.
 				atk_act.Restart();
 				atk_cd.Restart();
 			}
@@ -315,16 +364,38 @@ void Yawara::Comand(float dt) {
 			if (dge_act.Get() > YWR_DGE_ACT) {
 				act = MOV;
 
+				// Change back sprite.
 				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
-				sp->SetFrameTime(YWR_ANI_TIME);
+				sp->SetFrameTime(YWR_RUN_TIME);
+				change_sprite = true;
+
+				// Return collider.
 				Collider *cl = new Collider(associated);
 				associated.AddComponent(cl);
-				change_sprite = true;
+
+				// Reset atributes.
 				speed = {0, 0};
 				associated.angleDeg = 0;
 
+				// Reset dodge.
 				dge_act.Restart();
 				dge_cd.Restart();
+			}
+		break;
+
+		case HOWL:
+			howl_act.Update(dt);
+			if (howl_act.Get() > YWR_HOWL_TIME * YWR_HOWL_FRAME + YWR_HOWL_EXTRA) {
+				act = MOV;
+
+				// Change back sprite.
+				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+				sp->SetFrameTime(YWR_RUN_TIME);
+				change_sprite = true;
+
+				// Reset howl.
+				howl_act.Restart();
+				howl_cd.Restart();
 			}
 		break;
 
@@ -347,6 +418,9 @@ void Yawara::DoAction(float dt) {
 		case DGE:
 			associated.box.x += speed.x*dt;
 			associated.box.y += speed.y*dt;
+		break;
+
+		case HOWL:
 		break;
 
 		default:
@@ -513,67 +587,131 @@ void Yawara::SetDge() {
 }
 
 void Yawara::SetAtk() {
+	// Create attack.
 	GameObject *go = new GameObject();
 	std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
 
-	Sprite* sp = new Sprite(*ptr, "assets/penguin/img/slash.png", 5, 0.05, 5*0.05);
+	Sprite* sp = new Sprite(*ptr, YWR_BITE_FX, YWR_BITE_FX_FRAME, YWR_BITE_FX_TIME, YWR_BITE_FX_FRAME * YWR_BITE_FX_TIME);
 	Hitbox* hit = new Hitbox(*ptr);
 	ptr->AddComponent(sp);
 	ptr->AddComponent(hit);
-	hit->colisor->SetScale({0.55, 0.85});
+	hit->colisor->SetScale({0.50, 0.85});
 	hit->colisor->SetOffset({0, 0});
 	hit->SetDamage(att);
 	hit->hitDie = false;
 	ptr->box.Centered(associated.box.Center());
 
-	switch (dir) {
-		case RIGHT:
-			ptr->box.x += 100;
-			ptr->angleDeg = 0;
-		break;
+	// Get yawara sprite.
+	sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 
-		case LEFT:
-			ptr->box.x -= 100;
-			ptr->angleDeg = 180;
-		break;
+	// Set offset, rotation and yawara sprite.
+	if (sp) {
+		Vec2 position = associated.box.Center();
+		sp->SetFrameCount(YWR_BITE_FRAME);
+		sp->SetFrameTime(YWR_BITE_TIME);
+		sp->SetStopFrame(2);
+		switch (dir) {
+			case RIGHT:
+				ptr->box.x += YWR_BITE_FX_RADIUS;
+				ptr->angleDeg = 180;
 
-		case DOWN:
-			ptr->box.y += 100;
-			ptr->angleDeg = 90;
-		break;
+				sp->Open(YWR_BITE_R);
+			break;
 
-		case DOWN_RIGHT:
-			ptr->box.x += 50;
-			ptr->box.y += 50;
-			ptr->angleDeg = 45;
-		break;
+			case LEFT:
+				ptr->box.x -= YWR_BITE_FX_RADIUS;
+				ptr->angleDeg = 0;
 
-		case DOWN_LEFT:
-			ptr->box.x -= 50;
-			ptr->box.y += 50;
-			ptr->angleDeg = 135;
-		break;
+				sp->Open(YWR_BITE_L);
+			break;
 
-		case UP:
-			ptr->box.y -= 100;
-			ptr->angleDeg = 270;
-		break;
+			case DOWN:
+				ptr->box.y += YWR_BITE_FX_RADIUS;
+				ptr->angleDeg = 270;
 
-		case UP_RIGHT:
-			ptr->box.x += 50;
-			ptr->box.y -= 50;
-			ptr->angleDeg = 315;
-		break;
+				sp->Open(YWR_BITE_D);
+			break;
 
-		case UP_LEFT:
-			ptr->box.x -= 50;
-			ptr->box.y -= 50;
-			ptr->angleDeg = 225;
-		break;
+			case DOWN_RIGHT:
+				ptr->box.x += YWR_BITE_FX_RADIUS * 0.666;
+				ptr->box.y += YWR_BITE_FX_RADIUS * 0.666;
+				ptr->angleDeg = 225;
 
-		default:
-			std::cout << "Unknow direction to atack!\n";
-		break;
+				sp->Open(YWR_BITE_DR);
+			break;
+
+			case DOWN_LEFT:
+				ptr->box.x -= YWR_BITE_FX_RADIUS * 0.666;
+				ptr->box.y += YWR_BITE_FX_RADIUS * 0.666;
+				ptr->angleDeg = 315;
+
+				sp->Open(YWR_BITE_DL);
+			break;
+
+			case UP:
+				ptr->box.y -= YWR_BITE_FX_RADIUS;
+				ptr->angleDeg = 90;
+
+				sp->Open(YWR_BITE_U);
+			break;
+
+			case UP_RIGHT:
+				ptr->box.x += YWR_BITE_FX_RADIUS * 0.666;
+				ptr->box.y -= YWR_BITE_FX_RADIUS * 0.666;
+				ptr->angleDeg = 135;
+
+				sp->Open(YWR_BITE_UR);
+			break;
+
+			case UP_LEFT:
+				ptr->box.x -= YWR_BITE_FX_RADIUS * 0.666;
+				ptr->box.y -= YWR_BITE_FX_RADIUS * 0.666;
+				ptr->angleDeg = 45;
+
+				sp->Open(YWR_BITE_UL);
+			break;
+
+			default:
+				std::cout << "Unknow direction to attack!\n";
+			break;
+		}
+		associated.box.Centered(position);
 	}
+}
+
+void Yawara::SetHowl() {
+	// Get yawara sprite.
+	Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+
+	// Set yawara sprite.
+	if (sp) {
+		Vec2 position = associated.box.Center();
+		sp->SetFrameCount(YWR_HOWL_FRAME);
+		sp->SetFrameTime(YWR_HOWL_TIME);
+		sp->SetStopFrame(YWR_HOWL_FRAME - 1);
+		switch (dir) {
+			case RIGHT:
+			case DOWN:
+			case DOWN_RIGHT:
+			case UP_RIGHT:
+				sp->Open(YWR_HOWL_R);
+			break;
+
+			case LEFT:
+			case UP:
+			case DOWN_LEFT:
+			case UP_LEFT:
+				sp->Open(YWR_HOWL_L);
+			break;
+
+			default:
+				std::cout << "Unknow direction to attack!\n";
+			break;
+		}
+		associated.box.Centered(position);
+	}
+
+	// Set howl effect animation.
+	howl->SetHowl(YWR_HOWL_TIME * YWR_HOWL_FRAME, YWR_HOWL_EXTRA);
 }

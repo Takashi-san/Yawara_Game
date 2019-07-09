@@ -26,6 +26,8 @@ public:
 	void Open(std::string);
 	bool IsOpen();
 
+	void FadeOut(int);
+
 	void Update(float);
 	void Render();
 	bool Is(std::string);

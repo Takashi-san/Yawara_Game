@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Vec2.h"
 #include "Timer.h"
+#include "Howl.h"
 
 #include <string>
 #include <iostream>
@@ -23,7 +24,7 @@ private:
 	float def;
 	bool idle, change_sprite;
 	enum Direction { RIGHT, LEFT, DOWN, DOWN_LEFT, DOWN_RIGHT, UP, UP_LEFT, UP_RIGHT };
-	enum Action { MOV, ATK, DGE };
+	enum Action { MOV, ATK, DGE, HOWL };
 	Direction dir;
 	Action act;
 
@@ -42,16 +43,21 @@ private:
 
 	std::unordered_map<int, boosters> boostMap;
 
+	Howl* howl;
+
 	void Comand(float);
 	void DoAction(float);
 	void SetMov();
 	void SetDge();
 	void SetAtk();
+	void SetHowl();
 
 	Timer dge_cd;
 	Timer dge_act;
 	Timer atk_cd;
 	Timer atk_act;
+	Timer howl_cd;
+	Timer howl_act;
 
 public:
 	static Yawara* player;
