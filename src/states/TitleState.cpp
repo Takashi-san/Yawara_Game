@@ -148,9 +148,10 @@ void TitleState::Update(float dt) {
 	}
 
 	if (input.KeyPress(ENTER_KEY) || input.KeyPress(ENTER_KEY2)) {
-		StageState *stage = new StageState();
+		StageState *stage = nullptr;
 		switch (opt) {
 			case PLAY:
+				stage = new StageState();
 				Game::GetInstance().Push(stage);
 				if(play)
 					play->Play(1);
