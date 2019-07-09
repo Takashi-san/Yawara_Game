@@ -23,6 +23,19 @@
 #define CPLB_ENEMY_DIST_Y 150
 #define CPLB_ENEMY_DIST_X 150
 
+#define BOSS_VEL_ANG 0
+#define BOSS_SPEED 350
+#define BOSS_REST_BASE 0.5
+#define BOSS_MOVEMENT 1
+
+#define CLAW_DAMAGE 10
+#define TONGUE_DAMAGE 50
+#define TONGUE_SPEED 1300
+#define TONGUE_MAX_DIST 400
+
+#define DIST_DETECT_YAWARA 700
+#define DIST_LOAD_ATTACK 450
+
 // Movement sprites
 
 const std::string MOVE_RIGHT 	  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
@@ -36,14 +49,14 @@ const std::string MOVE_RIGHT_UP	  = "assets/img/capelobo/capelobo_correndo_line_
 
 // Resting sprites
 
-const std::string REST_RIGHT		 = "assets/img/capelobo/capelobo_idle_right.png";
-const std::string REST_RIGHT_DOWN = "assets/img/capelobo/capelobo_idle_right.png";
-const std::string REST_DOWN		 = "assets/img/capelobo/capelobo_idle_right.png";
-const std::string REST_LEFT_DOWN	 = "assets/img/capelobo/capelobo_idle_left.png";
-const std::string REST_LEFT		 = "assets/img/capelobo/capelobo_idle_left.png";
-const std::string REST_LEFT_UP	 = "assets/img/capelobo/capelobo_idle_left.png";
-const std::string REST_UP		 = "assets/img/capelobo/capelobo_idle_left.png";
-const std::string REST_RIGHT_UP	 = "assets/img/capelobo/capelobo_idle_right.png";
+const std::string REST_RIGHT		= "assets/img/capelobo/capelobo_idle_right.png";
+const std::string REST_RIGHT_DOWN 	= "assets/img/capelobo/capelobo_idle_right.png";
+const std::string REST_DOWN		 	= "assets/img/capelobo/capelobo_idle_right.png";
+const std::string REST_LEFT_DOWN	= "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_LEFT		 	= "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_LEFT_UP	 	= "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_UP		 	= "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_RIGHT_UP		= "assets/img/capelobo/capelobo_idle_right.png";
 
 // Attacking sprites
 
@@ -58,19 +71,20 @@ const std::string ATTACK_RIGHT_UP	= "assets/img/capelobo/capelobo_attack_r.png";
 
 // Load attack sprites
 
-const std::string LOAD_RIGHT		 = "";
-const std::string LOAD_RIGHT_DOWN = "";
-const std::string LOAD_DOWN		 = "";
-const std::string LOAD_LEFT_DOWN	 = "assets/img/capelobo/capelobo_ataque_lingua_ld.png";
-const std::string LOAD_LEFT		 = "";
-const std::string LOAD_LEFT_UP	 = "";
-const std::string LOAD_UP		 = "";
-const std::string LOAD_RIGHT_UP	 = "";
+const std::string LOAD_RIGHT		= "assets/img/capelobo/capelobo_ataque_lingua_r.png";
+const std::string LOAD_RIGHT_DOWN 	= "";
+const std::string LOAD_DOWN		 	= "";
+const std::string LOAD_LEFT_DOWN	= "assets/img/capelobo/capelobo_ataque_lingua_ld.png";
+const std::string LOAD_LEFT		 	= "assets/img/capelobo/capelobo_ataque_lingua_l.png";
+const std::string LOAD_LEFT_UP	 	= "";
+const std::string LOAD_UP			= "";
+const std::string LOAD_RIGHT_UP	 	= "";
 
 Capelobo *Capelobo::boss;
 
 bool moveAllowed = true;
 bool startedAttack = false;
+bool startedMoving = true;
 bool changed = false;
 
 Vec2 temp_speed;
@@ -83,9 +97,7 @@ Capelobo::Capelobo(GameObject &associated, float restOffset) : Enemy(associated)
 	speed.x = 0;
 	speed.y = 0;
 	this->restOffset = restOffset;
-	//Sprite *sp = new Sprite(associated, "assets/img/alien.png");
 	Sprite *sp = new Sprite(associated, "assets/img/capelobo/capelobo_idle_left.png", 8, 0.150);
-	//Sprite* sp = new Sprite(associated, "assets/img/guara_r.png", 12, 0.140);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(sp);
 	associated.AddComponent(cl);
@@ -119,14 +131,28 @@ void Capelobo::Update(float dt)
 
 	if (Yawara::player != nullptr)
 	{
+		yawaraPos = Yawara::player->GetCenterPos();
 		switch (state)
 		{
 		case MOVING:
 			moveTimer.Update(dt);
 
-			if (moveTimer.Get() < BOSS_MOVEMENT && moveAllowed)
+			if ((yawaraPos - associated.box.Center()).Modulo() < 900 && moveAllowed)
 			{
-				yawaraPos = Yawara::player->GetCenterPos();
+
+				if(moveTimer.Get() > BOSS_MOVEMENT && (yawaraPos - associated.box.Center()).Modulo() <= DIST_LOAD_ATTACK)
+				{
+					// Stop moving.
+					speed.x = 0;
+					speed.y = 0;
+
+					// Change to LOAD_ATTACK state.
+					startedAttack = false;
+					changed = false;
+					state = LOAD_ATTACK;
+					restTimer.Restart();
+					moveTimer.Restart();
+				}
 
 				if ((yawaraPos - associated.box.Center()).Modulo() != 0)
 					speed = ((yawaraPos - associated.box.Center()) / ((yawaraPos - associated.box.Center()).Modulo())) * BOSS_SPEED;
@@ -143,6 +169,8 @@ void Capelobo::Update(float dt)
 					speed.y = 0;
 
 					// Change to BASIC_ATTACK state.
+					startedAttack = false;
+					changed = false;
 					state = BASIC_ATTACK;
 					break;
 				}
@@ -190,8 +218,10 @@ void Capelobo::Update(float dt)
 					else if (speed.x < -10)
 						dir = LEFT;
 				}
-				if (dir != lastDir)
+				if (dir != lastDir || startedMoving){
 					change_sprite = true;
+					startedMoving = false;
+				}
 
 				moveAllowed = AllowedToMove(speed);
 				
@@ -207,16 +237,8 @@ void Capelobo::Update(float dt)
 					associated.box.y += speed.y * dt;
 				}
 			}
-			else
-			{
-				// Stop moving.
-				speed.x = 0;
-				speed.y = 0;
-
-				// Change to LOAD_ATTACK state.
-				state = LOAD_ATTACK;
-				restTimer.Restart();
-				moveTimer.Restart();
+			else if((yawaraPos - associated.box.Center()).Modulo() > DIST_DETECT_YAWARA){
+				state = SLEEPING;
 			}
 			break;
 
@@ -228,7 +250,6 @@ void Capelobo::Update(float dt)
 			// Rest for a determinated time
 			if (restTimer.Get() > BOSS_REST_BASE + restOffset)
 			{
-				yawaraPos = Yawara::player->GetCenterPos();
 				if ((yawaraPos - associated.box.Center()).Modulo() != 0)
 					speed = ((yawaraPos - associated.box.Center()) / ((yawaraPos - associated.box.Center()).Modulo())) * BOSS_SPEED;
 				else
@@ -237,17 +258,17 @@ void Capelobo::Update(float dt)
 				temp_speed = speed;
 
 				state = MOVING;
+				startedMoving = true;
 				moveAllowed = 1;
 				moveTimer.Restart();
 			}
 			break;
 
 		case SLEEPING:
-			yawaraPos = Yawara::player->GetCenterPos();
-
 			// Stay asleep if Yawara don't get closer
-			if ((yawaraPos - associated.box.Center()).Modulo() <= 700)
+			if ((yawaraPos - associated.box.Center()).Modulo() <= DIST_DETECT_YAWARA)
 				state = MOVING;
+				startedMoving = true;
 
 			break;
 
@@ -374,8 +395,6 @@ void Capelobo::Update(float dt)
 				state = RESTING;
 				attackTimer.Restart();
 				restTimer.Restart();
-				startedAttack = false;
-				changed = false;
 			}
 			break;
 		
@@ -394,8 +413,9 @@ void Capelobo::Update(float dt)
 				changed = true;
 			}
 
+
 			// Create Hitbox if it wasn't created yet. Create it 0.3s after render the sprite (time that he actualy attack on the sprite)
-			if (!startedAttack && attackTimer.Get() > 0.3)
+			if (!startedAttack)
 			{
 				startedAttack = true;
 
@@ -412,7 +432,40 @@ void Capelobo::Update(float dt)
 				if (angle < 0)
 					angle += 360;
 
-				angle = angle - angle % 45;
+
+				// Corect direction and angle. Capelobo will attack diagonally just if it is on a range od 15 deg from the 45 deg diagonal
+				if(angle > 330 || angle < 30){
+					angle = 360;
+					dir = RIGHT;
+				}
+				else if(angle > 30 && angle < 60){
+					angle = 45;
+					dir = RIGHT_UP;	
+				}
+				else if(angle > 60 && angle < 120){
+					angle = 90;
+					dir = UP;
+				}
+				else if(angle > 120 && angle < 150){
+					angle = 135;
+					dir = LEFT_UP;
+				}
+				else if(angle > 150 && angle < 210){
+					angle = 180;
+					dir = LEFT;
+				}
+				else if(angle > 210 && angle < 240){
+					angle = 225;
+					dir = LEFT_DOWN;
+				}
+				else if(angle > 240 && angle < 300){
+					angle = 270;
+					dir = DOWN;
+				}
+				else{
+					angle = 315;
+					dir = RIGHT_DOWN;
+				}
 
 				Tongue *theTongue = new Tongue(*shared_tongue, TONGUE_DAMAGE, TONGUE_SPEED, angle, TONGUE_MAX_DIST, true);
 
@@ -422,13 +475,12 @@ void Capelobo::Update(float dt)
 			}
 
 			// End attack
-			if (attackTimer.Get() > 1.5)
+			if (attackTimer.Get() > 0.6)
 			{
 				state = MOVING;
+				startedMoving = true;
 				attackTimer.Restart();
 				restTimer.Restart();
-				startedAttack = false;
-				changed = false;
 			}
 			break;
 		}
@@ -611,17 +663,17 @@ void Capelobo::Render()
 		}
 		else if (state == LOAD_ATTACK)
 		{
-			sp->SetFrameTime(0.05);
+			sp->SetFrameTime(0.08);
 			switch (dir)
 			{
 			case RIGHT:
-				// sp->Open(LOAD_RIGHT);
-				// sp->SetFrameCount(16);
+				sp->Open(LOAD_RIGHT);
+				sp->SetFrameCount(6);
 				break;
 
 			case LEFT:
-				// sp->Open(LOAD_LEFT);
-				// sp->SetFrameCount(16);
+				sp->Open(LOAD_LEFT);
+				sp->SetFrameCount(6);
 				break;
 
 			case UP:
