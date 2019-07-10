@@ -11,7 +11,7 @@
 #define HIT_COOL_DOWN 1
 
 Enemy::Enemy(GameObject& associated) : Component(associated){
-
+    change_sprite = false;
 }
 
 Enemy::~Enemy(){
@@ -19,7 +19,13 @@ Enemy::~Enemy(){
 }
 
 void Enemy::Start(){
-
+    // Reset all timers
+	restTimer.Restart();
+	moveTimer.Restart();
+	attackTimer.Restart();
+	hitTimer.Restart();
+    
+    dir = RIGHT;
 }
 
 void Enemy::Update(float dt){
@@ -68,4 +74,19 @@ bool Enemy::AllowedToMove(Vec2 speed){
 
     // return (Floor::loaded && Floor::AtAllowedArea(safeX, safeY, 0));
     return 1;
+}
+
+void Enemy::Move45(Vec2& speed){
+    if (abs(speed.x) > abs(speed.y) && (speed.y < -10 || speed.y > 10))
+    {
+        int signalY = speed.y / abs(speed.y);
+        int signalX = speed.x / abs(speed.x);
+        speed = {speed.x, signalY * signalX * speed.x};
+    }
+    else if (abs(speed.x) < abs(speed.y) && (speed.x < -10 || speed.x > 10))
+    {
+        int signalY = speed.y / abs(speed.y);
+        int signalX = speed.x / abs(speed.x);
+        speed = {signalY * signalX * speed.y, speed.y};
+    }
 }

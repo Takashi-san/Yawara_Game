@@ -23,6 +23,7 @@ protected:
 
 	int hp;
 	bool change_sprite;
+	bool moveAllowed;
 
 	enum Direction { RIGHT, RIGHT_UP, UP, LEFT_UP, LEFT, LEFT_DOWN, DOWN, RIGHT_DOWN};
 	enum Action { MOVING, RESTING, SLEEPING, BASIC_ATTACK, LOAD_ATTACK };
@@ -51,4 +52,5 @@ public:
 	void NotifyCollision(GameObject&);
 
 	bool AllowedToMove(Vec2);
+	void Move45(Vec2&);
 };
