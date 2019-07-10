@@ -6,45 +6,24 @@
 #include "Camera.h"
 #include "InputManager.h"
 
-#define LOSE_END "assets/img/background/game_over.png"
-#define CONT_TXT "assets/img/text/continuar.png"
-#define NEWG_TXT "assets/img/text/novo_jogo.png"
-#define WIN_MUSIC ""
-#define LOSE_MUSIC "assets/audio/musica/tema_triste.ogg"
+#define END_STT_BG		"assets/img/background/game_over.png"
+#define END_STT_QUIT	"assets/img/text/main_menu_sair.png"
+#define END_STT_NEWG	"assets/img/text/novo_jogo.png"
+#define WIN_MUSIC		""
+#define LOSE_MUSIC		"assets/audio/musica/tema_triste.ogg"
+
+#define CURSOR_PATH "assets/img/cursor/cursor.png"
 
 EndState::EndState() {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
+	Camera::pos = {0,  0};
+
+	Opt = NEWGAME;
+
 	if (Data::playerVictory) {
 		// End img.
-		GameObject *go = new GameObject();
-		weak_ptr = AddObject(go);
-		ptr = weak_ptr.lock();
-		ptr->box.x = 0;
-		ptr->box.y = 0;
-		Sprite *sp = new Sprite(*ptr, "assets/img/win.jpg");
-		CameraFollower *cmfl = new CameraFollower(*ptr);
-		ptr->AddComponent(sp);
-		ptr->AddComponent(cmfl);
-
-		// BGM
-		bgMusic.Open(WIN_MUSIC);
-	
-		// End txt.
-		GameObject *tgo = new GameObject();
-		weak_ptr = AddObject(tgo);
-		ptr = weak_ptr.lock();
-		Text* tx = new Text(*ptr, "assets/font/Call me maybe.ttf", 50, Text::BLENDED, "Press Space To Play Again", {50, 50, 255, 255});
-		ptr->box.Centered({512, 475});
-		ptr->AddComponent(tx);
-
-		GameObject *tgo1 = new GameObject();
-		weak_ptr = AddObject(tgo1);
-		ptr = weak_ptr.lock();
-		Text* tx1 = new Text(*ptr, "assets/font/Call me maybe.ttf", 50, Text::BLENDED, "Press ESC To Exit", {255, 50, 50, 255});
-		ptr->box.Centered({512, 400});
-		ptr->AddComponent(tx1);
 	} else {
 		// End img.
 		GameObject *go = new GameObject();
@@ -52,30 +31,39 @@ EndState::EndState() {
 		ptr = weak_ptr.lock();
 		ptr->box.x = 0;
 		ptr->box.y = 0;
-		Sprite *sp = new Sprite(*ptr, LOSE_END);
+		Sprite *bg = new Sprite(*ptr, END_STT_BG);
 		CameraFollower *cmfl = new CameraFollower(*ptr);
-		ptr->AddComponent(sp);
+		ptr->AddComponent(bg);
 		ptr->AddComponent(cmfl);
 
 		// BGM
 		bgMusic.Open(LOSE_MUSIC);
 	
 		// End txt.
-		GameObject *tgo = new GameObject();
-		weak_ptr = AddObject(tgo);
+		GameObject *t1go = new GameObject();
+		weak_ptr = AddObject(t1go);
 		ptr = weak_ptr.lock();
-		Sprite* tx = new Sprite(*ptr, CONT_TXT);
-		tx->SetScale({0.3,0.3});
-		ptr->box.Centered({280, 500});
-		ptr->AddComponent(tx);
-
-		GameObject *tgo1 = new GameObject();
-		weak_ptr = AddObject(tgo1);
-		ptr = weak_ptr.lock();
-		Sprite* tx1 = new Sprite(*ptr, NEWG_TXT);
-		tx1->SetScale({0.3,0.3});
-		ptr->box.Centered({683, 500});
+		Sprite *tx1 = new Sprite(*ptr, END_STT_QUIT);
+		tx1->SetScale(0.3, 0.3);
+		ptr->box.Centered(341, 500);
 		ptr->AddComponent(tx1);
+
+		GameObject *t2go = new GameObject();
+		weak_ptr = AddObject(t2go);
+		ptr = weak_ptr.lock();
+		Sprite *tx2 = new Sprite(*ptr, END_STT_NEWG);
+		tx2->SetScale(0.4, 0.4);
+		ptr->box.Centered(720, 500);
+		ptr->AddComponent(tx2);
+
+		//Selection
+		GameObject *sgo = new GameObject();
+		weak_ptr = AddObject(sgo);
+		ptr = weak_ptr.lock();
+		selection = sgo;
+		Sprite *sspr = new Sprite(*ptr, CURSOR_PATH);
+		ptr->box.Centered({580 + Camera::pos.x, 500 + Camera::pos.y});
+		ptr->AddComponent(sspr);
 	}
 
 }
@@ -92,9 +80,41 @@ void EndState::Update(float dt) {
 		quitRequested = true;
 	}
 
-	// Inicia o jogo.
-	if (input.KeyPress(SPACE_KEY)) { 
-		popRequested = true;
+	if(input.KeyPress(LEFT_ARROW_KEY) || input.KeyPress(A_KEY)){
+		if(Opt == NEWGAME)
+			Opt = QUIT;
+	}
+
+	if(input.KeyPress(RIGHT_ARROW_KEY) || input.KeyPress(D_KEY)){
+		if(Opt == QUIT)
+			Opt = NEWGAME;
+	}
+
+	switch (Opt)
+	{
+	case NEWGAME:
+		selection->box.Centered({580 + Camera::pos.x, 500 + Camera::pos.y});
+		break;
+	
+	case QUIT:
+		selection->box.Centered({250 + Camera::pos.x, 500 + Camera::pos.y});
+		break;
+	}
+
+	if(input.KeyPress(ENTER_KEY) || input.KeyPress(ENTER_KEY2)){
+		switch (Opt)
+		{
+		case NEWGAME:
+			popRequested = true;
+			break;
+
+		case QUIT:
+			quitRequested = true;
+			break;
+		
+		default:
+			break;
+		}
 	}
 
 	UpdateArray(dt);
