@@ -36,5 +36,13 @@ public:
 	bool Validate(int, int, int, int);
 	bool Validate(Rect);
 
+	// position + velocity.
+	Vec2 Validate(int, int, Vec2, float);
+	Vec2 Validate(Vec2, Vec2, float);
+
+	// area + velocity.
+	Vec2 Validate(int, int, int, int, Vec2, float);
+	Vec2 Validate(Rect, Vec2, float);
+
 	static MapColision& GetInstance();
 };

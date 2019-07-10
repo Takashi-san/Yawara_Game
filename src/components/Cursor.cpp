@@ -13,7 +13,7 @@ void Cursor::Update(float dt)
 
 	associated.box.Centered({(float)input.GetMouseX() + Camera::pos.x, (float)input.GetMouseY() + Camera::pos.y});
 
-	std::cout << "validation: " << MapColision::GetInstance().Validate(associated.box.x, associated.box.y, associated.box.w, associated.box.h) << "\n";
+	std::cout << "validation: " << MapColision::GetInstance().Validate(associated.box) << "\n";
 	//MapColision::GetInstance().Validate(associated.box.x, associated.box.y);
 }
 

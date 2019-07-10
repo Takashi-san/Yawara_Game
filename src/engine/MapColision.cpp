@@ -2,6 +2,8 @@
 #include "Tilemaps.h"
 #include <sstream>
 
+#define MC_CONDITION	7
+
 MapColision& MapColision::GetInstance(){
 	static MapColision instance;
 	return instance;
@@ -329,4 +331,100 @@ bool MapColision::Validate (int x, int y, int w, int h) {
 
 bool MapColision::Validate (Rect area) {
 	return Validate((int)area.x, (int)area.y, (int)area.w, (int)area.h);
+}
+
+Vec2 MapColision::Validate (int x, int y, Vec2 vel, float dt) {
+	Vec2 vdt = {vel.x*dt, vel.y*dt};
+	Vec2 mid, low;
+	int count;
+
+	// If stuck get freemovement.
+	if (!Validate(x, y)) {
+		return {x + vdt.x, y + vdt.y};
+	}
+
+	// Check goal position.
+	if (Validate(x + vdt.x, y + vdt.y)) {
+		// Simple double check at the middle.
+		if (Validate(x + vdt.x/2, y + vdt.y/2)) {
+			return {x + vdt.x, y + vdt.y};
+		} else {
+			vdt = vdt/2;
+		}
+	}
+
+	count = 0;
+	mid = vdt/2;
+	low = {0,0};
+	while (true) {
+		if (Validate(x + mid.x, y + mid.y)) {
+			count++;
+			if (count > MC_CONDITION) {
+				return {x + mid.x, y + mid.y};
+			}
+
+			low = mid;
+			mid = mid + (vdt - mid)/2;
+		} else {
+			count--;
+			if (count < -MC_CONDITION) {
+				return {(float)x, (float)y};
+			}
+
+			vdt = mid;
+			mid = low + (mid - low)/2;
+		}
+	}
+}
+
+Vec2 MapColision::Validate (Vec2 position, Vec2 vel, float dt) {
+	return Validate((int)position.x, (int)position.y, vel, dt);
+}
+
+Vec2 MapColision::Validate (int x, int y, int w, int h, Vec2 vel, float dt) {
+	Vec2 vdt = {vel.x*dt, vel.y*dt};
+	Vec2 mid, low;
+	int count;
+
+	// If stuck get freemovement.
+	if (!Validate(x, y, w, h)) {
+		return {x + vdt.x, y + vdt.y};
+	}
+
+	// Check goal position.
+	if (Validate(x + vdt.x, y + vdt.y, w, h)) {
+		// Simple double check at the middle.
+		if (Validate(x + vdt.x/2, y + vdt.y/2, w, h)) {
+			return {x + vdt.x, y + vdt.y};
+		} else {
+			vdt = vdt/2;
+		}
+	}
+
+	count = 0;
+	mid = vdt/2;
+	low = {0,0};
+	while (true) {
+		if (Validate(x + mid.x, y + mid.y, w, h)) {
+			count++;
+			if (count > MC_CONDITION) {
+				return {x + mid.x, y + mid.y};
+			}
+
+			low = mid;
+			mid = mid + (vdt - mid)/2;
+		} else {
+			count--;
+			if (count < -MC_CONDITION) {
+				return {(float)x, (float)y};
+			}
+
+			vdt = mid;
+			mid = low + (mid - low)/2;
+		}
+	}
+}
+
+Vec2 MapColision::Validate (Rect area, Vec2 vel, float dt) {
+	return Validate((int)area.x, (int)area.y, (int)area.w, (int)area.h, vel, dt);
 }
