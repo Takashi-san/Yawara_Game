@@ -10,6 +10,7 @@
 #include "Yawara.h"
 #include "Claw.h"
 #include "Tongue.h"
+#include "Easing.h"
 
 #define CPLB_HB_DISTANCE_Y 150
 #define CPLB_HB_DISTANCE_X 150
@@ -36,13 +37,14 @@
 #define DIST_DETECT_YAWARA 700
 #define DIST_LOAD_ATTACK 450
 
+
 // Movement sprites
 
-const std::string MOVE_RIGHT 	  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
-const std::string MOVE_RIGHT_DOWN = "assets/img/capelobo/capelobo_correndo_line_art_rd.png";
+const std::string MOVE_RIGHT 	  = "assets/img/capelobo/capelobo_correndo_r.png";
+const std::string MOVE_RIGHT_DOWN = "assets/img/capelobo/capelobo_correndo_rd.png";
 const std::string MOVE_DOWN		  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
-const std::string MOVE_LEFT_DOWN  = "assets/img/capelobo/capelobo_correndo_line_art_ld.png";
-const std::string MOVE_LEFT		  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
+const std::string MOVE_LEFT_DOWN  = "assets/img/capelobo/capelobo_correndo_ld.png";
+const std::string MOVE_LEFT		  = "assets/img/capelobo/capelobo_correndo_l.png";
 const std::string MOVE_LEFT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_lu.png";
 const std::string MOVE_UP		  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
 const std::string MOVE_RIGHT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_ru.png";
@@ -50,13 +52,13 @@ const std::string MOVE_RIGHT_UP	  = "assets/img/capelobo/capelobo_correndo_line_
 // Resting sprites
 
 const std::string REST_RIGHT		= "assets/img/capelobo/capelobo_idle_right.png";
-const std::string REST_RIGHT_DOWN 	= "assets/img/capelobo/capelobo_idle_right.png";
-const std::string REST_DOWN		 	= "assets/img/capelobo/capelobo_idle_right.png";
-const std::string REST_LEFT_DOWN	= "assets/img/capelobo/capelobo_idle_left.png";
+const std::string REST_RIGHT_DOWN 	= "assets/img/capelobo/capelobo_idle_right_down.png";
+const std::string REST_DOWN		 	= "assets/img/capelobo/capelobo_idle_down.png";
+const std::string REST_LEFT_DOWN	= "assets/img/capelobo/capelobo_idle_left_down.png";
 const std::string REST_LEFT		 	= "assets/img/capelobo/capelobo_idle_left.png";
-const std::string REST_LEFT_UP	 	= "assets/img/capelobo/capelobo_idle_left.png";
-const std::string REST_UP		 	= "assets/img/capelobo/capelobo_idle_left.png";
-const std::string REST_RIGHT_UP		= "assets/img/capelobo/capelobo_idle_right.png";
+const std::string REST_LEFT_UP	 	= "assets/img/capelobo/capelobo_idle_left_up.png";
+const std::string REST_UP		 	= "assets/img/capelobo/capelobo_idle_up.png";
+const std::string REST_RIGHT_UP		= "assets/img/capelobo/capelobo_idle_right_up.png";
 
 // Attacking sprites
 
@@ -73,18 +75,29 @@ const std::string ATTACK_RIGHT_UP	= "assets/img/capelobo/capelobo_attack_r.png";
 
 const std::string LOAD_RIGHT		= "assets/img/capelobo/capelobo_ataque_lingua_r.png";
 const std::string LOAD_RIGHT_DOWN 	= "";
-const std::string LOAD_DOWN		 	= "";
+const std::string LOAD_DOWN		 	= "assets/img/capelobo/capelobo_lingua_d.png";
 const std::string LOAD_LEFT_DOWN	= "assets/img/capelobo/capelobo_ataque_lingua_ld.png";
 const std::string LOAD_LEFT		 	= "assets/img/capelobo/capelobo_ataque_lingua_l.png";
 const std::string LOAD_LEFT_UP	 	= "";
-const std::string LOAD_UP			= "";
+const std::string LOAD_UP			= "assets/img/capelobo/capelobo_lingua_u.png";
 const std::string LOAD_RIGHT_UP	 	= "";
+
+// Death sprites
+
+const std::string DEATH_RIGHT		= "assets/img/capelobo/capelobo_morte_r.png";
+const std::string DEATH_LEFT	 	= "assets/img/capelobo/capelobo_morte_l.png";
+const std::string EFFECT_1			= "assets/img/capelobo/camada1_efeitomorteboss.png";
+const std::string EFFECT_2			= "assets/img/capelobo/camada2_efeitomorteboss.png";
+const std::string EFFECT_3			= "assets/img/capelobo/camada3_efeitomorteboss.png";
+const std::string EFFECT_4			= "assets/img/capelobo/camada4_efeitomorteboss.png";
+const std::string EFFECT_5			= "assets/img/capelobo/camada5_efeitomorteboss.png";
 
 Capelobo *Capelobo::boss;
 
 bool startedAttack = false;
 bool startedMoving = true;
 bool changed = false;
+bool endEffects = false;
 
 Vec2 temp_speed;
 
@@ -93,15 +106,16 @@ Capelobo::Capelobo(GameObject &associated, float restOffset) : Enemy(associated)
 	boss = this;
 	moveAllowed = true;
 
-	hp = 600;
-	speed = Vec2{0,0};
-	this->restOffset = restOffset;
 	Sprite *sp = new Sprite(associated, REST_RIGHT, 8, 0.150);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(sp);
 	associated.AddComponent(cl);
+	
+	speed = Vec2{0,0};
 
 	state = SLEEPING;
+	hp = 6;
+	this->restOffset = restOffset;
 }
 
 void Capelobo::Start()
@@ -114,6 +128,7 @@ void Capelobo::Start()
 	moveTimer.Restart();
 	attackTimer.Restart();
 	hitTimer.Restart();
+	deathTimer.Restart();
 }
 
 Capelobo::~Capelobo()
@@ -128,7 +143,7 @@ void Capelobo::Update(float dt)
 
 	hitTimer.Update(dt);
 
-	if (Yawara::player != nullptr)
+	if (Yawara::player != nullptr && hp > 0)
 	{
 		yawaraPos = Yawara::player->GetCenterPos();
 		switch (state)
@@ -432,15 +447,15 @@ void Capelobo::Update(float dt)
 				}
 				else if(angle > 30 && angle < 60){
 					angle = 45;
-					dir = RIGHT_UP;	
+					dir = RIGHT_DOWN;	
 				}
 				else if(angle > 60 && angle < 120){
 					angle = 90;
-					dir = UP;
+					dir = DOWN;
 				}
 				else if(angle > 120 && angle < 150){
 					angle = 135;
-					dir = LEFT_UP;
+					dir = LEFT_DOWN;
 				}
 				else if(angle > 150 && angle < 210){
 					angle = 180;
@@ -448,15 +463,15 @@ void Capelobo::Update(float dt)
 				}
 				else if(angle > 210 && angle < 240){
 					angle = 225;
-					dir = LEFT_DOWN;
+					dir = LEFT_UP;
 				}
 				else if(angle > 240 && angle < 300){
 					angle = 270;
-					dir = DOWN;
+					dir = UP;
 				}
 				else{
 					angle = 315;
-					dir = RIGHT_DOWN;
+					dir = RIGHT_UP;
 				}
 
 				Tongue *theTongue = new Tongue(*shared_tongue, TONGUE_DAMAGE, TONGUE_SPEED, angle, TONGUE_MAX_DIST, true);
@@ -481,20 +496,49 @@ void Capelobo::Update(float dt)
 	// Capelobo is dead
 	if (hp <= 0)
 	{
-		associated.RequestDelete();
-		/*
+		state = RESTING;
+		deathTimer.Update(dt);
+		
 		GameObject *go = new GameObject();
 		std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 		std::shared_ptr<GameObject> ptr = weak_ptr.lock();
+		Sprite *sp;
 
-		Sprite *sp = new Sprite(*ptr, "assets/img/aliendeath.png", 4, 0.1, 4 * 0.1);
-		Sound *so = new Sound(*ptr, "assets/audio/boom.wav");
+		if(deathTimer.Get() < DEATH_EFFECT_TIME){
+			if(deathTimer.Get() < DEATH_EFFECT_TIME / 10)
+				sp = new Sprite(*ptr, EFFECT_1, 1, DEATH_EFFECT_TIME / 10, DEATH_EFFECT_TIME / 10);
+			else if (deathTimer.Get() < (DEATH_EFFECT_TIME * 2) / 10)
+				sp = new Sprite(*ptr, EFFECT_2, 1, DEATH_EFFECT_TIME / 10, DEATH_EFFECT_TIME / 10);
+			else if (deathTimer.Get() < (DEATH_EFFECT_TIME * 3) / 10){
+				sp = new Sprite(*ptr, EFFECT_4, 1, DEATH_EFFECT_TIME / 10, DEATH_EFFECT_TIME / 10);
+				sp->SetScale(Vec2{0.5,0.5});
+			}
+			else if(deathTimer.Get() < (DEATH_EFFECT_TIME * 4) / 10)
+				sp = new Sprite(*ptr, EFFECT_4, 1, DEATH_EFFECT_TIME / 10, DEATH_EFFECT_TIME / 10);
+			else if(deathTimer.Get() < (DEATH_EFFECT_TIME * 5) / 10){
+				sp = new Sprite(*ptr, EFFECT_4, 1, DEATH_EFFECT_TIME / 10, DEATH_EFFECT_TIME / 10);
+				sp->SetColorMod(200,10,200);
+			}
+			else{
+				sp = new Sprite(*ptr, EFFECT_5, 7, DEATH_EFFECT_TIME /10, 7 * (DEATH_EFFECT_TIME /10));
+				sp->SetColorMod(200,10,200);
+			}
+		}
+		else{
+			associated.RequestDelete();
+
+			if(dir == RIGHT || dir == RIGHT_DOWN || dir == RIGHT_UP || dir == UP)
+				sp = new Sprite(*ptr, DEATH_RIGHT, 9, 0.1, 9 * 0.1);
+			else
+				sp = new Sprite(*ptr, DEATH_LEFT, 9, 0.1, 9 * 0.1);
+			// Sound *so = new Sound(*ptr, "assets/audio/boom.wav");
+			// ptr->AddComponent(so);
+
+			// so->Play(1);
+		}
 		ptr->box.Centered(associated.box.Center());
 		ptr->AddComponent(sp);
-		ptr->AddComponent(so);
-
-		so->Play(1);
-		*/
+		
 	}
 }
 
@@ -572,32 +616,32 @@ void Capelobo::Render()
 
 			case UP:
 				sp->Open(REST_UP);
-				sp->SetFrameCount(8);
+				sp->SetFrameCount(5);
 				break;
 
 			case DOWN:
 				sp->Open(REST_DOWN);
-				sp->SetFrameCount(8);
+				sp->SetFrameCount(5);
 				break;
 
 			case RIGHT_UP:
 				sp->Open(REST_RIGHT_UP);
-				sp->SetFrameCount(8);
+				sp->SetFrameCount(5);
 				break;
 
 			case RIGHT_DOWN:
 				sp->Open(REST_RIGHT_DOWN);
-				sp->SetFrameCount(8);
+				sp->SetFrameCount(5);
 				break;
 
 			case LEFT_UP:
 				sp->Open(REST_LEFT_UP);
-				sp->SetFrameCount(8);
+				sp->SetFrameCount(5);
 				break;
 
 			case LEFT_DOWN:
 				sp->Open(REST_LEFT_DOWN);
-				sp->SetFrameCount(8);
+				sp->SetFrameCount(5);
 				break;
 
 			default:
@@ -669,13 +713,13 @@ void Capelobo::Render()
 				break;
 
 			case UP:
-				// sp->Open(LOAD_UP);
-				// sp->SetFrameCount(16);
+				sp->Open(LOAD_UP);
+				sp->SetFrameCount(6);
 				break;
 
 			case DOWN:
-				// sp->Open(LOAD_DOWN);
-				// sp->SetFrameCount(16);
+				sp->Open(LOAD_DOWN);
+				sp->SetFrameCount(6);
 				break;
 
 			case RIGHT_UP:
