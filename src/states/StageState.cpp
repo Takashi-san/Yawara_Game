@@ -16,26 +16,24 @@
 #include "Game.h"
 #include "Cursor.h"
 #include "Yawara.h"
-#include "Floor.h"
 #include "HealthRune.h"
 #include "AttackRune.h"
 #include "DefenseRune.h"
 #include "HealthFeedback.h"
+#include "MapColision.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
 
 #define STAGE_STT_BG "assets/penguin/img/ocean.jpg"
 #define STAGE_STT_BGM "assets/audio/musica/tema_triste.ogg"
-#define STAGE_STT_CURSOR_SPRITE "assets/img/cursor/cursor.png"
+#define STAGE_STT_CURSOR_SPRITE "assets/img/cursor/square.jpg"
 #define STAGE_STT_CAMERA_RATIO 0.37
 
 StageState::StageState()
 {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
-
-	Floor::Load(CL_MAP1, TILE, TILE);
 
 	// Background
 	GameObject *gobg = new GameObject();
@@ -75,7 +73,8 @@ StageState::StageState()
 
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_17_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
 
-	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
+	MapColision::GetInstance().SetMapColision("assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80);
+	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
 	
 
 	/* // Fase2
