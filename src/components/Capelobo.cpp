@@ -39,9 +39,9 @@
 // Movement sprites
 
 const std::string MOVE_RIGHT 	  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
-const std::string MOVE_RIGHT_DOWN = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
-const std::string MOVE_DOWN		  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
-const std::string MOVE_LEFT_DOWN  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
+const std::string MOVE_RIGHT_DOWN = "assets/img/capelobo/capelobo_correndo_line_art_rd.png";
+const std::string MOVE_DOWN		  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
+const std::string MOVE_LEFT_DOWN  = "assets/img/capelobo/capelobo_correndo_line_art_ld.png";
 const std::string MOVE_LEFT		  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
 const std::string MOVE_LEFT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_lu.png";
 const std::string MOVE_UP		  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
