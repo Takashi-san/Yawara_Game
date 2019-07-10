@@ -54,14 +54,14 @@
 
 #define YWR_BITE_FRAME		5
 #define YWR_BITE_TIME		0.07
-#define YWR_BITE_D			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_U			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_D			"assets/img/yawara/yawara_bite_down.png"
+#define YWR_BITE_U			"assets/img/yawara/yawara_bite_up.png"
 #define YWR_BITE_L			"assets/img/yawara/yawara_bite_left.png"
 #define YWR_BITE_R			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_DL			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_DR			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_UL			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_UR			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_DL			"assets/img/yawara/yawara_bite_down_left.png"
+#define YWR_BITE_DR			"assets/img/yawara/yawara_bite_down_right.png"
+#define YWR_BITE_UL			"assets/img/yawara/yawara_bite_up_left.png"
+#define YWR_BITE_UR			"assets/img/yawara/yawara_bite_up_right.png"
 
 #define YWR_HOWL_FRAME		5
 #define YWR_HOWL_TIME		0.07
