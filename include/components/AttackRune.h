@@ -14,13 +14,20 @@ private:
     float attFactor;
     Sprite* sp, *top_layer_sprite;
     Sound* activationSound;
+
+    enum Color {DARK = 0, MEDIUM, LIGHT};
+    enum Image {YAWARA = 0, TAPU};
+
+    Image top_img;
     
 public:
-    AttackRune(GameObject&, float);
+    AttackRune(GameObject&, float, Color = DARK, Image = YAWARA);
     
     void Update(float);
     void Render();
     bool Is(std::string);
 
     void Start();
+
+    void ChangeColor(Color);
 };
