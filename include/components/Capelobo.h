@@ -20,14 +20,6 @@ private:
 	
 	float restOffset;
 
-	Vec2 speed;
-	int hp;
-
-	int safeX;
-	int safeY;
-
-	bool change_sprite;
-
 public:
 	static Capelobo *boss;
 

@@ -25,7 +25,7 @@
 
 #define BOSS_VEL_ANG 0
 #define BOSS_SPEED 350
-#define BOSS_REST_BASE 0.5
+#define BOSS_REST_BASE 1
 #define BOSS_MOVEMENT 1.5
 
 #define CLAW_DAMAGE 10
@@ -82,7 +82,6 @@ const std::string LOAD_RIGHT_UP	 	= "";
 
 Capelobo *Capelobo::boss;
 
-bool moveAllowed = true;
 bool startedAttack = false;
 bool startedMoving = true;
 bool changed = false;
@@ -92,12 +91,12 @@ Vec2 temp_speed;
 Capelobo::Capelobo(GameObject &associated, float restOffset) : Enemy(associated)
 {
 	boss = this;
+	moveAllowed = true;
 
 	hp = 600;
-	speed.x = 0;
-	speed.y = 0;
+	speed = Vec2{0,0};
 	this->restOffset = restOffset;
-	Sprite *sp = new Sprite(associated, "assets/img/capelobo/capelobo_idle_left.png", 8, 0.150);
+	Sprite *sp = new Sprite(associated, REST_RIGHT, 8, 0.150);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(sp);
 	associated.AddComponent(cl);
@@ -150,6 +149,7 @@ void Capelobo::Update(float dt)
 					startedAttack = false;
 					changed = false;
 					state = LOAD_ATTACK;
+					startedMoving = false;
 					restTimer.Restart();
 					moveTimer.Restart();
 				}
@@ -172,22 +172,12 @@ void Capelobo::Update(float dt)
 					startedAttack = false;
 					changed = false;
 					state = BASIC_ATTACK;
+					startedMoving = false;
 					break;
 				}
 
 				// Correct root to move in 45 degrees
-				if (abs(speed.x) > abs(speed.y) && (speed.y < -10 || speed.y > 10))
-				{
-					int signalY = speed.y / abs(speed.y);
-					int signalX = speed.x / abs(speed.x);
-					speed = {speed.x, signalY * signalX * speed.x};
-				}
-				else if (abs(speed.x) < abs(speed.y) && (speed.x < -10 || speed.x > 10))
-				{
-					int signalY = speed.y / abs(speed.y);
-					int signalX = speed.x / abs(speed.x);
-					speed = {signalY * signalX * speed.y, speed.y};
-				}
+				Move45(speed);
 
 				// Set dir to the direction that Capelobo is facing
 
@@ -218,6 +208,7 @@ void Capelobo::Update(float dt)
 					else if (speed.x < -10)
 						dir = LEFT;
 				}
+
 				if (dir != lastDir || startedMoving){
 					change_sprite = true;
 					startedMoving = false;
@@ -239,6 +230,7 @@ void Capelobo::Update(float dt)
 			}
 			else if((yawaraPos - associated.box.Center()).Modulo() > DIST_DETECT_YAWARA){
 				state = SLEEPING;
+				startedMoving = false;
 			}
 			break;
 
@@ -266,10 +258,10 @@ void Capelobo::Update(float dt)
 
 		case SLEEPING:
 			// Stay asleep if Yawara don't get closer
-			if ((yawaraPos - associated.box.Center()).Modulo() <= DIST_DETECT_YAWARA)
+			if ((yawaraPos - associated.box.Center()).Modulo() <= DIST_DETECT_YAWARA){
 				state = MOVING;
 				startedMoving = true;
-
+			}
 			break;
 
 		case BASIC_ATTACK:
@@ -390,7 +382,7 @@ void Capelobo::Update(float dt)
 			}
 
 			// End attack
-			if (attackTimer.Get() > 1)
+			if (attackTimer.Get() > 0.9)
 			{
 				state = RESTING;
 				attackTimer.Restart();
@@ -709,6 +701,11 @@ void Capelobo::Render()
 			default:
 				break;
 			}
+		}
+		else if(state == SLEEPING){
+			// sp->SetFrameTime(0.08);
+			// sp->Open(LOAD_LEFT_DOWN);
+			// sp->SetFrameCount(4);
 		}
 	}
 	associated.box.Centered(position);
