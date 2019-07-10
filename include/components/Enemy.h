@@ -15,6 +15,7 @@
 #define SAFE_DISTANCE_UP 16 * 0.7
 #define SAFE_DISTANCE_DOWN 48 * 0.7
 #define HIT_COOL_DOWN 1
+#define DEATH_EFFECT_TIME 2.0
 
 class Enemy : public Component{
 protected:
@@ -34,6 +35,7 @@ protected:
 	Timer moveTimer;
 	Timer attackTimer;
 	Timer hitTimer;
+	Timer deathTimer;
 
 	int safeX;
 	int safeY;
