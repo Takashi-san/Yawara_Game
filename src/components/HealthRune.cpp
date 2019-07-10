@@ -12,12 +12,12 @@
 #define HEALTHRUNE_COOLDOWN_TIME        30
 
 /* 1 < factor <= 2 means an increased health */
-HealthRune::HealthRune(GameObject& associated, float hpFactor) : Item(associated){
+HealthRune::HealthRune(GameObject& associated, float hpFactor, Color color) : Item(associated){
 
     sp = new Sprite(associated, BASE_HEALTHRUNE_FILE, BASE_HEALTHRUNE_FRAMES, 0.5);
     sp->SetScale(1, 1);
-    sp->SetFrame(2);
-    sp->SetStopFrame(2);
+    sp->SetFrame(color);
+    sp->SetStopFrame(color);
 	associated.AddComponent(sp);
 
     activationSound = new Sound(associated, RUNE_SOUND_PATH);
@@ -92,4 +92,14 @@ bool HealthRune::Is(std::string type){
 void HealthRune::Start(){
 
 
+}
+
+void HealthRune::ChangeColor(Color color){
+
+    Sprite* sp = static_cast<Sprite*> (associated.GetComponent("Sprite"));
+
+    if(sp){
+        sp->SetFrame(color);
+        sp->SetStopFrame(color);
+    }
 }
