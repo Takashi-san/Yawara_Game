@@ -15,12 +15,16 @@ private:
     Sprite* sp, *top_layer_sprite;
     Sound* activationSound;
 
+    enum Color {DARK = 0, MEDIUM, LIGHT};
+
 public:
-    HealthRune(GameObject&, float);
+    HealthRune(GameObject&, float, Color = DARK);
     
     void Update(float);
     void Render();
     bool Is(std::string);
 
     void Start();
+
+    void ChangeColor(Color);
 };

@@ -10,10 +10,12 @@
 
 #include "Fonts.h"
 
-#define TITLE_STT_BG	"assets/img/background/main_menu.png"
-#define TITLE_STT_PLAY	"assets/img/background/main_menu_jogar.png"
-#define TITLE_STT_QUIT	"assets/img/background/main_menu_sair.png"
-#define TITLE_STT_ARROW	"assets/img/background/main_menu_selection.png"
+#define TITLE_STT_BG		"assets/img/background/main_menu.png"
+#define TITLE_STT_BGCTRLS	"assets/img/background/menu_controles.png"
+#define TITLE_STT_PLAY		"assets/img/text/main_menu_jogar.png"
+#define TITLE_STT_QUIT		"assets/img/text/main_menu_sair.png"
+#define TITLE_STT_CTRLS		"assets/img/text/controles.png"
+#define TITLE_STT_ARROW		"assets/img/text/main_menu_selection.png"
 
 #define TITLE_STT_BGM			"assets/audio/musica/main_menu.mp3"
 #define TITLE_STT_SLCT_SOUND	"assets/audio/sons/menu-selecionar_opcao.ogg"
@@ -47,7 +49,8 @@ TitleState::TitleState() {
 	GameObject *t2go = new GameObject();
 	weak_ptr = AddObject(t2go);
 	ptr = weak_ptr.lock();
-	Text* tx2 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Controles", {0, 0, 0, 255});
+	Sprite* tx2 = new Sprite(*ptr, TITLE_STT_CTRLS);
+	tx2->SetScale(0.2, 0.2);
 	ptr->box.Centered(500, 550);
 	ptr->AddComponent(tx2);
 
@@ -91,6 +94,10 @@ TitleState::TitleState() {
 	ptr = weak_ptr.lock();
 	play = new Sound(*ptr, TITLE_STT_PLAY_SOUND);
 
+	GameObject* controls_go = new GameObject();
+	weak_ptr = AddObject(controls_go);
+	controlsgo = weak_ptr.lock();
+
 	opt = PLAY;
 }
 
@@ -103,30 +110,45 @@ void TitleState::Update(float dt) {
 	static float counter = 0;
 	static bool fadingIn = true;
 	static float ease = 0.3;
+	static CameraFollower* cmfll = nullptr;
+	static Sprite* controlScreen = nullptr;
 
 	// Fecha o jogo.
-	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY)) {
+	if (input.QuitRequested()) {
 		quitRequested = true;
 	}
 
-	if (input.KeyPress(A_KEY) || input.KeyPress(LEFT_ARROW_KEY)) {
-		if(opt == OPTIONS)
-			opt = PLAY;
-		else if(opt == QUIT)
-			opt = OPTIONS;
+	if(!controlScreen) {
+		if (input.KeyPress(A_KEY) || input.KeyPress(LEFT_ARROW_KEY)) {
+			if(opt == OPTIONS)
+				opt = PLAY;
+			else if(opt == QUIT)
+				opt = OPTIONS;
 
-	if(changeSelection)
-		changeSelection->Play(1);
-		
-	}
-	if (input.KeyPress(D_KEY) || input.KeyPress(RIGHT_ARROW_KEY)) {
-		if(opt == PLAY)
-			opt = OPTIONS;
-		else if(opt == OPTIONS)
-			opt = QUIT;
+			if(changeSelection)
+				changeSelection->Play(1);
+			
+		}
+		if (input.KeyPress(D_KEY) || input.KeyPress(RIGHT_ARROW_KEY)) {
+			if(opt == PLAY)
+				opt = OPTIONS;
+			else if(opt == OPTIONS)
+				opt = QUIT;
 
-		if(changeSelection)
-			changeSelection->Play(1);
+			if(changeSelection)
+				changeSelection->Play(1);
+		}
+		if(input.KeyPress(ESCAPE_KEY))
+			quitRequested = true;
+	} else {
+		if(input.KeyPress(ESCAPE_KEY)){
+			controlsgo->RemoveComponent(controlScreen);
+			controlsgo->RemoveComponent(cmfll);
+			cmfll = nullptr;
+			controlScreen = nullptr;
+			if(select)
+				select->Play(1);
+		}
 	}
 
 	switch (opt)
@@ -136,7 +158,7 @@ void TitleState::Update(float dt) {
 		break;
 
 		case OPTIONS:
-			selection->box.Centered({370, 550});
+			selection->box.Centered({350, 550});
 		break;
 
 		case QUIT:
@@ -162,6 +184,17 @@ void TitleState::Update(float dt) {
 				if(select)
 					select->Play(1);
 			break;
+
+			case OPTIONS:
+				if(!controlScreen){
+					controlScreen = new Sprite(*controlsgo, TITLE_STT_BGCTRLS);
+					cmfll = new CameraFollower(*controlsgo);
+					controlsgo->AddComponent(cmfll);
+					controlsgo->AddComponent(controlScreen);
+					if(select)
+						select->Play(1);
+				}
+				break;
 
 			default:
 				if(select)

@@ -14,6 +14,7 @@ class TitleState : public State
 {
 private:
 	GameObject* selection;
+	std::shared_ptr<GameObject> controlsgo;
 	enum Option { PLAY, OPTIONS, QUIT };
 	Option opt;
 	Music bgMusic;

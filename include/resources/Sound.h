@@ -27,6 +27,7 @@ public:
 	bool IsOpen();
 
 	void FadeOut(int);
+	void PlayFadeIn(int, int = MIX_MAX_VOLUME/2, int = 1, int = -1);
 
 	void Update(float);
 	void Render();
