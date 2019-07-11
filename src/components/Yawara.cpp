@@ -208,62 +208,22 @@ void Yawara::Update(float dt) {
 
 	// Boosters.
 	if(boostMap[HPBOOST].isBoosted){
-		static Timer hpTimer;
-
-		if(hpTimer.Get() == 0)
-			hp = YWR_HP * boostMap[HPBOOST].factor;
-
-		hpTimer.Update(dt);
-
-		if(hpTimer.Get() >= 15){
-			hpTimer.Restart();
-
-			if(hp > YWR_HP)
-				hp = YWR_HP;
-
-			boostMap[HPBOOST] = {false, 1};
-		}
+		hp += (boostMap[HPBOOST].factor - 1) * YWR_HP;
+		boostMap[HPBOOST] = {false, 1};
 	}
 	if(boostMap[ATTBOOST].isBoosted){
-		static Timer attTimer;
-
-		if(attTimer.Get() == 0){
-			att = YWR_ATT * boostMap[ATTBOOST].factor;
-			std::shared_ptr<GameObject> tp_go = tapu.lock();
-			if(tp_go){
-				Tapu* tp =  static_cast<Tapu*> (tp_go->GetComponent("Tapu"));
-				if(tp)
-					tp->SetDamageFactor(boostMap[ATTBOOST].factor);
-			}
+		att += (boostMap[ATTBOOST].factor - 1) * YWR_ATT;
+		std::shared_ptr<GameObject> tp_go = tapu.lock();
+		if(tp_go){
+			Tapu* tp =  static_cast<Tapu*> (tp_go->GetComponent("Tapu"));
+			if(tp)
+				tp->SetDamageFactor(tp->GetDamageFactor() + (boostMap[ATTBOOST].factor - 1));
 		}
-
-		attTimer.Update(dt);
-
-		if(attTimer.Get() >= 15){
-			attTimer.Restart();
-			att = YWR_ATT;
-			boostMap[ATTBOOST] = {false, 1};
-			std::shared_ptr<GameObject> tp_go = tapu.lock();
-			if(tp_go){
-				Tapu* tp =  static_cast<Tapu*> (tp_go->GetComponent("Tapu"));
-				if(tp)
-					tp->SetDamageFactor(1);
-			}
-		}
+		boostMap[ATTBOOST] = {false, 1};
 	}
 	if(boostMap[DEFBOOST].isBoosted){
-		static Timer defTimer;
-
-		if(defTimer.Get() == 0)
-			def = YWR_DEF * boostMap[DEFBOOST].factor;
-
-		defTimer.Update(dt);
-
-		if(defTimer.Get() >= 15){
-			defTimer.Restart();
-			def = YWR_DEF;
-			boostMap[DEFBOOST] = {false, 1};
-		}
+		def += (boostMap[DEFBOOST].factor - 1) * YWR_DEF;
+		boostMap[DEFBOOST] = {false, 1};
 	}
 
 	// Act or dead.
@@ -305,6 +265,24 @@ void Yawara::Update(float dt) {
 	} else {
 		Comand(dt);
 		DoAction(dt);
+		static InputManager& input = InputManager::GetInstance();
+
+		if(input.KeyPress(SDLK_F1)) {
+			Boost(HPBOOST, 1.5);
+			Boost(DEFBOOST, 1.1);
+			Boost(ATTBOOST, 1.5);
+		}
+		if(input.KeyPress(SDLK_F2)) {
+			hp = YWR_HP;
+			def = YWR_DEF;
+			att = YWR_ATT;
+			std::shared_ptr<GameObject> tp_go = tapu.lock();
+			if(tp_go){
+				Tapu* tp =  static_cast<Tapu*> (tp_go->GetComponent("Tapu"));
+				if(tp)
+					tp->SetDamageFactor(1);
+			}
+		}
 	}
 }
 
