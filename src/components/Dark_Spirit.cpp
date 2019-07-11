@@ -81,7 +81,7 @@ Dark_Spirit::~Dark_Spirit(){
 void Dark_Spirit::Update(float dt) {
 
     hitTimer.Update(dt);
-    
+
     if (Yawara::player != nullptr)
 	{
 		yawaraPos = Yawara::player->GetCenterPos();
@@ -235,7 +235,7 @@ void Dark_Spirit::Update(float dt) {
 
 		case BASIC_ATTACK:
             attackTimer.Update(dt);
-            if (/*!startedAttack && */ attackTimer.Get() > 0.3)
+            if (attackTimer.Get() > 0.5)
 			{
                 GameObject *bullet_GO = new GameObject;
                 std::weak_ptr<GameObject> weak_bullet = Game::GetInstance().GetCurrentState().AddObject(bullet_GO);
