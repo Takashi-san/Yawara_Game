@@ -283,6 +283,9 @@ void Yawara::Update(float dt) {
 					tp->SetDamageFactor(1);
 			}
 		}
+		if(input.KeyPress(SDLK_F3)) {
+			hp = 0;
+		}
 	}
 }
 
