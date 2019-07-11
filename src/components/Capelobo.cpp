@@ -115,7 +115,7 @@ Capelobo::Capelobo(GameObject &associated, float restOffset) : Enemy(associated)
 	speed = Vec2{0,0};
 
 	state = SLEEPING;
-	hp = 6;
+	hp = 60;
 	this->restOffset = restOffset;
 }
 
@@ -389,7 +389,7 @@ void Capelobo::Update(float dt)
 				shared_tongue->box.x = associated.box.Center().x - shared_tongue->box.w / 2;
 				shared_tongue->box.y = associated.box.Center().y;
 
-				int angle = (Yawara::player->GetCenterPos() - associated.box.Center()).Inclination();
+				int angle = (yawaraPos - associated.box.Center()).Inclination();
 				if (angle < 0)
 					angle += 360;
 
@@ -715,5 +715,5 @@ void Capelobo::Render()
 
 bool Capelobo::Is(std::string type)
 {
-	return !strcmp(type.c_str(), "Capelobo");
+	return !std::min(strcmp(type.c_str(), "Capelobo"),strcmp(type.c_str(), "Enemy"));
 }
