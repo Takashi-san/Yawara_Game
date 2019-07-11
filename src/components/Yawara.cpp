@@ -41,14 +41,6 @@
 #define YWR_IDLE_UL			"assets/img/yawara/yawara_idle_up_left.png"
 #define YWR_IDLE_UR			"assets/img/yawara/yawara_idle_up_right.png"
 
-#define YWR_SHADOW_LR			"assets/img/yawara/yawara_shadow.png"
-#define YWR_SHADOW_D			"assets/img/yawara/yawara_shadow_down.png"
-#define YWR_SHADOW_U			"assets/img/yawara/yawara_shadow_up.png"
-#define YWR_SHADOW_DL			"assets/img/yawara/yawara_shadow_down_left.png"
-#define YWR_SHADOW_DR			"assets/img/yawara/yawara_shadow_down_right.png"
-#define YWR_SHADOW_UL			"assets/img/yawara/yawara_shadow_up_left.png"
-#define YWR_SHADOW_UR			"assets/img/yawara/yawara_shadow_up_right.png"
-
 #define YWR_RUN_FRAME		9
 #define YWR_RUN_TIME		0.07
 #define YWR_RUN_D			"assets/img/yawara/yawara_run_down.png"
@@ -198,6 +190,10 @@ int Yawara::GetHP() {
 
 int Yawara::GetMaxHP() {
 	return YWR_HP;
+}
+
+int Yawara::GetDirection() {
+	return dir;
 }
 
 void Yawara::Update(float dt) {
