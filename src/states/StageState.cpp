@@ -25,7 +25,7 @@
 #include "Tilesets.h"
 #include "Tilemaps.h"
 
-#define STAGE_STT_BG "assets/penguin/img/ocean.jpg"
+#define STAGE_STT_BG "assets/img/background/fundo.png"
 #define STAGE_STT_BGM "assets/audio/musica/tema_triste.ogg"
 #define STAGE_STT_CURSOR_SPRITE "assets/img/cursor/cursor.png"
 #define STAGE_STT_CAMERA_RATIO 0.37
@@ -34,8 +34,6 @@ StageState::StageState()
 {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
-
-	Floor::Load(CL_MAP1, TILE, TILE);
 
 	// Background
 	GameObject *gobg = new GameObject();
@@ -74,6 +72,12 @@ StageState::StageState()
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_16_pilar", 4, 9, 80, 80, TS_PILAR, TS_PILAR_W, TS_PILAR_H);
 
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_17_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
+
+	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_30_nuvem1", 4, 9, 80, 80, TS_NUVEM1, TS_NUVEM1_W, TS_NUVEM1_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_31_nuvem2", 4, 9, 80, 80, TS_NUVEM2, TS_NUVEM2_W, TS_NUVEM2_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_32_nuvem3", 4, 9, 80, 80, TS_NUVEM3, TS_NUVEM3_W, TS_NUVEM3_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_33_nuvem4", 4, 9, 80, 80, TS_NUVEM4, TS_NUVEM4_W, TS_NUVEM4_H);
+	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_34_nuvem5", 4, 9, 80, 80, TS_NUVEM5, TS_NUVEM5_W, TS_NUVEM5_H);
 
 	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
 	
