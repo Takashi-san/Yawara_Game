@@ -21,6 +21,7 @@
 #include "DefenseRune.h"
 #include "HealthFeedback.h"
 #include "MapColision.h"
+#include "YawaraShadow.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -187,6 +188,13 @@ StageState::StageState()
 	ptr = weak_ptr.lock();
 	HealthFeedback* hfb = new HealthFeedback(*ptr);
 	ptr->AddComponent(hfb);
+
+	// YawaraShadow.
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	YawaraShadow* ysh = new YawaraShadow(*ptr);
+	ptr->AddComponent(ysh);
 
 	// Yawara
 	GameObject *goya = new GameObject();
