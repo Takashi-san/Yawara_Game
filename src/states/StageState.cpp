@@ -174,6 +174,7 @@ StageState::StageState()
 	ptr->box.Centered(1300,500);
 	ptr->AddComponent(rune3);
 
+	/*
 	// Capelobo
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
@@ -181,6 +182,7 @@ StageState::StageState()
 	Capelobo *cape = new Capelobo(*ptr, 0.1);
 	ptr->box.Centered({512, 850});
 	ptr->AddComponent(cape);
+	*/
 
 	// HealthFeedback.
 	GameObject* go = new GameObject();

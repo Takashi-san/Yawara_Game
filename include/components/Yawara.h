@@ -50,6 +50,8 @@ private:
 
 	bool gotHit;
 	bool isDead;
+	float walkdif;
+	float walkbase;
 
 	void Comand(float);
 	void DoAction(float);
