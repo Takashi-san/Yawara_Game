@@ -65,11 +65,11 @@ const std::string REST_RIGHT_UP		= "assets/img/capelobo/capelobo_idle_right_up.p
 
 const std::string ATTACK_RIGHT		= "assets/img/capelobo/capelobo_attack_r.png";
 const std::string ATTACK_RIGHT_DOWN	= "assets/img/capelobo/capelobo_attack_r.png";
-const std::string ATTACK_DOWN		= "assets/img/capelobo/capelobo_attack_r.png";
+const std::string ATTACK_DOWN		= "assets/img/capelobo/capelobo_attack_d.png";
 const std::string ATTACK_LEFT_DOWN	= "assets/img/capelobo/capelobo_attack_l.png";
 const std::string ATTACK_LEFT		= "assets/img/capelobo/capelobo_attack_l.png";
 const std::string ATTACK_LEFT_UP	= "assets/img/capelobo/capelobo_attack_l.png";
-const std::string ATTACK_UP			= "assets/img/capelobo/capelobo_attack_r.png";
+const std::string ATTACK_UP			= "assets/img/capelobo/capelobo_attack_u.png";
 const std::string ATTACK_RIGHT_UP	= "assets/img/capelobo/capelobo_attack_r.png";
 
 // Load attack sprites
@@ -111,7 +111,7 @@ Capelobo::Capelobo(GameObject &associated, float restOffset) : Enemy(associated)
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(sp);
 	associated.AddComponent(cl);
-	
+
 	speed = Vec2{0,0};
 
 	state = SLEEPING;
@@ -121,9 +121,6 @@ Capelobo::Capelobo(GameObject &associated, float restOffset) : Enemy(associated)
 
 void Capelobo::Start()
 {
-	std::weak_ptr<GameObject> weak_ptr;
-	std::shared_ptr<GameObject> ptr;
-	
 	// Reset all timers
 	restTimer.Restart();
 	moveTimer.Restart();
@@ -188,6 +185,7 @@ void Capelobo::Update(float dt)
 					cplbStartedAttack = false;
 					cplbSpriteChanged = false;
 					state = BASIC_ATTACK;
+					velAttackOffset = 1;
 					cplbStartedMoving = false;
 					break;
 				}
@@ -295,8 +293,11 @@ void Capelobo::Update(float dt)
 				cplbSpriteChanged = true;
 			}
 
+			if(dir == UP || dir == DOWN)
+				velAttackOffset = 2;
+
 			// Create Hitbox if it wasn't created yet. Create it 0.3s after render the sprite (time that he actualy attack on the sprite)
-			if (!cplbStartedAttack && attackTimer.Get() > 0.3)
+			if (!cplbStartedAttack && attackTimer.Get() > 0.3 * velAttackOffset)
 			{
 				// Create first Claw hitbox
 				GameObject *clawGO = new GameObject();
@@ -495,7 +496,6 @@ void Capelobo::Update(float dt)
 			// so->Play(1);
 		}
 		ptr->box.Centered(associated.box.Center());
-		ptr->AddComponent(sp);
 		
 	}
 }
@@ -622,13 +622,15 @@ void Capelobo::Render()
 				break;
 
 			case UP:
+				sp->SetFrameTime(0.15);
 				sp->Open(ATTACK_UP);
-				sp->SetFrameCount(16);
+				sp->SetFrameCount(5);
 				break;
 
 			case DOWN:
+				sp->SetFrameTime(0.15);
 				sp->Open(ATTACK_DOWN);
-				sp->SetFrameCount(16);
+				sp->SetFrameCount(5);
 				break;
 
 			case RIGHT_UP:
