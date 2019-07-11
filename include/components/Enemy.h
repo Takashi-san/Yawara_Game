@@ -27,7 +27,7 @@ protected:
 	bool moveAllowed;
 
 	enum Direction { RIGHT, RIGHT_UP, UP, LEFT_UP, LEFT, LEFT_DOWN, DOWN, RIGHT_DOWN};
-	enum Action { MOVING, RESTING, SLEEPING, BASIC_ATTACK, LOAD_ATTACK };
+	enum Action { MOVING, PURSUE, RESTING, SLEEPING, BASIC_ATTACK, LOAD_ATTACK };
 	Direction dir;
 	Action state;
 
@@ -39,7 +39,6 @@ protected:
 
 	int safeX;
 	int safeY;
-	Vec2 enemyPos;
 
 public:
 	
