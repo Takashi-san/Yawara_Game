@@ -4,6 +4,8 @@
 #include "Yawara.h"
 #include "Bullet.h"
 #include "Game.h"
+#include "Hitbox.h"
+#include "Capelobo.h"
 
 #define SPRT_SPEED              250
 #define SPRT_BULLET_SPEED       750
@@ -14,13 +16,14 @@
 #define REST_LIMIT              1.5
 const std::string SPRT_BULLET_SOURCE = "assets/img/tapu/disparo.png";
 
-#define SPRT_ENEMY_DIST_Y 50
-#define SPRT_ENEMY_DIST_X 50
+#define SPRT_ENEMY_DIST_Y 250
+#define SPRT_ENEMY_DIST_X 250
 
-#define SPRT_DIST_DETECT_YAWARA 400
-#define SPRT_DIST_OUT_OF_RANGE 600
-#define SPRT_FREE_TIME_MOVEMENT 1
-#define SPRT_LIMIT_TIME_MOVEMENT 1.5
+#define SPRT_DIST_DETECT_YAWARA     400
+#define SPRT_DIST_OUT_OF_RANGE      600
+#define SPRT_FREE_TIME_MOVEMENT     1
+#define SPRT_PURSUE_MOVEMENT        2 
+#define SPRT_LIMIT_TIME_MOVEMENT    1.5
 
 // Movement sprites
 
@@ -114,6 +117,7 @@ void Dark_Spirit::Update(float dt) {
             }
             if((yawaraPos - associated.box.Center()).Modulo() <= SPRT_DIST_DETECT_YAWARA){
                 state = PURSUE;
+                rangeOffset = 0;
                 restOffset = 1;
                 moveTimer.Restart();
                 sprtStartedMoving = true;
@@ -122,17 +126,17 @@ void Dark_Spirit::Update(float dt) {
             break;
         case PURSUE:
             moveTimer.Update(dt);
-			if ((yawaraPos - associated.box.Center()).Modulo() < SPRT_DIST_OUT_OF_RANGE && moveAllowed)
+			if ((yawaraPos - associated.box.Center()).Modulo() < SPRT_DIST_OUT_OF_RANGE + rangeOffset && moveAllowed)
 			{
 				if ((yawaraPos - associated.box.Center()).Modulo() != 0)
 					speed = ((yawaraPos - associated.box.Center()) / ((yawaraPos - associated.box.Center()).Modulo())) * SPRT_SPEED;
 				else
 					speed = {0, 0};
 
-				// Yawara is nearby the Capelobo.
+				// Yawara is nearby the enemy ore it moved for too long.
 				if (moveTimer.Get() > SPRT_LIMIT_TIME_MOVEMENT || ((associated.box.Center().x <= SPRT_ENEMY_DIST_X + yawaraPos.x + dt * abs(speed.x)) && (associated.box.Center().x >= -SPRT_ENEMY_DIST_X + yawaraPos.x - dt * abs(speed.x)) &&
 					 (associated.box.Center().y <= SPRT_ENEMY_DIST_Y + yawaraPos.y + dt * abs(speed.y)) && (associated.box.Center().y >= -SPRT_ENEMY_DIST_Y + yawaraPos.y - dt * abs(speed.y))) ||
-					!moveAllowed)
+					!moveAllowed || moveTimer.Get() > SPRT_PURSUE_MOVEMENT)
 				{
 					// Stop moving.
 					speed.x = 0;
@@ -210,7 +214,14 @@ void Dark_Spirit::Update(float dt) {
 			// Rest for a determinated time
 			if (restTimer.Get() > REST_LIMIT - restOffset)
 			{
-
+                if((yawaraPos - associated.box.Center()).Modulo() <= SPRT_DIST_DETECT_YAWARA){
+                    state = PURSUE;
+                    rangeOffset = 0;
+                    restOffset = 1;
+                    moveTimer.Restart();
+                    sprtStartedMoving = true;
+                    break;
+                }
 				state = MOVING;
                 restOffset = 0;
 				moveAllowed = 1;
@@ -226,15 +237,45 @@ void Dark_Spirit::Update(float dt) {
                 std::weak_ptr<GameObject> weak_bullet = Game::GetInstance().GetCurrentState().AddObject(bullet_GO);
                 std::shared_ptr<GameObject> ptr = weak_bullet.lock();
 
-                int angle = (yawaraPos - associated.box.Center()).Inclination();
-				std::cout << angle << '\t';
-                angle = angle + (45 - angle % 45);
+                float angle = (yawaraPos - associated.box.Center()).Inclination();
+                
 				if (angle <= 0)
 					angle += 360;
-                if (angle > 360)
-                    angle -= 360;
+                    
+                if(angle >= 337.5 || angle < 22.5){
+					angle = 360;
+					dir = RIGHT;
+				}
+				else if(angle >= 22.5 && angle < 67.5){
+					angle = 45;
+					dir = RIGHT_DOWN;	
+				}
+				else if(angle >= 67.5 && angle < 112.5){
+					angle = 90;
+					dir = DOWN;
+				}
+				else if(angle >= 112.5 && angle < 157.5){
+					angle = 135;
+					dir = LEFT_DOWN;
+				}
+				else if(angle >= 157.5 && angle < 202.5){
+					angle = 180;
+					dir = LEFT;
+				}
+				else if(angle >= 202.5 && angle < 247.5){
+					angle = 225;
+					dir = LEFT_UP;
+				}
+				else if(angle >= 247.5 && angle < 292.5){
+					angle = 270;
+					dir = UP;
+				}
+				else{
+					angle = 315;
+					dir = RIGHT_UP;
+				}
 
-                std::cout << angle << std::endl;
+                angle *= PI/180;
 
                 Bullet *bullet = new Bullet(*ptr, angle, SPRT_BULLET_SPEED, SPRT_BULLET_DAMAGE, SPRT_BULLET_DISTANCE, SPRT_BULLET_SOURCE, SPRT_BULLET_FRAMES, SPRT_BULLET_FM_TIME, true);
                 ptr->box.Centered(associated.box.Center());
@@ -251,172 +292,65 @@ void Dark_Spirit::Update(float dt) {
         default:
             break;
 		}
+        if(hp <= 0){
+            state = RESTING;
+            deathTimer.Update(dt);
+            
+            GameObject *go = new GameObject();
+            std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+            std::shared_ptr<GameObject> ptr = weak_ptr.lock();
+            Sprite *sp;
+
+            if(deathTimer.Get() < DEATH_EFFECT_TIME){}
+            else{
+                if(Capelobo::boss != nullptr){
+                    GameObject *goSpirit = new GameObject();
+                    std::weak_ptr<GameObject> weak_ptr_sprt = Game::GetInstance().GetCurrentState().AddObject(goSpirit);
+                    std::shared_ptr<GameObject> ptr_sprt = weak_ptr_sprt.lock();
+                    Dark_Spirit *sprt = new Dark_Spirit(*ptr_sprt);
+                    ptr_sprt->box.Centered({associated.box.x + rand()%2500 - rand()%2500, associated.box.y + rand()%500 - rand()%500});
+                    if(ptr_sprt->box.Center().x < 0)
+                        ptr_sprt->box.Centered({associated.box.x + rand()%2500, ptr_sprt->box.Center().y});
+                    if(ptr_sprt->box.Center().y < 0)
+                        ptr_sprt->box.Centered({ptr_sprt->box.Center().x, associated.box.y + rand()%2500});
+                    ptr_sprt->AddComponent(sprt);
+                }
+                associated.RequestDelete();
+				// sp = new Sprite(*ptr, DEATH_RIGHT, 9, 0.1, 9 * 0.1);
+                // Sound *so = new Sound(*ptr, "assets/audio/boom.wav");
+                // ptr->AddComponent(so);
+
+                // so->Play(1);
+            }
+        }
 	}
 }
 
 void Dark_Spirit::Render() {
     Vec2 position = associated.box.Center();
 
-	// Sprite *sp = static_cast<Sprite *>(associated.GetComponent("Sprite"));
-	// if (change_sprite && sp)
-	// {
-	// 	change_sprite = false;
-		// if (state == MOVING)
-		// {
-		// 	sp->SetFrameTime(0.1);
-		// 	switch (dir)
-		// 	{
-		// 	case RIGHT:
-		// 		sp->Open(MOVE_RIGHT);
-		// 		sp->SetFrameCount(12);
-		// 		break;
+}
 
-		// 	case LEFT:
-		// 		sp->Open(MOVE_LEFT);
-		// 		sp->SetFrameCount(12);
-		// 		break;
+void Dark_Spirit::NotifyCollision(GameObject& other){
+    if (other.GetComponent("Bullet") && !static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer){
+		hp -= static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
+        
+        //  If the enemy can't see Yawara and got hit, it will enhance the range off vision and start pursuing Yawara
 
-		// 	case UP:
-		// 		sp->Open(MOVE_UP);
-		// 		sp->SetFrameCount(12);
-		// 		break;
-
-		// 	case DOWN:
-		// 		sp->Open(MOVE_DOWN);
-		// 		sp->SetFrameCount(12);
-		// 		break;
-
-		// 	case RIGHT_UP:
-		// 		sp->Open(MOVE_RIGHT_UP);
-		// 		sp->SetFrameCount(12);
-		// 		break;
-
-		// 	case RIGHT_DOWN:
-		// 		sp->Open(MOVE_RIGHT_DOWN);
-		// 		sp->SetFrameCount(12);
-		// 		break;
-
-		// 	case LEFT_UP:
-		// 		sp->Open(MOVE_LEFT_UP);
-		// 		sp->SetFrameCount(12);
-		// 		break;
-
-		// 	case LEFT_DOWN:
-		// 		sp->Open(MOVE_LEFT_DOWN);
-		// 		sp->SetFrameCount(12);
-		// 		break;
-
-		// 	default:
-		// 		break;
-		// 	}
-		// }
-		// else if (state == RESTING)
-		// {
-		// 	sp->SetFrameTime(0.15);
-		// 	switch (dir)
-		// 	{
-		// 	case RIGHT:
-		// 		sp->Open(REST_RIGHT);
-		// 		sp->SetFrameCount(8);
-		// 		break;
-
-		// 	case LEFT:
-		// 		sp->Open(REST_LEFT);
-		// 		sp->SetFrameCount(8);
-		// 		break;
-
-		// 	case UP:
-		// 		sp->Open(REST_UP);
-		// 		sp->SetFrameCount(8);
-		// 		break;
-
-		// 	case DOWN:
-		// 		sp->Open(REST_DOWN);
-		// 		sp->SetFrameCount(8);
-		// 		break;
-
-		// 	case RIGHT_UP:
-		// 		sp->Open(REST_RIGHT_UP);
-		// 		sp->SetFrameCount(8);
-		// 		break;
-
-		// 	case RIGHT_DOWN:
-		// 		sp->Open(REST_RIGHT_DOWN);
-		// 		sp->SetFrameCount(8);
-		// 		break;
-
-		// 	case LEFT_UP:
-		// 		sp->Open(REST_LEFT_UP);
-		// 		sp->SetFrameCount(8);
-		// 		break;
-
-		// 	case LEFT_DOWN:
-		// 		sp->Open(REST_LEFT_DOWN);
-		// 		sp->SetFrameCount(8);
-		// 		break;
-
-		// 	default:
-		// 		break;
-		// 	}
-		// }
-		// else if (state == BASIC_ATTACK)
-		// {
-		// 	sp->SetFrameTime(0.05);
-		// 	switch (dir)
-		// 	{
-		// 	case RIGHT:
-		// 		sp->Open(ATTACK_RIGHT);
-		// 		sp->SetFrameCount(16);
-		// 		break;
-
-		// 	case LEFT:
-		// 		sp->Open(ATTACK_LEFT);
-		// 		sp->SetFrameCount(16);
-		// 		break;
-
-		// 	case UP:
-		// 		sp->Open(ATTACK_UP);
-		// 		sp->SetFrameCount(16);
-		// 		break;
-
-		// 	case DOWN:
-		// 		sp->Open(ATTACK_DOWN);
-		// 		sp->SetFrameCount(16);
-		// 		break;
-
-		// 	case RIGHT_UP:
-		// 		sp->Open(ATTACK_RIGHT_UP);
-		// 		sp->SetFrameCount(16);
-		// 		break;
-
-		// 	case RIGHT_DOWN:
-		// 		sp->Open(ATTACK_RIGHT_DOWN);
-		// 		sp->SetFrameCount(16);
-		// 		break;
-
-		// 	case LEFT_UP:
-		// 		sp->Open(ATTACK_LEFT_UP);
-		// 		sp->SetFrameCount(16);
-		// 		break;
-
-		// 	case LEFT_DOWN:
-		// 		sp->Open(ATTACK_LEFT_DOWN);
-		// 		sp->SetFrameCount(16);
-		// 		break;
-
-		// 	default:
-		// 		break;
-		// 	}
-		// }
-		// else if(state == SLEEPING){
-			// sp->SetFrameTime(0.08);
-			// sp->Open(LOAD_LEFT_DOWN);
-			// sp->SetFrameCount(4);
-	// 	}
-	// }
-	// associated.box.Centered(position);
+        if(state == MOVING || state == RESTING){
+            rangeOffset = 300;
+            state = PURSUE;
+            moveTimer.Restart();
+            sprtStartedMoving = true;
+        }
+    }
+	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
+	if (hitbox && !(hitbox->targetsPlayer) && hitTimer.Get() > HIT_COOL_DOWN) {
+		hp -= hitbox->GetDamage();
+		hitTimer.Restart();
+	}
 }
 
 bool Dark_Spirit::Is(std::string type){
-    return !strcmp(type.c_str(), "Dark_Spirit");
+	return !std::min(strcmp(type.c_str(), "Dark_Spirit"),strcmp(type.c_str(), "Enemy"));
 }
