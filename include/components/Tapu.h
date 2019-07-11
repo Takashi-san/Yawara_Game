@@ -35,4 +35,5 @@ class Tapu : public Component
         void Shoot();
 
         void SetDamageFactor(float);
+        float GetDamageFactor();
 };
