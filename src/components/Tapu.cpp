@@ -262,8 +262,13 @@ void Tapu::Shoot()
 	shoot->PlayFadeIn(800);
 }
 
-void Tapu::SetDamageFactor(float factor){
+void Tapu::SetDamageFactor(float factor) {
 	damageFactor = factor;
+}
+
+float Tapu::GetDamageFactor() {
+
+	return damageFactor;
 }
 		
 void Tapu::NotifyCollision(GameObject &other)
