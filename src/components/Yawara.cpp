@@ -25,8 +25,8 @@
 #define YWR_DGE_CD		0.5
 #define YWR_DGE_ACT		0.2
 
-#define YWR_DGE 		"assets/penguin/img/dash.png"
-#define YWR_DGE_FRAME 	4
+#define YWR_DGE 		"assets/img/yawara/yawara_dash.png"
+#define YWR_DGE_FRAME 	5
 #define YWR_DGE_TIME	0.04
 
 #define YWR_SIT_GO		5
