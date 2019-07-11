@@ -26,9 +26,8 @@ PauseState::PauseState()
 	ptr->box.x = Camera::pos.x;
 	ptr->box.y = Camera::pos.y;
 	Sprite *sp = new Sprite(*ptr, PAUSE_STT_BG);
-	CameraFollower *cmfl = new CameraFollower(*ptr);
+	sp->SetFullscreen();
 	ptr->AddComponent(sp);
-	ptr->AddComponent(cmfl);
 
 	// Pause txt.
 	GameObject *t1go = new GameObject();

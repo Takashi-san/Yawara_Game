@@ -32,6 +32,7 @@ EndState::EndState() {
 		ptr->box.x = 0;
 		ptr->box.y = 0;
 		Sprite *bg = new Sprite(*ptr, END_STT_BG);
+		bg->SetFullscreen();
 		CameraFollower *cmfl = new CameraFollower(*ptr);
 		ptr->AddComponent(bg);
 		ptr->AddComponent(cmfl);
