@@ -27,11 +27,14 @@
 
 #define YWR_SIT_GO		5
 #define YWR_SIT_FRAME	4
-#define YWR_SIT_TIME	0.07
+#define YWR_SIT_TIME	0.1
 #define YWR_SIT_R 		"assets/img/yawara/yawara_sit_right.png"
 #define YWR_SIT_L 		"assets/img/yawara/yawara_sit_left.png"
 
-#define YWR_IDLE_FRAME		1
+#define YWR_IDLE_FRAME		5
+#define YWR_IDLE_FRAME_LR	4
+#define YWR_IDLE_FRAME_D	6
+#define YWR_IDLE_TIME		0.1
 #define YWR_IDLE_D			"assets/img/yawara/yawara_idle_down.png"
 #define YWR_IDLE_U			"assets/img/yawara/yawara_idle_up.png"
 #define YWR_IDLE_L			"assets/img/yawara/yawara_idle_left.png"
@@ -549,40 +552,48 @@ void Yawara::SetMov() {
 				switch (dir) {
 					case RIGHT:
 						sp->Open(YWR_IDLE_R);
+						sp->SetFrameCount(YWR_IDLE_FRAME_LR);
 					break;
 
 					case LEFT:
 						sp->Open(YWR_IDLE_L);
+						sp->SetFrameCount(YWR_IDLE_FRAME_LR);
 					break;
 
 					case UP:
 						sp->Open(YWR_IDLE_U);
+						sp->SetFrameCount(YWR_IDLE_FRAME);
 					break;
 
 					case DOWN:
 						sp->Open(YWR_IDLE_D);
+						sp->SetFrameCount(YWR_IDLE_FRAME_D);
 					break;
 
 					case UP_RIGHT:
 						sp->Open(YWR_IDLE_UR);
+						sp->SetFrameCount(YWR_IDLE_FRAME);
 					break;
 
 					case DOWN_RIGHT:
 						sp->Open(YWR_IDLE_DR);
+						sp->SetFrameCount(YWR_IDLE_FRAME_D);
 					break;
 
 					case UP_LEFT:
 						sp->Open(YWR_IDLE_UL);
+						sp->SetFrameCount(YWR_IDLE_FRAME);
 					break;
 
 					case DOWN_LEFT:
 						sp->Open(YWR_IDLE_DL);
+						sp->SetFrameCount(YWR_IDLE_FRAME_D);
 					break;
 
 					default:
 					break;
 				}
-				sp->SetFrameCount(YWR_IDLE_FRAME);
+				sp->SetFrameTime(YWR_IDLE_TIME);
 			}
 		} else {
 			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
@@ -633,6 +644,7 @@ void Yawara::SetMov() {
 					break;
 				}
 				sp->SetFrameCount(YWR_RUN_FRAME);
+				sp->SetFrameTime(YWR_RUN_TIME);
 			}
 		}
 		associated.box.Centered(position);
