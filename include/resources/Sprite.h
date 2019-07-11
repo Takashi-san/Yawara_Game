@@ -47,6 +47,8 @@ private:
 	Timer selfDestructCount;
 	float secondsToSelfDestruct;
 
+	bool backwards;
+
 public:
 	Sprite(GameObject &);
 	Sprite(GameObject &, std::string, int = 1, float = 0, float = 0, int = -1);
@@ -67,6 +69,7 @@ public:
 	void SetFrameCount(int);
 	void SetFrameTime(float);
 	void SetStopFrame(int);
+	int GetFrame();
 
 	void Stop();
 	void Resume();
@@ -81,6 +84,8 @@ public:
 	void SetBlendMode(int);
 
 	void SetSelfDestruct(float);
+
+	void SetReverse(bool);
 
 	void Update(float dt);
 	bool Is(std::string type);
