@@ -4,9 +4,13 @@
 #include "Timer.h"
 #include "Easing.h"
 
+#include <algorithm>
+
 #define BASE_HEALTHRUNE_FILE            "assets/img/items/cristal_base.png"
 #define BASE_HEALTHRUNE_FRAMES          3
 #define TOP_HEALTHRUNE_FILE             "assets/img/items/cristal_brilho.png"
+
+#define HEALTHRUNE_SOUND                "assets/audio/sons/interacao_cristal.ogg"
 
 #define HEALTHRUNE_ACTIVATION_DISTANCE  45
 #define HEALTHRUNE_COOLDOWN_TIME        30
@@ -20,7 +24,7 @@ HealthRune::HealthRune(GameObject& associated, float hpFactor, Color color) : It
     sp->SetStopFrame(color);
 	associated.AddComponent(sp);
 
-    activationSound = new Sound(associated, RUNE_SOUND_PATH);
+    activationSound = new Sound(associated, HEALTHRUNE_SOUND);
     associated.AddComponent(activationSound);
 
     this->hpFactor = hpFactor;
