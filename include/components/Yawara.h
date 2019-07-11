@@ -15,10 +15,6 @@
 #include <unordered_map>
 #include <vector>
 
-#define SAFE_DISTANCE_UP 16 * 0.7
-#define SAFE_DISTANCE_DOWN 48 * 0.7
-#define HIT_COOL_DOWN 1
-
 class Yawara : public Component{
 private:
 	Vec2 speed;
@@ -49,6 +45,10 @@ private:
 
 	Howl* howl;
 	Sound* bite;
+	Sound* hit_scream;
+
+	bool gotHit;
+	bool isDead;
 
 	void Comand(float);
 	void DoAction(float);

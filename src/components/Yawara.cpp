@@ -16,14 +16,18 @@
 #define YWR_SPEED		500
 #define YWR_ATT			15
 #define YWR_DEF			1
+#define YWR_HIT_COOL_DOWN 	1
+
+#define YWR_ATK_CD		0.5
+#define YWR_HOWL_CD		0.5
 
 #define YWR_DGE_SPEED	2000
 #define YWR_DGE_CD		0.5
 #define YWR_DGE_ACT		0.2
 
-#define YWR_ATK_CD		0.5
-
-#define YWR_HOWL_CD		0.5
+#define YWR_DGE 		"assets/penguin/img/dash.png"
+#define YWR_DGE_FRAME 	4
+#define YWR_DGE_TIME	0.04
 
 #define YWR_SIT_GO		5
 #define YWR_SIT_FRAME	4
@@ -89,7 +93,8 @@
 #define YWR_DEATH_EXTRA		2
 #define YWR_DEATH_R			"assets/img/yawara/yawara_death_right.png"
 #define YWR_DEATH_L			"assets/img/yawara/yawara_death_left.png"
-#define YWR_DEATH_SOUND		"assets/penguin/audio/boom.wav"
+
+#define YWR_HIT_SOUND		"assets/audio/sons/yawara/yawara_hit.ogg"
 
 Yawara* Yawara::player;
 
@@ -103,6 +108,8 @@ Yawara::Yawara(GameObject& associated) : Component(associated) {
 
 	bite = new Sound(associated, YWR_BITE_SOUND);
 	associated.AddComponent(bite);
+	hit_scream = new Sound(associated, YWR_HIT_SOUND);
+	associated.AddComponent(hit_scream);
 
 	hp = YWR_HP;
 	att = YWR_ATT;
@@ -112,21 +119,12 @@ Yawara::Yawara(GameObject& associated) : Component(associated) {
 	act = MOV;
 	idle = true;
 	hitTime.Restart();
+	gotHit = false;
+	isDead = false;
 
 	boostMap[HPBOOST] = {false, 1};
 	boostMap[DEFBOOST] = {false, 1};
 	boostMap[ATTBOOST] = {false, 1};
-
-	/*
-	// Gera sombra;
-	GameObject* go = new GameObject();
-	shadow_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
-	std::shared_ptr<GameObject> ptr = shadow_ptr.lock();
-
-	shadow = new Sprite(*ptr, YWR_SHADOW_LR);
-	ptr->box.Centered(associated.box.Center());
-	ptr->AddComponent(shadow);
-	*/
 }
 
 Yawara::~Yawara() {
@@ -153,7 +151,6 @@ void Yawara::Start() {
 }
 
 void Yawara::Render() {
-	
 }
 
 bool Yawara::Is(std::string type) {
@@ -163,7 +160,7 @@ bool Yawara::Is(std::string type) {
 void Yawara::NotifyCollision(GameObject& other) {
 	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
 	
-	if (hitbox && hitbox->targetsPlayer && hitTime.Get() >= HIT_COOL_DOWN)
+	if (hitbox && hitbox->targetsPlayer && hitTime.Get() >= YWR_HIT_COOL_DOWN)
 	{
 		float defended = def - 1;
 
@@ -172,6 +169,12 @@ void Yawara::NotifyCollision(GameObject& other) {
 		
 		hp -= (1 - defended) * hitbox->GetDamage();
 		hitTime.Restart();
+		if (!isDead) {
+			gotHit = true;
+			if (hit_scream){
+				hit_scream->Play();
+			}
+		}
 	}
 }
 
@@ -272,6 +275,7 @@ void Yawara::Update(float dt) {
 
 		if (flag) {
 			flag = false;
+			isDead = true;
 			Camera::Unfollow();
 			
 			Vec2 pos = associated.box.Center();
@@ -305,6 +309,33 @@ void Yawara::Update(float dt) {
 	} else {
 		Comand(dt);
 		DoAction(dt);
+	}
+
+	static Timer hitblink, blinkTimer;
+	static bool flag = true;
+
+	Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+	if (sp) {
+		if (gotHit) {
+			hitblink.Update(dt);
+			blinkTimer.Update(dt);
+			if (blinkTimer.Get() > YWR_HIT_COOL_DOWN/2) {
+				if (flag) {
+					sp->SetAlphaMod(0);
+				} else {
+					sp->SetAlphaMod(255);
+				}
+				flag = !flag;
+				blinkTimer.Restart();
+			}
+			if (hitblink.Get() > YWR_HIT_COOL_DOWN) {
+				gotHit = false;
+				flag = true;
+				hitblink.Restart();
+				blinkTimer.Restart();
+				sp->SetAlphaMod(255);
+			}
+		}
 	}
 }
 
@@ -656,9 +687,9 @@ void Yawara::SetDge() {
 	
 	Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 	if (sp) {
-		sp->Open("assets/penguin/img/dash.png");
-		sp->SetFrameCount(4);
-		sp->SetFrameTime(0.04);
+		sp->Open(YWR_DGE);
+		sp->SetFrameCount(YWR_DGE_FRAME);
+		sp->SetFrameTime(YWR_DGE_TIME);
 		switch (dir) {
 			case RIGHT:
 				speed = {YWR_DGE_SPEED, 0};
