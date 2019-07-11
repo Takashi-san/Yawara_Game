@@ -5,6 +5,7 @@
 #include "Text.h"
 #include "Camera.h"
 #include "InputManager.h"
+#include "Game.h"
 
 #define END_STT_BG		"assets/img/background/game_over.png"
 #define END_STT_QUIT	"assets/img/text/main_menu_sair.png"
@@ -12,15 +13,37 @@
 #define WIN_MUSIC		""
 #define LOSE_MUSIC		"assets/audio/musica/tema_triste.ogg"
 
+#define END_STT_SLCT_SOUND	"assets/audio/sons/menu-selecionar_opcao.ogg"
+#define END_STT_CHNG_SLCT		"assets/audio/sons/menu-mover.ogg"
+#define END_STT_PLAY_SOUND	"assets/audio/sons/menu-jogar.ogg"
+
 #define CURSOR_PATH "assets/img/cursor/cursor.png"
 
 EndState::EndState() {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
+	float offset = 80;
+
 	Camera::pos = {0,  0};
 
 	Opt = NEWGAME;
+
+	// sounds
+	GameObject *chngslctgo = new GameObject();
+	weak_ptr = AddObject(chngslctgo);
+	ptr = weak_ptr.lock();
+	changeSelection = new Sound(*ptr, END_STT_CHNG_SLCT);
+
+	GameObject *slctgo = new GameObject();
+	weak_ptr = AddObject(slctgo);
+	ptr = weak_ptr.lock();
+	select = new Sound(*ptr, END_STT_SLCT_SOUND);
+
+	GameObject *playgo = new GameObject();
+	weak_ptr = AddObject(playgo);
+	ptr = weak_ptr.lock();
+	play = new Sound(*ptr, END_STT_PLAY_SOUND);
 
 	if (Data::playerVictory) {
 		// End img.
@@ -44,17 +67,19 @@ EndState::EndState() {
 		GameObject *t1go = new GameObject();
 		weak_ptr = AddObject(t1go);
 		ptr = weak_ptr.lock();
-		Sprite *tx1 = new Sprite(*ptr, END_STT_QUIT);
+		Sprite *tx1 = new Sprite(*ptr, END_STT_NEWG);
 		tx1->SetScale(0.3, 0.3);
-		ptr->box.Centered(341, 500);
+		Vec2 pos1 = {((float) tx1->GetWidth())/2 + offset, Game::GetInstance().GetWindowSize().y - tx1->GetHeight()};
+		ptr->box.Centered(pos1);
 		ptr->AddComponent(tx1);
 
 		GameObject *t2go = new GameObject();
 		weak_ptr = AddObject(t2go);
 		ptr = weak_ptr.lock();
-		Sprite *tx2 = new Sprite(*ptr, END_STT_NEWG);
+		Sprite *tx2 = new Sprite(*ptr, END_STT_QUIT);
 		tx2->SetScale(0.4, 0.4);
-		ptr->box.Centered(720, 500);
+		Vec2 pos2 = {Game::GetInstance().GetWindowSize().x - ((float)tx2->GetWidth())/2 - offset, Game::GetInstance().GetWindowSize().y - tx1->GetHeight()};
+		ptr->box.Centered(pos2);
 		ptr->AddComponent(tx2);
 
 		//Selection
@@ -63,7 +88,10 @@ EndState::EndState() {
 		ptr = weak_ptr.lock();
 		selection = sgo;
 		Sprite *sspr = new Sprite(*ptr, CURSOR_PATH);
-		ptr->box.Centered({580 + Camera::pos.x, 500 + Camera::pos.y});
+		xpos[0] = pos1.x - tx1->GetWidth()/2 - sspr->GetWidth()/2;
+		xpos[1] = pos2.x - tx2->GetWidth()/2 - sspr->GetWidth()/2;
+		ypos = pos1.y;
+		ptr->box.Centered({xpos[0], ypos});
 		ptr->AddComponent(sspr);
 	}
 
@@ -81,24 +109,31 @@ void EndState::Update(float dt) {
 		quitRequested = true;
 	}
 
-	if(input.KeyPress(LEFT_ARROW_KEY) || input.KeyPress(A_KEY)){
-		if(Opt == NEWGAME)
-			Opt = QUIT;
+	if(input.KeyPress(LEFT_ARROW_KEY) || input.KeyPress(A_KEY)) {
+		
+		if(Opt != NEWGAME) {
+			Opt = NEWGAME;
+			if(changeSelection)
+				changeSelection->Play();
+		}
 	}
 
-	if(input.KeyPress(RIGHT_ARROW_KEY) || input.KeyPress(D_KEY)){
-		if(Opt == QUIT)
-			Opt = NEWGAME;
+	if(input.KeyPress(RIGHT_ARROW_KEY) || input.KeyPress(D_KEY)) {
+		if(Opt != QUIT) {
+			Opt = QUIT;
+			if(changeSelection)
+				changeSelection->Play();
+		}
 	}
 
 	switch (Opt)
 	{
 	case NEWGAME:
-		selection->box.Centered({580 + Camera::pos.x, 500 + Camera::pos.y});
+		selection->box.Centered({xpos[0], ypos});
 		break;
 	
 	case QUIT:
-		selection->box.Centered({250 + Camera::pos.x, 500 + Camera::pos.y});
+		selection->box.Centered({xpos[1], ypos});
 		break;
 	}
 
@@ -107,10 +142,15 @@ void EndState::Update(float dt) {
 		{
 		case NEWGAME:
 			popRequested = true;
+
+			if(play)
+				play->Play();
 			break;
 
 		case QUIT:
 			quitRequested = true;
+			if(select)
+				select->Play();
 			break;
 		
 		default:

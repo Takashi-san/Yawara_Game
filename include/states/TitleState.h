@@ -21,6 +21,8 @@ private:
 	Sprite* selectionSprite;
 	Sound *changeSelection, *play, *select;
 
+	float xpos[3], ypos;
+
 public:
 
 	TitleState();
