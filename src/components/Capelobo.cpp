@@ -13,10 +13,10 @@
 #include "Easing.h"
 
 #define CPLB_HB_DISTANCE_Y 150
-#define CPLB_HB_DISTANCE_X 150
+#define CPLB_HB_DISTANCE_X 50
 
-#define CPLB_B_ATTACK_H 300
-#define CPLB_B_ATTACK_W 90
+#define CPLB_B_ATTACK_H 400
+#define CPLB_B_ATTACK_W 300
 
 #define CPLB_L_ATTACK_H 20
 #define CPLB_L_ATTACK_W 20
@@ -298,15 +298,9 @@ void Capelobo::Update(float dt)
 			{
 				// Create first Claw hitbox
 				GameObject *clawGO = new GameObject();
-				std::weak_ptr<GameObject> weak_claw1 = Game::GetInstance().GetCurrentState().AddObject(clawGO);
-				std::shared_ptr<GameObject> shared_claw1 = weak_claw1.lock();
-				Claw *theClaw1;
-
-				// Create second Claw hitbox. It'll be used when diagonal attack
-				GameObject *clawGO2 = new GameObject();
-				std::weak_ptr<GameObject> weak_claw2 = Game::GetInstance().GetCurrentState().AddObject(clawGO2);
-				std::shared_ptr<GameObject> shared_claw2 = weak_claw2.lock();
-				Claw *theClaw2;
+				std::weak_ptr<GameObject> weak_claw = Game::GetInstance().GetCurrentState().AddObject(clawGO);
+				std::shared_ptr<GameObject> shared_claw = weak_claw.lock();
+				Claw *theClaw;
 
 				startedAttack = true;
 
@@ -317,83 +311,41 @@ void Capelobo::Update(float dt)
 					angle += 360;
 				angle = angle - angle % 45;
 
-				shared_claw1->box.h = CPLB_B_ATTACK_H;
-				shared_claw1->box.w = CPLB_B_ATTACK_W;
-
-				shared_claw2->box.h = CPLB_B_ATTACK_H + CPLB_B_ATTACK_W / 2;
-				shared_claw2->box.w = CPLB_B_ATTACK_W;
+				shared_claw->box.h = CPLB_B_ATTACK_H;
+				shared_claw->box.w = CPLB_B_ATTACK_W;
 
 				// Verify which direction Capelobo is facing to create the hitbox on the right position
 				switch (dir)
 				{
 				case RIGHT:
-					shared_claw1->box.Centered(associated.box.Center()+Vec2({CPLB_HB_DISTANCE_X,0}));
+					shared_claw->box.Centered(associated.box.Center()+Vec2({CPLB_HB_DISTANCE_X,0}));
 					break;
 
 				case UP:
-					std::swap(shared_claw1->box.h, shared_claw1->box.w);
-					shared_claw1->box.Centered(associated.box.Center()-Vec2({0,CPLB_HB_DISTANCE_X}));
+				case RIGHT_UP:
+				case LEFT_UP:
+					std::swap(shared_claw->box.h, shared_claw->box.w);
+					shared_claw->box.Centered(associated.box.Center()-Vec2({0,CPLB_HB_DISTANCE_X}));
 					break;
 
 				case LEFT:
-					shared_claw1->box.Centered(associated.box.Center()-Vec2({CPLB_HB_DISTANCE_X,0}));
+					shared_claw->box.Centered(associated.box.Center()-Vec2({CPLB_HB_DISTANCE_X,0}));
 					break;
 
 				case DOWN:
-					std::swap(shared_claw1->box.h, shared_claw1->box.w);
-					shared_claw1->box.Centered(associated.box.Center()+Vec2({0,CPLB_HB_DISTANCE_X}));
-					break;
-
-				case LEFT_DOWN:
-					std::swap(shared_claw2->box.h, shared_claw2->box.w);
-					shared_claw2->box.Centered(associated.box.Center()+Vec2({-shared_claw1->box.w/4,CPLB_HB_DISTANCE_Y}));
-					
-					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
-					shared_claw2->AddComponent(theClaw2);
-
-					shared_claw1->box.Centered(associated.box.Center()-Vec2({CPLB_HB_DISTANCE_X,0}));
-					shared_claw1->box.h -= shared_claw2->box.h/2;
-					break;
-
-				case LEFT_UP:
-					std::swap(shared_claw2->box.h, shared_claw2->box.w);
-					shared_claw2->box.Centered(associated.box.Center()-Vec2({shared_claw1->box.w/4,CPLB_HB_DISTANCE_Y}));
-					
-					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
-					shared_claw2->AddComponent(theClaw2);
-
-					shared_claw1->box.Centered(associated.box.Center()-Vec2({CPLB_HB_DISTANCE_X,-shared_claw2->box.h/2}));
-					shared_claw1->box.h -= shared_claw2->box.h/2;
-					break;
-
 				case RIGHT_DOWN:
-					std::swap(shared_claw2->box.h, shared_claw2->box.w);
-					shared_claw2->box.Centered(associated.box.Center()+Vec2({shared_claw1->box.w/4,CPLB_HB_DISTANCE_Y}));
-					
-					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
-					shared_claw2->AddComponent(theClaw2);
-					
-					shared_claw1->box.Centered(associated.box.Center()+Vec2({CPLB_HB_DISTANCE_X,0}));
-					shared_claw1->box.h -= shared_claw2->box.h/2;
+				case LEFT_DOWN:
+					std::swap(shared_claw->box.h, shared_claw->box.w);
+					shared_claw->box.Centered(associated.box.Center()+Vec2({0,CPLB_HB_DISTANCE_X}));
 					break;
 
-				case RIGHT_UP:
-					std::swap(shared_claw2->box.h, shared_claw2->box.w);
-					shared_claw2->box.Centered(associated.box.Center()+Vec2({shared_claw1->box.w/4,-CPLB_HB_DISTANCE_Y}));
-					
-					theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
-					shared_claw2->AddComponent(theClaw2);
-
-					shared_claw1->box.Centered(associated.box.Center()+Vec2({CPLB_HB_DISTANCE_X,shared_claw2->box.h/2}));
-					shared_claw1->box.h -= shared_claw2->box.h/2;
-					break;
 				default:
 					break;
 				}
 
-				theClaw1 = new Claw(*shared_claw1, CLAW_DAMAGE, true);
+				theClaw = new Claw(*shared_claw, CLAW_DAMAGE, true);
 
-				shared_claw1->AddComponent(theClaw1);
+				shared_claw->AddComponent(theClaw);
 			}
 
 			// End attack
@@ -517,11 +469,13 @@ void Capelobo::Update(float dt)
 				sp = new Sprite(*ptr, EFFECT_4, 1, DEATH_EFFECT_TIME / 10, DEATH_EFFECT_TIME / 10);
 			else if(deathTimer.Get() < (DEATH_EFFECT_TIME * 5) / 10){
 				sp = new Sprite(*ptr, EFFECT_4, 1, DEATH_EFFECT_TIME / 10, DEATH_EFFECT_TIME / 10);
-				sp->SetColorMod(200,10,200);
+				sp->SetColorMod(150,30,140);
 			}
 			else{
 				sp = new Sprite(*ptr, EFFECT_5, 7, DEATH_EFFECT_TIME /10, 7 * (DEATH_EFFECT_TIME /10));
-				sp->SetColorMod(200,10,200);
+				sp->SetColorMod(150,30,140);
+				sp->SetAlphaMod(200);
+				// sp->SetBlendMode(BLEND_ADD);
 			}
 		}
 		else{
