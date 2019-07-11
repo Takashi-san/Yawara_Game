@@ -43,14 +43,22 @@ bool Enemy::Is(std::string type){
 
 
 void Enemy::NotifyCollision(GameObject& other){
-    if (other.GetComponent("Bullet") && !static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer)
-		hp -= static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
-
 	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
 	if (hitbox && !(hitbox->targetsPlayer) && hitTimer.Get() > HIT_COOL_DOWN) {
-		hp -= hitbox->GetDamage();
+        hp -= hitbox->GetDamage();
 		hitTimer.Restart();
 	}
+    if (other.GetComponent("Bullet") && !static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer && hitTimer.Get() > HIT_COOL_DOWN){
+		hp -= static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
+        
+        //  If the enemy can't see Yawara and got hit, it will enhance the range off vision and start pursuing Yawara
+
+        if(state == MOVING || state == RESTING || state == SLEEPING){
+            rangeOffset = 300;
+            state = PURSUE;
+            moveTimer.Restart();
+        }
+    }
 }
 
 
