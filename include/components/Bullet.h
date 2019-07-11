@@ -1,24 +1,24 @@
 #pragma once // Alows to initializate the header just once
 
-#include "Component.h"
 #include "GameObject.h"
 #include "Vec2.h"
+#include "Hitbox.h"
 
 #include <string>
 #include <iostream>
 #include <stdbool.h>
 #include <memory>
 
-class Bullet : public Component
+class Bullet : public Hitbox
 {
 private:
 	Vec2 speed;
-	float distanceLeft;
+	float timeLeft;
 	int damage;
 
 public:
 	bool targetsPlayer;
-	Bullet(GameObject &, float, float, int, float, std::string, int = 1, float = 1, bool = true);
+	Bullet(GameObject &, float, float, int, float, std::string, int = 1, float = 1, bool = true, bool = true);
 
 	void Update(float);
 	void Render();

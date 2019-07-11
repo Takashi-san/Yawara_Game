@@ -1,8 +1,9 @@
 #include "Bullet.h"
 #include "Sprite.h"
 #include "Collider.h"
+#include <algorithm>
 
-Bullet::Bullet(GameObject& associated, float angle, float speed, int damage, float maxDistance, std::string sprite, int frameCount, float frameTime, bool targetsPlayer) : Component(associated) {
+Bullet::Bullet(GameObject& associated, float angle, float speed, int damage, float maxDistance, std::string sprite, int frameCount, float frameTime, bool targetsPlayer, bool hitDie) : Hitbox(associated, damage, targetsPlayer, maxDistance/speed, hitDie) {
 	Sprite* sp = new Sprite(associated, sprite, frameCount, frameTime);
 	sp->SetScale(1, 1);
 	Collider *cl = new Collider(associated);
@@ -15,16 +16,15 @@ Bullet::Bullet(GameObject& associated, float angle, float speed, int damage, flo
 	this->speed.Rotate(angle);
 	associated.angleDeg = angle/0.0174533;
 	this->damage = damage;
-	this->distanceLeft = maxDistance;
+	this->timeLeft = maxDistance/speed;
 }
 
 void Bullet::Update(float dt) {
 	associated.box.x += speed.x*dt;
 	associated.box.y += speed.y*dt;
-	distanceLeft -= speed.Modulo()*dt;
-	if (distanceLeft <= 0) {
+	timeLeft -= dt;
+	if(timeLeft <= 0)
 		associated.RequestDelete();
-	}
 }
 
 void Bullet::Render() {
@@ -32,7 +32,7 @@ void Bullet::Render() {
 }
 
 bool Bullet::Is(std::string type) {
-	return !strcmp(type.c_str(), "Bullet");
+	return !std::min(strcmp(type.c_str(), "Bullet"), strcmp(type.c_str(), "Hitbox"));
 }
 
 int Bullet::GetDamage() {
@@ -54,7 +54,7 @@ void Bullet::NotifyCollision(GameObject& other) {
 		Collider *cl = static_cast<Collider *>(associated.GetComponent("Collider"));
 		associated.RemoveComponent(cl);
 	}
-	if (other.GetComponent("PenguinBody") && targetsPlayer) {
+	if (other.GetComponent("PenguinBody") && targetsPlayer && hitDie) {
 		associated.RequestDelete();
 	}
 }

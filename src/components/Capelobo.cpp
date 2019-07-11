@@ -690,8 +690,6 @@ bool Capelobo::Is(std::string type)
 
 void Capelobo::NotifyCollision(GameObject &other)
 {
-	if (other.GetComponent("Bullet") && !static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer)
-		hp -= static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
 
 	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
 	if (hitbox && !(hitbox->targetsPlayer) && hitTimer.Get() > CPLB_HIT_COOL_DOWN) {
