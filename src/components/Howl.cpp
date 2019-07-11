@@ -15,6 +15,7 @@
 
 Howl::Howl(GameObject& associated) : Component(associated) {
 	sound = new Sound(associated, HOWL_SOUND);
+	associated.AddComponent(sound);
 
 	sec2Activate = 0;
 	activeTime = 0;

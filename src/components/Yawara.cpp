@@ -25,6 +25,11 @@
 
 #define YWR_HOWL_CD		0.5
 
+#define YWR_SIT_GO		5
+#define YWR_SIT_FRAME	4
+#define YWR_SIT_TIME	0.07
+#define YWR_SIT_R 		"assets/img/yawara/yawara_sit_right.png"
+#define YWR_SIT_L 		"assets/img/yawara/yawara_sit_left.png"
 
 #define YWR_IDLE_FRAME		1
 #define YWR_IDLE_D			"assets/img/yawara/yawara_idle_down.png"
@@ -35,6 +40,14 @@
 #define YWR_IDLE_DR			"assets/img/yawara/yawara_idle_down_right.png"
 #define YWR_IDLE_UL			"assets/img/yawara/yawara_idle_up_left.png"
 #define YWR_IDLE_UR			"assets/img/yawara/yawara_idle_up_right.png"
+
+#define YWR_SHADOW_LR			"assets/img/yawara/yawara_shadow.png"
+#define YWR_SHADOW_D			"assets/img/yawara/yawara_shadow_down.png"
+#define YWR_SHADOW_U			"assets/img/yawara/yawara_shadow_up.png"
+#define YWR_SHADOW_DL			"assets/img/yawara/yawara_shadow_down_left.png"
+#define YWR_SHADOW_DR			"assets/img/yawara/yawara_shadow_down_right.png"
+#define YWR_SHADOW_UL			"assets/img/yawara/yawara_shadow_up_left.png"
+#define YWR_SHADOW_UR			"assets/img/yawara/yawara_shadow_up_right.png"
 
 #define YWR_RUN_FRAME		9
 #define YWR_RUN_TIME		0.07
@@ -52,12 +65,13 @@
 #define YWR_BITE_FX			"assets/img/yawara/yawara_bite.png"
 #define YWR_BITE_FX_RADIUS	100
 
+#define YWR_BITE_SOUND		"assets/audio/sons/yawara/yawara_bite.ogg"
 #define YWR_BITE_FRAME		5
 #define YWR_BITE_TIME		0.07
 #define YWR_BITE_D			"assets/img/yawara/yawara_bite_down.png"
 #define YWR_BITE_U			"assets/img/yawara/yawara_bite_up.png"
 #define YWR_BITE_L			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_R			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_R			"assets/img/yawara/yawara_bite_right.png"
 #define YWR_BITE_DL			"assets/img/yawara/yawara_bite_down_left.png"
 #define YWR_BITE_DR			"assets/img/yawara/yawara_bite_down_right.png"
 #define YWR_BITE_UL			"assets/img/yawara/yawara_bite_up_left.png"
@@ -75,9 +89,12 @@
 #define YWR_HOWL_UL			
 #define YWR_HOWL_UR			
 
-#define YWR_DEATH_FRAME	4
-#define YWR_DEATH		"assets/img/yawara/yawara_death_right.png"
-#define YWR_DEATH_SOUND	"assets/penguin/audio/boom.wav"
+#define YWR_DEATH_FRAME		4
+#define YWR_DEATH_TIME		0.1
+#define YWR_DEATH_EXTRA		2
+#define YWR_DEATH_R			"assets/img/yawara/yawara_death_right.png"
+#define YWR_DEATH_L			"assets/img/yawara/yawara_death_left.png"
+#define YWR_DEATH_SOUND		"assets/penguin/audio/boom.wav"
 
 Yawara* Yawara::player;
 
@@ -89,8 +106,8 @@ Yawara::Yawara(GameObject& associated) : Component(associated) {
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 
-	//sp->SetScale({0.7, 0.7});
-	//cl->SetScale({0.7, 0.7});
+	bite = new Sound(associated, YWR_BITE_SOUND);
+	associated.AddComponent(bite);
 
 	hp = YWR_HP;
 	att = YWR_ATT;
@@ -104,6 +121,17 @@ Yawara::Yawara(GameObject& associated) : Component(associated) {
 	boostMap[HPBOOST] = {false, 1};
 	boostMap[DEFBOOST] = {false, 1};
 	boostMap[ATTBOOST] = {false, 1};
+
+	/*
+	// Gera sombra;
+	GameObject* go = new GameObject();
+	shadow_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	std::shared_ptr<GameObject> ptr = shadow_ptr.lock();
+
+	shadow = new Sprite(*ptr, YWR_SHADOW_LR);
+	ptr->box.Centered(associated.box.Center());
+	ptr->AddComponent(shadow);
+	*/
 }
 
 Yawara::~Yawara() {
@@ -112,7 +140,7 @@ Yawara::~Yawara() {
 
 void Yawara::Start() {
 	// Gera efeito uivo.
-	GameObject *go = new GameObject();
+	GameObject* go = new GameObject();
 	std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
 
@@ -241,8 +269,40 @@ void Yawara::Update(float dt) {
 
 	// Act or dead.
 	if (hp <= 0) {
-		Camera::Unfollow();
-		associated.RequestDelete();
+		static bool flag = true;
+
+		if (flag) {
+			flag = false;
+			Camera::Unfollow();
+			
+			Vec2 pos = associated.box.Center();
+			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+			if (sp) {
+				switch (dir) {
+					case RIGHT:
+					case UP:
+					case UP_RIGHT:
+					case DOWN_RIGHT:
+						sp->Open(YWR_DEATH_R);
+					break;
+
+					case LEFT:
+					case DOWN:
+					case DOWN_LEFT:
+					case UP_LEFT:
+						sp->Open(YWR_DEATH_L);
+					break;
+
+					default:
+					break;
+				}
+				sp->SetFrameCount(YWR_DEATH_FRAME);
+				sp->SetFrameTime(YWR_DEATH_TIME);
+				sp->SetStopFrame(YWR_DEATH_FRAME - 1);
+				sp->SetSelfDestruct((YWR_DEATH_FRAME * YWR_DEATH_TIME) + YWR_DEATH_EXTRA);
+			}
+			associated.box.Centered(pos);
+		}
 	} else {
 		Comand(dt);
 		DoAction(dt);
@@ -350,7 +410,9 @@ void Yawara::Comand(float dt) {
 
 				// Change back sprite.
 				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
-				sp->SetFrameTime(YWR_RUN_TIME);
+				if (sp) {
+					sp->SetFrameTime(YWR_RUN_TIME);
+				}
 				change_sprite = true;
 
 				// Reset attack.
@@ -366,7 +428,9 @@ void Yawara::Comand(float dt) {
 
 				// Change back sprite.
 				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
-				sp->SetFrameTime(YWR_RUN_TIME);
+				if (sp) {
+					sp->SetFrameTime(YWR_RUN_TIME);
+				}
 				change_sprite = true;
 
 				// Return collider.
@@ -390,7 +454,9 @@ void Yawara::Comand(float dt) {
 
 				// Change back sprite.
 				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
-				sp->SetFrameTime(YWR_RUN_TIME);
+				if (sp) {
+					sp->SetFrameTime(YWR_RUN_TIME);
+				}
 				change_sprite = true;
 
 				// Reset howl.
@@ -405,22 +471,70 @@ void Yawara::Comand(float dt) {
 }
 
 void Yawara::DoAction(float dt) {
+	static Timer sit;
+	static bool good_boy;
+	Vec2 pos;
+
 	switch (act) {
 		case MOV:
+			if (idle) {
+				sit.Update(dt);
+				if ((sit.Get() > YWR_SIT_GO) && !good_boy) {
+					pos = associated.box.Center();
+					Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+					if (sp) {
+						switch (dir) {
+							case RIGHT:
+							case UP:
+							case UP_RIGHT:
+							case DOWN_RIGHT:
+								sp->Open(YWR_SIT_R);
+							break;
+
+							case LEFT:
+							case DOWN:
+							case DOWN_LEFT:
+							case UP_LEFT:
+								sp->Open(YWR_SIT_L);
+							break;
+
+							default:
+							break;
+						}
+						sp->SetFrameCount(YWR_SIT_FRAME);
+						sp->SetFrameTime(YWR_SIT_TIME);
+						sp->SetStopFrame(YWR_SIT_FRAME - 1);
+					}
+					associated.box.Centered(pos);
+					sit.Restart();
+					good_boy = true;
+				}
+			} else {
+				sit.Restart();
+				good_boy = false;
+			}
+
 			SetMov();
 			associated.box.x += speed.x*dt;
 			associated.box.y += speed.y*dt;
 		break;
 
 		case ATK:
+			sit.Restart();
+			good_boy = false;
 		break;
 
 		case DGE:
+			sit.Restart();
+			good_boy = false;
+
 			associated.box.x += speed.x*dt;
 			associated.box.y += speed.y*dt;
 		break;
 
 		case HOWL:
+			sit.Restart();
+			good_boy = false;
 		break;
 
 		default:
@@ -678,6 +792,8 @@ void Yawara::SetAtk() {
 		}
 		associated.box.Centered(position);
 	}
+
+	bite->Play();
 }
 
 void Yawara::SetHowl() {

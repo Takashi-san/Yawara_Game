@@ -5,6 +5,8 @@
 #include "Vec2.h"
 #include "Timer.h"
 #include "Howl.h"
+#include "Sound.h"
+#include "Sprite.h"
 
 #include <string>
 #include <iostream>
@@ -34,6 +36,8 @@ private:
 	int safeY;
 
 	std::weak_ptr<GameObject> tapu;
+	std::weak_ptr<GameObject> shadow_ptr;
+	Sprite* shadow;
 
 	typedef struct
 	{
@@ -44,6 +48,7 @@ private:
 	std::unordered_map<int, boosters> boostMap;
 
 	Howl* howl;
+	Sound* bite;
 
 	void Comand(float);
 	void DoAction(float);
