@@ -3,6 +3,7 @@
 #include "Hitbox.h"
 #include "Bullet.h"
 #include "Floor.h"
+#include <algorithm> 
 
 #define SAFE_UP 16
 #define SAFE_DOWN 142
