@@ -32,8 +32,11 @@
 #define TAPU_SHOOT			"assets/img/tapu/efeito_disparo.png"
 #define TAPU_SHOOT_FRAME	10
 #define TAPU_SHOOT_TIME		0.05
+#define TAPU_SHOOT_SOUND	"assets/audio/sons/tapu/disparo.ogg"
 
 Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component(associated) {
+	shoot = new Sound(associated, TAPU_SHOOT_SOUND);
+
 	angle = 0;
 	this->yawara = Yawara;
 	dir = RIGHT;
@@ -255,6 +258,8 @@ void Tapu::Shoot()
 	ptr->box.x += offset.x;
 	ptr->box.y += offset.y;
 	ptr->angleDeg = angle/0.0174533;
+
+	shoot->PlayFadeIn(800);
 }
 
 void Tapu::SetDamageFactor(float factor){

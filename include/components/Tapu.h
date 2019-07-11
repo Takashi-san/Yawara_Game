@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Vec2.h"
 #include "Sprite.h"
+#include "Sound.h"
 
 #include <string>
 #include <iostream>
@@ -24,8 +25,7 @@ class Tapu : public Component
 
         float damageFactor;
 
-        Sprite* shoot_fx;
-        std::weak_ptr<GameObject> shoot;
+        Sound* shoot;
     public:
         Tapu(GameObject &, std::weak_ptr<GameObject>);
 

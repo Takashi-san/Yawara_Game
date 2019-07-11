@@ -42,6 +42,19 @@ void Sound::FadeOut(int ms) {
 	Mix_FadeOutChannel(channel, ms);
 }
 
+void Sound::PlayFadeIn(int ms, int volume, int times, int ticks) {
+	if (chunk != nullptr){
+		if (times > 0) {
+			channel = Mix_FadeInChannelTimed(-1, chunk.get(), times-1, ms, ticks);
+			// volume de 0 a 128;
+			//Mix_Volume(channel, volume);
+		}
+	} else {
+		// Nenhum som carregado.
+		std::cout << "Nenhum som carregado para tocar.\n";
+	}
+}
+
 bool Sound::IsOpen() {
 	if (chunk == nullptr){
 		return false;
