@@ -15,9 +15,9 @@
 #define TITLE_STT_PLAY		"assets/img/text/main_menu_jogar.png"
 #define TITLE_STT_QUIT		"assets/img/text/main_menu_sair.png"
 #define TITLE_STT_CTRLS		"assets/img/text/controles.png"
-#define TITLE_STT_ARROW		"assets/img/text/main_menu_selection.png"
+#define TITLE_STT_ARROW		"assets/img/cursor/cursor.png"
 
-#define TITLE_STT_BGM			"assets/audio/musica/main_menu.mp3"
+#define TITLE_STT_BGM			"assets/audio/musica/main_menu.ogg"
 #define TITLE_STT_SLCT_SOUND	"assets/audio/sons/menu-selecionar_opcao.ogg"
 #define TITLE_STT_CHNG_SLCT		"assets/audio/sons/menu-mover.ogg"
 #define TITLE_STT_PLAY_SOUND	"assets/audio/sons/menu-jogar.ogg"
@@ -26,6 +26,8 @@ TitleState::TitleState() {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
+	float offset = 80;
+
 	// Title img.
 	GameObject *go = new GameObject();
 	weak_ptr = AddObject(go);
@@ -33,6 +35,7 @@ TitleState::TitleState() {
 	ptr->box.x = 0;
 	ptr->box.y = 0;
 	Sprite *sp = new Sprite(*ptr, TITLE_STT_BG);
+	sp->SetFullscreen();
 	CameraFollower *cmfl = new CameraFollower(*ptr);
 	ptr->AddComponent(sp);
 	ptr->AddComponent(cmfl);
@@ -43,7 +46,8 @@ TitleState::TitleState() {
 	ptr = weak_ptr.lock();
 	Sprite* tx1 = new Sprite(*ptr, TITLE_STT_PLAY);
 	tx1->SetScale(0.5, 0.5);
-	ptr->box.Centered({200, 560});
+	Vec2 pos1 = {((float) tx1->GetWidth())/2 + offset, Game::GetInstance().GetWindowSize().y - tx1->GetHeight()};
+	ptr->box.Centered(pos1);
 	ptr->AddComponent(tx1);
 
 	GameObject *t2go = new GameObject();
@@ -51,7 +55,8 @@ TitleState::TitleState() {
 	ptr = weak_ptr.lock();
 	Sprite* tx2 = new Sprite(*ptr, TITLE_STT_CTRLS);
 	tx2->SetScale(0.2, 0.2);
-	ptr->box.Centered(500, 550);
+	Vec2 pos2 = {(Game::GetInstance().GetWindowSize().x/2), Game::GetInstance().GetWindowSize().y - tx1->GetHeight()};
+	ptr->box.Centered(pos2);
 	ptr->AddComponent(tx2);
 
 	GameObject *t3go = new GameObject();
@@ -59,7 +64,8 @@ TitleState::TitleState() {
 	ptr = weak_ptr.lock();
 	Sprite* tx3 = new Sprite(*ptr, TITLE_STT_QUIT);
 	tx3->SetScale(0.3, 0.3);
-	ptr->box.Centered({800, 550});
+	Vec2 pos3 = {Game::GetInstance().GetWindowSize().x - ((float)tx3->GetWidth())/2 - offset, Game::GetInstance().GetWindowSize().y - tx1->GetHeight()};
+	ptr->box.Centered(pos3);
 	ptr->AddComponent(tx3);
 
 	// Selection.
@@ -68,8 +74,12 @@ TitleState::TitleState() {
 	ptr = weak_ptr.lock();
 	selection = sgo;
 	Sprite* txs = new Sprite(*ptr, TITLE_STT_ARROW);
-	txs->SetScale(0.7, 0.7);
-	ptr->box.Centered({90, 550});
+	txs->SetScale(1.3, 1.3);
+	xpos[0] = pos1.x - tx1->GetWidth()/2 - txs->GetWidth()/2;
+	xpos[1] = pos2.x - tx2->GetWidth()/2 - txs->GetWidth()/2;
+	xpos[2] = pos3.x - tx3->GetWidth()/2 - txs->GetWidth()/2;
+	ypos = pos1.y;
+	ptr->box.Centered(xpos[0], ypos);
 	ptr->AddComponent(txs);
 
 	selectionSprite = txs;
@@ -94,6 +104,7 @@ TitleState::TitleState() {
 	ptr = weak_ptr.lock();
 	play = new Sound(*ptr, TITLE_STT_PLAY_SOUND);
 
+	//Controls screen
 	GameObject* controls_go = new GameObject();
 	weak_ptr = AddObject(controls_go);
 	controlsgo = weak_ptr.lock();
@@ -154,15 +165,15 @@ void TitleState::Update(float dt) {
 	switch (opt)
 	{
 		case PLAY:
-			selection->box.Centered({90, 550});
+			selection->box.Centered(xpos[0], ypos);
 		break;
 
 		case OPTIONS:
-			selection->box.Centered({350, 550});
+			selection->box.Centered(xpos[1], ypos);
 		break;
 
 		case QUIT:
-			selection->box.Centered({720, 550});
+			selection->box.Centered(xpos[2], ypos);
 		break;
 		
 		default:
@@ -188,6 +199,7 @@ void TitleState::Update(float dt) {
 			case OPTIONS:
 				if(!controlScreen){
 					controlScreen = new Sprite(*controlsgo, TITLE_STT_BGCTRLS);
+					controlScreen->SetFullscreen();
 					cmfll = new CameraFollower(*controlsgo);
 					controlsgo->AddComponent(cmfll);
 					controlsgo->AddComponent(controlScreen);

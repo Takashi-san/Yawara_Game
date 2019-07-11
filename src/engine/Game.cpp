@@ -5,6 +5,9 @@
 #define GAME_SIZE_W	1024
 #define GAME_SIZE_H	600
 
+#define RESOLUTION_W	1280
+#define RESOLUTION_H	720
+
 Game* Game::instance;
 
 Game::Game(std::string title, int width, int height)
@@ -81,6 +84,13 @@ Game::Game(std::string title, int width, int height)
 		exit(EXIT_FAILURE);
 	}
 
+	// Modo tela cheia
+	// i = SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	// if(i != 0){
+	// 	std::cout << "Erro colocando em tela cheia: " << SDL_GetError() << "\n";
+	// 	exit(EXIT_FAILURE);
+	// }
+
 	// Iniciar renderizador.
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (renderer == nullptr)
@@ -89,6 +99,14 @@ Game::Game(std::string title, int width, int height)
 		std::cout << "Erro inicialização SDL_CreateRenderer: " << SDL_GetError() << "\n";
 		exit(EXIT_FAILURE);
 	}
+
+	// Mudar resolução
+	// i = SDL_RenderSetLogicalSize(renderer, RESOLUTION_W, RESOLUTION_H);
+	// if(i != 0){
+	// 	std::cout << "Erro alterando resolução: " << SDL_GetError() << "\n";
+	// 	exit(EXIT_FAILURE);
+	// }
+	// SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 
 	// Modo relativo do mouse. Posição do mouse é fornecido apesar do que dizem em sites.
 	SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -227,5 +245,12 @@ Vec2 Game::GetWindowSize()
 {
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
+	return {(float)w, (float)h};
+}
+
+Vec2 Game::GetRenderSize(){
+
+	int w = 0, h = 0;
+	SDL_RenderGetLogicalSize(renderer, &w, &h);
 	return {(float)w, (float)h};
 }

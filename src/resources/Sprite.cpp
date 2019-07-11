@@ -328,3 +328,8 @@ void Sprite::SetSelfDestruct(float secondsToSelfDestruct) {
 void Sprite::SetReverse(bool backwards){
 	this->backwards = backwards;
 }
+
+void Sprite::SetFullscreen() {
+	
+	SetScale(Game::GetInstance().GetWindowSize().x/GetWidth(), Game::GetInstance().GetWindowSize().y/GetHeight());
+}

@@ -45,6 +45,7 @@ StageState::StageState()
 	ptr->box.x = 0;
 	ptr->box.y = 0;
 	Sprite *sp = new Sprite(*ptr, STAGE_STT_BG);
+	sp->SetFullscreen();
 	CameraFollower *cmfl = new CameraFollower(*ptr);
 	ptr->AddComponent(sp);
 	ptr->AddComponent(cmfl);
