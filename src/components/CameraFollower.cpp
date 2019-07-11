@@ -7,7 +7,7 @@ CameraFollower::CameraFollower(GameObject& associated): Component(associated){
 }
 
 void CameraFollower::Update(float dt) {
-	associated.box.Centered(Camera::pos + Game::GetInstance().GetRenderSize()/2);	
+	associated.box.Centered(Camera::pos + Game::GetInstance().GetWindowSize()/2);	
 }
 
 void CameraFollower::Render() {

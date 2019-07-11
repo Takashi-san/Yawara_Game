@@ -331,5 +331,5 @@ void Sprite::SetReverse(bool backwards){
 
 void Sprite::SetFullscreen() {
 	
-	SetScale(Game::GetInstance().GetRenderSize().x/GetWidth(), Game::GetInstance().GetRenderSize().y/GetHeight());
+	SetScale(Game::GetInstance().GetWindowSize().x/GetWidth(), Game::GetInstance().GetWindowSize().y/GetHeight());
 }

@@ -85,11 +85,11 @@ Game::Game(std::string title, int width, int height)
 	}
 
 	// Modo tela cheia
-	i = SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-	if(i != 0){
-		std::cout << "Erro colocando em tela cheia: " << SDL_GetError() << "\n";
-		exit(EXIT_FAILURE);
-	}
+	// i = SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	// if(i != 0){
+	// 	std::cout << "Erro colocando em tela cheia: " << SDL_GetError() << "\n";
+	// 	exit(EXIT_FAILURE);
+	// }
 
 	// Iniciar renderizador.
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -101,12 +101,12 @@ Game::Game(std::string title, int width, int height)
 	}
 
 	// Mudar resolução
-	i = SDL_RenderSetLogicalSize(renderer, RESOLUTION_W, RESOLUTION_H);
-	if(i != 0){
-		std::cout << "Erro alterando resolução: " << SDL_GetError() << "\n";
-		exit(EXIT_FAILURE);
-	}
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+	// i = SDL_RenderSetLogicalSize(renderer, RESOLUTION_W, RESOLUTION_H);
+	// if(i != 0){
+	// 	std::cout << "Erro alterando resolução: " << SDL_GetError() << "\n";
+	// 	exit(EXIT_FAILURE);
+	// }
+	// SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 
 	// Modo relativo do mouse. Posição do mouse é fornecido apesar do que dizem em sites.
 	SDL_SetRelativeMouseMode(SDL_TRUE);
