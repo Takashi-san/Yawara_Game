@@ -11,6 +11,7 @@
 #include "Sound.h"
 #include "Tapu.h"
 #include "Hitbox.h"
+#include "MapColision.h"
 
 #define YWR_HP			100
 #define YWR_SPEED		500
@@ -118,6 +119,18 @@ void Yawara::Start() {
 
 	howl = new Howl(*ptr);
 	ptr->AddComponent(howl);
+	
+	// Gera hurtbox de caminhada do yawara.
+	go = new GameObject();
+	weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	ptr = weak_ptr.lock();
+	walk = weak_ptr;
+
+	ptr->box.Centered(associated.box.Center());
+	ptr->box.w = associated.box.w;
+	ptr->box.h = associated.box.h;
+	Collider *cl = new Collider(associated);
+	associated.AddComponent(cl);
 
 	// Gera Tapu.
 	go = new GameObject();
@@ -405,11 +418,20 @@ void Yawara::Comand(float dt) {
 }
 
 void Yawara::DoAction(float dt) {
+	Vec2 pos;
+	
+	std::shared_ptr<GameObject> ptr = walk.lock();
+	ptr->box.Centered(associated.box.Center());
+
 	switch (act) {
 		case MOV:
 			SetMov();
-			associated.box.x += speed.x*dt;
-			associated.box.y += speed.y*dt;
+			//associated.box.x += speed.x*dt;
+			//associated.box.y += speed.y*dt;
+			pos = MapColision::GetInstance().Validate(ptr->box, speed, dt);
+			ptr->box.x = pos.x;
+			ptr->box.y = pos.y;
+			associated.box.Centered(ptr->box.Center());
 		break;
 
 		case ATK:

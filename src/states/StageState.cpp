@@ -27,7 +27,7 @@
 
 #define STAGE_STT_BG "assets/penguin/img/ocean.jpg"
 #define STAGE_STT_BGM "assets/audio/musica/tema_triste.ogg"
-#define STAGE_STT_CURSOR_SPRITE "assets/img/cursor/square.jpg"
+#define STAGE_STT_CURSOR_SPRITE "assets/img/cursor/cursor.png"
 #define STAGE_STT_CAMERA_RATIO 0.37
 
 StageState::StageState()

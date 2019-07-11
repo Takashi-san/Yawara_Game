@@ -34,6 +34,7 @@ private:
 	int safeY;
 
 	std::weak_ptr<GameObject> tapu;
+	std::weak_ptr<GameObject> walk;
 
 	typedef struct
 	{

@@ -1,7 +1,6 @@
 #include "Bullet.h"
 #include "Sprite.h"
 #include "Collider.h"
-#include "MapColision.h"
 
 Bullet::Bullet(GameObject& associated, float angle, float speed, int damage, float maxDistance, std::string sprite, int frameCount, float frameTime, bool targetsPlayer) : Component(associated) {
 	Sprite* sp = new Sprite(associated, sprite, frameCount, frameTime);
@@ -20,11 +19,8 @@ Bullet::Bullet(GameObject& associated, float angle, float speed, int damage, flo
 }
 
 void Bullet::Update(float dt) {
-	Vec2 pos = MapColision::GetInstance().Validate(associated.box, speed, dt);
-	//associated.box.x += speed.x*dt;
-	//associated.box.y += speed.y*dt;
-	associated.box.x = pos.x;
-	associated.box.y = pos.y;
+	associated.box.x += speed.x*dt;
+	associated.box.y += speed.y*dt;
 	distanceLeft -= speed.Modulo()*dt;
 	if (distanceLeft <= 0) {
 		associated.RequestDelete();

@@ -2,7 +2,7 @@
 #include "Tilemaps.h"
 #include <sstream>
 
-#define MC_CONDITION	7
+#define MC_CONDITION	15
 
 MapColision& MapColision::GetInstance(){
 	static MapColision instance;
