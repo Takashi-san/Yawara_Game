@@ -3,6 +3,8 @@
 #include "Yawara.h"
 #include "Timer.h"
 
+#include <algorithm>
+
 #define BASE_DEFRUNE_FILE               "assets/img/items/espirito_corrompido.png"
 #define BASE_DEFRUNE_FRAMES             9
 #define BASE_DEFRUNE_FRAMETIME          0.15
@@ -88,7 +90,7 @@ void DefenseRune::Render(){
 
 bool DefenseRune::Is(std::string type){
 
-	return !strcmp(type.c_str(), "DefenseRune");
+	return !std::min(strcmp(type.c_str(), "DefenseRune"), strcmp(type.c_str(), "Item"));
 }
 
 void DefenseRune::Start(){

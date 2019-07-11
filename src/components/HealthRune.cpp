@@ -86,7 +86,7 @@ void HealthRune::Render(){
 
 bool HealthRune::Is(std::string type){
 
-	return !strcmp(type.c_str(), "HealthRune");
+	return !std::min(strcmp(type.c_str(), "HealthRune"), strcmp(type.c_str(), "Item"));
 }
 
 void HealthRune::Start(){

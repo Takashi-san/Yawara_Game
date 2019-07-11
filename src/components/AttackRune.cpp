@@ -4,6 +4,8 @@
 #include "Timer.h"
 #include "Easing.h"
 
+#include <algorithm>
+
 #define BASE_ATTRUNE_FILE           "assets/img/items/runa_base.png"
 #define BASE_ATTRUNE_FRAMES         3
 #define TOP_ATTRUNE_FILE            "assets/img/items/runa_imagem.png"
@@ -90,7 +92,7 @@ void AttackRune::Render(){
 
 bool AttackRune::Is(std::string type){
 
-	return !strcmp(type.c_str(), "AttackRune");
+	return !std::min(strcmp(type.c_str(), "AttackRune"), strcmp(type.c_str(), "Item"));
 }
 
 void AttackRune::Start(){
