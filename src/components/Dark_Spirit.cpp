@@ -2,12 +2,25 @@
 #include "Sprite.h"
 #include "Collider.h"
 #include "Yawara.h"
+#include "Bullet.h"
+#include "Game.h"
 
-#define SPRT_SPEED 250
+#define SPRT_SPEED              250
+#define SPRT_BULLET_SPEED       750
+#define SPRT_BULLET_DAMAGE      5
+#define SPRT_BULLET_DISTANCE    500
+#define SPRT_BULLET_FRAMES      5
+#define SPRT_BULLET_FM_TIME     0.05
+#define REST_LIMIT              1.5
+const std::string SPRT_BULLET_SOURCE = "assets/img/tapu/disparo.png";
 
-#define DIST_DETECT_YAWARA 400
-#define FREE_TIME_MOVEMENT 1
-#define LIMIT_TIME_MOVEMENT 1.5
+#define SPRT_ENEMY_DIST_Y 50
+#define SPRT_ENEMY_DIST_X 50
+
+#define SPRT_DIST_DETECT_YAWARA 400
+#define SPRT_DIST_OUT_OF_RANGE 600
+#define SPRT_FREE_TIME_MOVEMENT 1
+#define SPRT_LIMIT_TIME_MOVEMENT 1.5
 
 // Movement sprites
 
@@ -42,6 +55,8 @@ const std::string ATTACK_LEFT_UP	= "assets/img/capelobo/capelobo_attack_l.png";
 const std::string ATTACK_UP			= "assets/img/capelobo/capelobo_attack_r.png";
 const std::string ATTACK_RIGHT_UP	= "assets/img/capelobo/capelobo_attack_r.png";
 
+bool sprtStartedMoving = false;
+
 Dark_Spirit::Dark_Spirit(GameObject & associated) : Enemy(associated){
     moveAllowed = true;
 
@@ -53,6 +68,7 @@ Dark_Spirit::Dark_Spirit(GameObject & associated) : Enemy(associated){
 	associated.AddComponent(cl);
 
     state = MOVING;
+    restOffset = 0;
 }
 
 Dark_Spirit::~Dark_Spirit(){
@@ -67,10 +83,9 @@ void Dark_Spirit::Update(float dt) {
 		{
 		case MOVING:
 			moveTimer.Update(dt);
-            if(moveTimer.Get() < FREE_TIME_MOVEMENT){
+            if(moveTimer.Get() < SPRT_FREE_TIME_MOVEMENT){
                 while(speed == Vec2{0,0}){
                     speed = Vec2{rand() % 2 ,rand() % 2 };
-                    std::cout << speed.x << '\t' << speed.y << std::endl;
                     speed.x *= SPRT_SPEED;
                     speed.y *= SPRT_SPEED;
                     if(speed.x == speed.y)
@@ -95,111 +110,96 @@ void Dark_Spirit::Update(float dt) {
                 speed = Vec2{0,0};
                 state = RESTING;
                 restTimer.Restart();
+                break;
             }
-            
-			// else if ((yawaraPos - associated.box.Center()).Modulo() < 900 && moveAllowed)
-			// {
+            if((yawaraPos - associated.box.Center()).Modulo() <= SPRT_DIST_DETECT_YAWARA){
+                state = PURSUE;
+                restOffset = 1;
+                moveTimer.Restart();
+                sprtStartedMoving = true;
+                break;
+            }
+            break;
+        case PURSUE:
+            moveTimer.Update(dt);
+			if ((yawaraPos - associated.box.Center()).Modulo() < SPRT_DIST_OUT_OF_RANGE && moveAllowed)
+			{
+				if ((yawaraPos - associated.box.Center()).Modulo() != 0)
+					speed = ((yawaraPos - associated.box.Center()) / ((yawaraPos - associated.box.Center()).Modulo())) * SPRT_SPEED;
+				else
+					speed = {0, 0};
 
-			// 	if(moveTimer.Get() > LIMIT_TIME_MOVEMENT && (yawaraPos - associated.box.Center()).Modulo() <= DIST_LOAD_ATTACK)
-			// 	{
-			// 		// Stop moving.
-			// 		speed.x = 0;
-			// 		speed.y = 0;
+				// Yawara is nearby the Capelobo.
+				if (moveTimer.Get() > SPRT_LIMIT_TIME_MOVEMENT || ((associated.box.Center().x <= SPRT_ENEMY_DIST_X + yawaraPos.x + dt * abs(speed.x)) && (associated.box.Center().x >= -SPRT_ENEMY_DIST_X + yawaraPos.x - dt * abs(speed.x)) &&
+					 (associated.box.Center().y <= SPRT_ENEMY_DIST_Y + yawaraPos.y + dt * abs(speed.y)) && (associated.box.Center().y >= -SPRT_ENEMY_DIST_Y + yawaraPos.y - dt * abs(speed.y))) ||
+					!moveAllowed)
+				{
+					// Stop moving.
+					speed.x = 0;
+					speed.y = 0;
 
-			// 		// Change to LOAD_ATTACK state.
-			// 		startedAttack = false;
-			// 		changed = false;
-			// 		state = LOAD_ATTACK;
-			// 		restTimer.Restart();
-			// 		moveTimer.Restart();
-			// 	}
+					// Change to BASIC_ATTACK state.
+					// changed = false;
+					state = BASIC_ATTACK;
+					restTimer.Restart();
+					moveTimer.Restart();
+                    break;
+				}
 
-			// 	if ((yawaraPos - associated.box.Center()).Modulo() != 0)
-			// 		speed = ((yawaraPos - associated.box.Center()) / ((yawaraPos - associated.box.Center()).Modulo())) * BOSS_SPEED;
-			// 	else
-			// 		speed = {0, 0};
+				// Correct root to move in 45 degrees
+				Move45(speed);
 
-			// 	// Yawara is nearby the Capelobo.
-			// 	if (((associated.box.Center().x <= CPLB_ENEMY_DIST_X + yawaraPos.x + dt * abs(speed.x)) && (associated.box.Center().x >= -CPLB_ENEMY_DIST_X + yawaraPos.x - dt * abs(speed.x)) &&
-			// 		 (associated.box.Center().y <= CPLB_ENEMY_DIST_Y + yawaraPos.y + dt * abs(speed.y)) && (associated.box.Center().y >= -CPLB_ENEMY_DIST_Y + yawaraPos.y - dt * abs(speed.y))) ||
-			// 		!moveAllowed)
-			// 	{
-			// 		// Stop moving
-			// 		speed.x = 0;
-			// 		speed.y = 0;
+				// Set dir to the direction that enemy is facing
 
-			// 		// Change to BASIC_ATTACK state.
-			// 		startedAttack = false;
-			// 		changed = false;
-			// 		state = BASIC_ATTACK;
-			// 		break;
-			// 	}
+				Direction lastDir = dir;
 
-			// 	// Correct root to move in 45 degrees
-			// 	if (abs(speed.x) > abs(speed.y) && (speed.y < -10 || speed.y > 10))
-			// 	{
-			// 		int signalY = speed.y / abs(speed.y);
-			// 		int signalX = speed.x / abs(speed.x);
-			// 		speed = {speed.x, signalY * signalX * speed.x};
-			// 	}
-			// 	else if (abs(speed.x) < abs(speed.y) && (speed.x < -10 || speed.x > 10))
-			// 	{
-			// 		int signalY = speed.y / abs(speed.y);
-			// 		int signalX = speed.x / abs(speed.x);
-			// 		speed = {signalY * signalX * speed.y, speed.y};
-			// 	}
+				if (speed.y > 10)
+				{
+					if (speed.x > 10)
+						dir = RIGHT_DOWN;
+					else if (speed.x < -10)
+						dir = LEFT_DOWN;
+					else
+						dir = DOWN;
+				}
+				else if (speed.y < -10)
+				{
+					if (speed.x > 10)
+						dir = RIGHT_UP;
+					else if (speed.x < -10)
+						dir = LEFT_UP;
+					else
+						dir = UP;
+				}
+				else
+				{
+					if (speed.x > 10)
+						dir = RIGHT;
+					else if (speed.x < -10)
+						dir = LEFT;
+				}
+				if (dir != lastDir || sprtStartedMoving){
+					change_sprite = true;
+					sprtStartedMoving = false;
+				}
 
-			// 	// Set dir to the direction that Capelobo is facing
-
-			// 	Direction lastDir = dir;
-
-			// 	if (speed.y > 10)
-			// 	{
-			// 		if (speed.x > 10)
-			// 			dir = RIGHT_DOWN;
-			// 		else if (speed.x < -10)
-			// 			dir = LEFT_DOWN;
-			// 		else
-			// 			dir = DOWN;
-			// 	}
-			// 	else if (speed.y < -10)
-			// 	{
-			// 		if (speed.x > 10)
-			// 			dir = RIGHT_UP;
-			// 		else if (speed.x < -10)
-			// 			dir = LEFT_UP;
-			// 		else
-			// 			dir = UP;
-			// 	}
-			// 	else
-			// 	{
-			// 		if (speed.x > 10)
-			// 			dir = RIGHT;
-			// 		else if (speed.x < -10)
-			// 			dir = LEFT;
-			// 	}
-			// 	if (dir != lastDir || startedMoving){
-			// 		change_sprite = true;
-			// 		startedMoving = false;
-			// 	}
-
-			// 	moveAllowed = AllowedToMove(speed);
+				moveAllowed = AllowedToMove(speed);
 				
-			// 	if (!moveAllowed) // If he can't move, he will rest
-			// 	{
-			// 		state = RESTING;
-			// 		restTimer.Restart();
-			// 	}
-			// 	// Move.
-			// 	else
-			// 	{
-			// 		associated.box.x += speed.x * dt;
-			// 		associated.box.y += speed.y * dt;
-			// 	}
-			// }
-			// else if((yawaraPos - associated.box.Center()).Modulo() > DIST_DETECT_YAWARA){
-			// 	state = SLEEPING;
-			// }
+				if (!moveAllowed) // If he can't move, he will rest
+				{
+					state = RESTING;
+					restTimer.Restart();
+				}
+				// Move.
+				else
+				{
+					associated.box.x += speed.x * dt;
+					associated.box.y += speed.y * dt;
+				}
+			}
+			else if((yawaraPos - associated.box.Center()).Modulo() > SPRT_DIST_DETECT_YAWARA){
+				state = SLEEPING;
+			}
 			break;
 
 		case RESTING:
@@ -208,147 +208,48 @@ void Dark_Spirit::Update(float dt) {
 				change_sprite = true;
 
 			// Rest for a determinated time
-			if (restTimer.Get() > 3)
+			if (restTimer.Get() > REST_LIMIT - restOffset)
 			{
-				// if ((yawaraPos - associated.box.Center()).Modulo() != 0)
-				// 	speed = ((yawaraPos - associated.box.Center()) / ((yawaraPos - associated.box.Center()).Modulo())) * SPRT_SPEED;
-				// else
-				// 	speed = {0, 0};
-
-				// temp_speed = speed;
 
 				state = MOVING;
-				// startedMoving = true;
+                restOffset = 0;
 				moveAllowed = 1;
 				moveTimer.Restart();
 			}
 			break;
 
-		// case BASIC_ATTACK:
-		// 	attackTimer.Update(dt);
+		case BASIC_ATTACK:
+            attackTimer.Update(dt);
+            if (/*!startedAttack && */ attackTimer.Get() > 0.3)
+			{
+                GameObject *bullet_GO = new GameObject;
+                std::weak_ptr<GameObject> weak_bullet = Game::GetInstance().GetCurrentState().AddObject(bullet_GO);
+                std::shared_ptr<GameObject> ptr = weak_bullet.lock();
 
-		// 	// Make change sprite just when the attack start and if it hasn't changed yet
-		// 	if (change_sprite && !startedAttack){
-		// 		change_sprite = false;
-		// 		changed = false;
-		// 	}
+                int angle = (yawaraPos - associated.box.Center()).Inclination();
+				std::cout << angle << '\t';
+                angle = angle + (45 - angle % 45);
+				if (angle <= 0)
+					angle += 360;
+                if (angle > 360)
+                    angle -= 360;
 
-		// 	if (!change_sprite && !changed){
-		// 		change_sprite = true;
-		// 		changed = true;
-		// 	}
+                std::cout << angle << std::endl;
 
-		// 	// Create Hitbox if it wasn't created yet. Create it 0.3s after render the sprite (time that he actualy attack on the sprite)
-		// 	if (!startedAttack && attackTimer.Get() > 0.3)
-		// 	{
-		// 		// Create first Claw hitbox
-		// 		GameObject *clawGO = new GameObject();
-		// 		std::weak_ptr<GameObject> weak_claw1 = Game::GetInstance().GetCurrentState().AddObject(clawGO);
-		// 		std::shared_ptr<GameObject> shared_claw1 = weak_claw1.lock();
-		// 		Claw *theClaw1;
+                Bullet *bullet = new Bullet(*ptr, angle, SPRT_BULLET_SPEED, SPRT_BULLET_DAMAGE, SPRT_BULLET_DISTANCE, SPRT_BULLET_SOURCE, SPRT_BULLET_FRAMES, SPRT_BULLET_FM_TIME, true);
+                ptr->box.Centered(associated.box.Center());
+                Vec2 offset(associated.box.w / 2, 0);
+                offset.Rotate(angle);
+                ptr->box.x += offset.x;
+                ptr->box.y += offset.y;
 
-		// 		// Create second Claw hitbox. It'll be used when diagonal attack
-		// 		GameObject *clawGO2 = new GameObject();
-		// 		std::weak_ptr<GameObject> weak_claw2 = Game::GetInstance().GetCurrentState().AddObject(clawGO2);
-		// 		std::shared_ptr<GameObject> shared_claw2 = weak_claw2.lock();
-		// 		Claw *theClaw2;
-
-		// 		startedAttack = true;
-
-		// 		std::weak_ptr<GameObject> weak_Boss = Game::GetInstance().GetCurrentState().GetObjectPtr(&associated);
-
-		// 		int angle = (Yawara::player->GetCenterPos() - associated.box.Center()).Inclination();
-		// 		if (angle < 0)
-		// 			angle += 360;
-		// 		angle = angle - angle % 45;
-
-		// 		shared_claw1->box.h = CPLB_B_ATTACK_H;
-		// 		shared_claw1->box.w = CPLB_B_ATTACK_W;
-
-		// 		shared_claw2->box.h = CPLB_B_ATTACK_H + CPLB_B_ATTACK_W / 2;
-		// 		shared_claw2->box.w = CPLB_B_ATTACK_W;
-
-		// 		// Verify which direction Capelobo is facing to create the hitbox on the right position
-		// 		switch (dir)
-		// 		{
-		// 		case RIGHT:
-		// 			shared_claw1->box.Centered(associated.box.Center()+Vec2({CPLB_HB_DISTANCE_X,0}));
-		// 			break;
-
-		// 		case UP:
-		// 			std::swap(shared_claw1->box.h, shared_claw1->box.w);
-		// 			shared_claw1->box.Centered(associated.box.Center()-Vec2({0,CPLB_HB_DISTANCE_X}));
-		// 			break;
-
-		// 		case LEFT:
-		// 			shared_claw1->box.Centered(associated.box.Center()-Vec2({CPLB_HB_DISTANCE_X,0}));
-		// 			break;
-
-		// 		case DOWN:
-		// 			std::swap(shared_claw1->box.h, shared_claw1->box.w);
-		// 			shared_claw1->box.Centered(associated.box.Center()+Vec2({0,CPLB_HB_DISTANCE_X}));
-		// 			break;
-
-		// 		case LEFT_DOWN:
-		// 			std::swap(shared_claw2->box.h, shared_claw2->box.w);
-		// 			shared_claw2->box.Centered(associated.box.Center()+Vec2({-shared_claw1->box.w/4,CPLB_HB_DISTANCE_Y}));
-					
-		// 			theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
-		// 			shared_claw2->AddComponent(theClaw2);
-
-		// 			shared_claw1->box.Centered(associated.box.Center()-Vec2({CPLB_HB_DISTANCE_X,0}));
-		// 			shared_claw1->box.h -= shared_claw2->box.h/2;
-		// 			break;
-
-		// 		case LEFT_UP:
-		// 			std::swap(shared_claw2->box.h, shared_claw2->box.w);
-		// 			shared_claw2->box.Centered(associated.box.Center()-Vec2({shared_claw1->box.w/4,CPLB_HB_DISTANCE_Y}));
-					
-		// 			theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
-		// 			shared_claw2->AddComponent(theClaw2);
-
-		// 			shared_claw1->box.Centered(associated.box.Center()-Vec2({CPLB_HB_DISTANCE_X,-shared_claw2->box.h/2}));
-		// 			shared_claw1->box.h -= shared_claw2->box.h/2;
-		// 			break;
-
-		// 		case RIGHT_DOWN:
-		// 			std::swap(shared_claw2->box.h, shared_claw2->box.w);
-		// 			shared_claw2->box.Centered(associated.box.Center()+Vec2({shared_claw1->box.w/4,CPLB_HB_DISTANCE_Y}));
-					
-		// 			theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
-		// 			shared_claw2->AddComponent(theClaw2);
-					
-		// 			shared_claw1->box.Centered(associated.box.Center()+Vec2({CPLB_HB_DISTANCE_X,0}));
-		// 			shared_claw1->box.h -= shared_claw2->box.h/2;
-		// 			break;
-
-		// 		case RIGHT_UP:
-		// 			std::swap(shared_claw2->box.h, shared_claw2->box.w);
-		// 			shared_claw2->box.Centered(associated.box.Center()+Vec2({shared_claw1->box.w/4,-CPLB_HB_DISTANCE_Y}));
-					
-		// 			theClaw2 = new Claw(*shared_claw2, CLAW_DAMAGE,true);
-		// 			shared_claw2->AddComponent(theClaw2);
-
-		// 			shared_claw1->box.Centered(associated.box.Center()+Vec2({CPLB_HB_DISTANCE_X,shared_claw2->box.h/2}));
-		// 			shared_claw1->box.h -= shared_claw2->box.h/2;
-		// 			break;
-		// 		default:
-		// 			break;
-		// 		}
-
-		// 		theClaw1 = new Claw(*shared_claw1, CLAW_DAMAGE, true);
-
-		// 		shared_claw1->AddComponent(theClaw1);
-		// 	}
-
-		// 	// End attack
-		// 	if (attackTimer.Get() > 1)
-		// 	{
-		// 		state = RESTING;
-		// 		attackTimer.Restart();
-		// 		restTimer.Restart();
-		// 	}
-		// 	break;
+                ptr->AddComponent(bullet);
+                state = RESTING;
+                restTimer.Restart();
+            }
+			break;
+        default:
+            break;
 		}
 	}
 }
@@ -356,7 +257,7 @@ void Dark_Spirit::Update(float dt) {
 void Dark_Spirit::Render() {
     Vec2 position = associated.box.Center();
 
-	Sprite *sp = static_cast<Sprite *>(associated.GetComponent("Sprite"));
+	// Sprite *sp = static_cast<Sprite *>(associated.GetComponent("Sprite"));
 	// if (change_sprite && sp)
 	// {
 	// 	change_sprite = false;
