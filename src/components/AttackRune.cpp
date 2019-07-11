@@ -13,12 +13,12 @@
 #define ATTRUNE_COOLDOWN_TIME       30
 
 /* 1 < factor <= 2 increased attack damage */
-AttackRune::AttackRune(GameObject& associated, float attFactor) : Item(associated){
+AttackRune::AttackRune(GameObject& associated, float attFactor, Color color, Image img) : Item(associated){
 
     sp = new Sprite(associated, BASE_ATTRUNE_FILE, BASE_ATTRUNE_FRAMES);
     sp->SetScale(1, 1);
-    sp->SetFrame(1);
-    sp->SetStopFrame(1);
+    sp->SetFrame(color);
+    sp->SetStopFrame(color);
 	associated.AddComponent(sp);
 
     activationSound = new Sound(associated, RUNE_SOUND_PATH);
@@ -27,6 +27,8 @@ AttackRune::AttackRune(GameObject& associated, float attFactor) : Item(associate
     top_layer_sprite = nullptr;
 
     this->attFactor = attFactor;
+
+    this->top_img = img;
 }
 
 void AttackRune::Update(float dt){
@@ -43,8 +45,8 @@ void AttackRune::Update(float dt){
             active = false;
             top_layer_sprite = new Sprite(associated, TOP_ATTRUNE_FILE, TOP_ATTRUNE_FRAMES);
             top_layer_sprite->SetScale(1, 1);
-            top_layer_sprite->SetFrame(0);
-            top_layer_sprite->SetStopFrame(0);
+            top_layer_sprite->SetFrame(top_img);
+            top_layer_sprite->SetStopFrame(top_img);
             associated.AddComponent(top_layer_sprite);
             activationSound->Play(1, MIX_MAX_VOLUME);
         }
@@ -94,4 +96,12 @@ bool AttackRune::Is(std::string type){
 void AttackRune::Start(){
 
 
+}
+
+void AttackRune::ChangeColor(Color color){
+    Sprite* sp = static_cast<Sprite*> (associated.GetComponent("Sprite"));
+    if(sp){
+        sp->SetFrame(color);
+        sp->SetStopFrame(color);
+    }
 }

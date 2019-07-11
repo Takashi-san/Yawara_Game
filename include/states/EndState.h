@@ -24,4 +24,8 @@ public:
 
 private:
 	Music bgMusic;
+	GameObject* selection;
+
+	enum Option {NEWGAME, QUIT};
+	Option Opt;
 };

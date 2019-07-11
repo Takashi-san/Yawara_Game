@@ -9,7 +9,10 @@
 
 #include "Fonts.h"
 
-#define PAUSE_STT_BG "assets/img/background/main_menu.png"
+#define PAUSE_STT_BG	"assets/img/background/main_menu.png"
+#define PAUSE_STT_CONT	"assets/img/text/continuar.png"
+#define PAUSE_STT_QUIT	"assets/img/text/main_menu_sair.png"
+#define CURSOR_PATH		"assets/img/cursor/cursor.png"
 
 PauseState::PauseState()
 {
@@ -29,14 +32,16 @@ PauseState::PauseState()
 	GameObject *t1go = new GameObject();
 	weak_ptr = AddObject(t1go);
 	ptr = weak_ptr.lock();
-	Text *tx1 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Resume", {255, 255, 255, 255});
+	Sprite *tx1 = new Sprite(*ptr, PAUSE_STT_CONT);
+	tx1->SetScale(0.4, 0.4);
 	ptr->box.Centered({341 + Camera::pos.x, 500 + Camera::pos.y});
 	ptr->AddComponent(tx1);
 
 	GameObject *t2go = new GameObject();
 	weak_ptr = AddObject(t2go);
 	ptr = weak_ptr.lock();
-	Text *tx2 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Quit", {255, 255, 255, 255});
+	Sprite *tx2 = new Sprite(*ptr, PAUSE_STT_QUIT);
+	tx2->SetScale(0.3, 0.3);
 	ptr->box.Centered({683 + Camera::pos.x, 500 + Camera::pos.y});
 	ptr->AddComponent(tx2);
 
@@ -45,9 +50,9 @@ PauseState::PauseState()
 	weak_ptr = AddObject(sgo);
 	ptr = weak_ptr.lock();
 	selection = sgo;
-	Text *txs = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, ">>", {255, 255, 255, 255}, 0.3);
-	ptr->box.Centered({240 + Camera::pos.x, 500 + Camera::pos.y});
-	ptr->AddComponent(txs);
+	Sprite *sspr = new Sprite(*ptr, CURSOR_PATH);
+	ptr->box.Centered({220 + Camera::pos.x, 500 + Camera::pos.y});
+	ptr->AddComponent(sspr);
 
 	// BGM
 
@@ -74,7 +79,7 @@ void PauseState::Update(float dt)
 	if (input.KeyPress(A_KEY) || input.KeyPress(LEFT_ARROW_KEY))
 	{
 		opt = RESUME;
-		selection->box.Centered({240 + Camera::pos.x, 500 + Camera::pos.y});
+		selection->box.Centered({220 + Camera::pos.x, 500 + Camera::pos.y});
 	}
 	if (input.KeyPress(D_KEY) || input.KeyPress(RIGHT_ARROW_KEY))
 	{
