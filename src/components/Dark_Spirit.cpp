@@ -79,6 +79,9 @@ Dark_Spirit::~Dark_Spirit(){
 }
 
 void Dark_Spirit::Update(float dt) {
+
+    hitTimer.Update(dt);
+    
     if (Yawara::player != nullptr)
 	{
 		yawaraPos = Yawara::player->GetCenterPos();
@@ -115,7 +118,7 @@ void Dark_Spirit::Update(float dt) {
                 restTimer.Restart();
                 break;
             }
-            if((yawaraPos - associated.box.Center()).Modulo() <= SPRT_DIST_DETECT_YAWARA){
+            if((yawaraPos - associated.box.Center()).Modulo() <= SPRT_DIST_DETECT_YAWARA + rangeOffset){
                 state = PURSUE;
                 rangeOffset = 0;
                 restOffset = 1;
@@ -125,6 +128,7 @@ void Dark_Spirit::Update(float dt) {
             }
             break;
         case PURSUE:
+            sprtStartedMoving = true;
             moveTimer.Update(dt);
 			if ((yawaraPos - associated.box.Center()).Modulo() < SPRT_DIST_OUT_OF_RANGE + rangeOffset && moveAllowed)
 			{
@@ -201,8 +205,8 @@ void Dark_Spirit::Update(float dt) {
 					associated.box.y += speed.y * dt;
 				}
 			}
-			else if((yawaraPos - associated.box.Center()).Modulo() > SPRT_DIST_DETECT_YAWARA){
-				state = SLEEPING;
+			else{
+				state = RESTING;
 			}
 			break;
 
@@ -214,7 +218,7 @@ void Dark_Spirit::Update(float dt) {
 			// Rest for a determinated time
 			if (restTimer.Get() > REST_LIMIT - restOffset)
 			{
-                if((yawaraPos - associated.box.Center()).Modulo() <= SPRT_DIST_DETECT_YAWARA){
+                if((yawaraPos - associated.box.Center()).Modulo() <= SPRT_DIST_DETECT_YAWARA + rangeOffset){
                     state = PURSUE;
                     rangeOffset = 0;
                     restOffset = 1;
@@ -329,26 +333,6 @@ void Dark_Spirit::Update(float dt) {
 void Dark_Spirit::Render() {
     Vec2 position = associated.box.Center();
 
-}
-
-void Dark_Spirit::NotifyCollision(GameObject& other){
-    if (other.GetComponent("Bullet") && !static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer){
-		hp -= static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
-        
-        //  If the enemy can't see Yawara and got hit, it will enhance the range off vision and start pursuing Yawara
-
-        if(state == MOVING || state == RESTING){
-            rangeOffset = 300;
-            state = PURSUE;
-            moveTimer.Restart();
-            sprtStartedMoving = true;
-        }
-    }
-	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
-	if (hitbox && !(hitbox->targetsPlayer) && hitTimer.Get() > HIT_COOL_DOWN) {
-		hp -= hitbox->GetDamage();
-		hitTimer.Restart();
-	}
 }
 
 bool Dark_Spirit::Is(std::string type){

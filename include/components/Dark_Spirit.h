@@ -14,13 +14,11 @@ class Dark_Spirit : public Enemy
 {
 	private:
 		float restOffset;
-		float rangeOffset;
 	public:
 		Dark_Spirit(GameObject &);
 		~Dark_Spirit();
 
 		void Update(float) override;
 		void Render() override;
-		void NotifyCollision(GameObject&) override;
 		bool Is(std::string);
 };
