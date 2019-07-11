@@ -29,11 +29,11 @@ void Camera::Update(float dt) {
 	if ((focusA != nullptr) && (focusB != nullptr)) {
 		pos = {(focusA->box.Center() - focusB->box.Center()).Modulo() * ratio, 0};
 		pos.Rotate(atan2((focusB->box.Center() - focusA->box.Center()).y, (focusB->box.Center() - focusA->box.Center()).x));
-		pos.x = pos.x + focusA->box.Center().x - Game::GetInstance().GetWindowSize().x/2;
-		pos.y = pos.y + focusA->box.Center().y - Game::GetInstance().GetWindowSize().y/2;
+		pos.x = pos.x + focusA->box.Center().x - Game::GetInstance().GetRenderSize().x/2 /* + Game::GetInstance().GetRenderSize().x/2*/;
+		pos.y = pos.y + focusA->box.Center().y - Game::GetInstance().GetRenderSize().y/2 /*+ Game::GetInstance().GetRenderSize().y/2*/;
 	} else if (focusA != nullptr) {
-		pos.x = focusA->box.Center().x - Game::GetInstance().GetWindowSize().x/2;
-		pos.y = focusA->box.Center().y - Game::GetInstance().GetWindowSize().y/2;
+		pos.x = focusA->box.Center().x - Game::GetInstance().GetRenderSize().x/2 /*+ Game::GetInstance().GetRenderSize().x/2*/;
+		pos.y = focusA->box.Center().y - Game::GetInstance().GetRenderSize().y/2 /*+ Game::GetInstance().GetRenderSize().y/2*/;
 	} else {
 		InputManager& input = InputManager::GetInstance();
 

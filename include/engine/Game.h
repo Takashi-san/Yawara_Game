@@ -42,4 +42,5 @@ public:
 
 	float GetDeltaTime();
 	Vec2 GetWindowSize();
+	Vec2 GetRenderSize();
 };

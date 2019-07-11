@@ -87,6 +87,8 @@ public:
 
 	void SetReverse(bool);
 
+	void SetFullscreen();
+
 	void Update(float dt);
 	bool Is(std::string type);
 };
