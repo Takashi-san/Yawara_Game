@@ -17,6 +17,10 @@
 #define ACTIVATED_DEFRUNE_FRAMES        8
 #define ACTIVATED_DEFRUNE_FRAMETIME     0.2
 
+#define DEFRUNE_FREE_NPC_FILE           "assets/img/npc/efeito_npc.png"
+#define DEFRUNE_FREE_NPC_FRAMES         3
+#define DEFRUNE_FREE_NPC_FRAMETIME      0.12
+
 #define DEFRUNE_ACTIVATION_DISTANCE     45
 #define DEFRUNE_COOLDOWN_TIME           30
 
@@ -35,7 +39,7 @@ DefenseRune::DefenseRune(GameObject& associated, float defFactor) : Item(associa
 
 void DefenseRune::Update(float dt){
 
-    static Timer cooldownTimer, changeTimer;
+    static Timer cooldownTimer, changeTimer, removeTopTimer;
     static bool active = true, changed = false;
     
     if(Yawara::player){
@@ -50,9 +54,7 @@ void DefenseRune::Update(float dt){
             sp->Open(INTERACTED_DEFRUNE_FILE);
             sp->SetFrameCount(INTERACTED_DEFRUNE_FRAMES);
             sp->SetFrameTime(INTERACTED_DEFRUNE_FRAMETIME);
-            sp->SetScale(1, 1);
-            associated.box.x -= 16;
-            associated.box.y -= 20;
+            associated.box.x -= 15;
             cooldownTimer.Restart();
             active = false;
             activationSound->Play(1, MIX_MAX_VOLUME);
@@ -62,21 +64,24 @@ void DefenseRune::Update(float dt){
             sp->Open(ACTIVATED_DEFRUNE_FILE);
             sp->SetFrameCount(ACTIVATED_DEFRUNE_FRAMES);
             sp->SetFrameTime(ACTIVATED_DEFRUNE_FRAMETIME);
-            sp->SetScale(1, 1);
-            associated.box.x += 48;
-            associated.box.y += 40;
+            associated.box.x += 15;
             changed = false;
             changeTimer.Restart();
+            top_layer_sprite = new Sprite(associated, DEFRUNE_FREE_NPC_FILE, DEFRUNE_FREE_NPC_FRAMES, DEFRUNE_FREE_NPC_FRAMETIME);
+            associated.AddComponent(top_layer_sprite);
+            removeTopTimer.Restart();
         }
+        removeTopTimer.Update(dt);
 
+        if(top_layer_sprite && removeTopTimer.Get() >= DEFRUNE_FREE_NPC_FRAMES * DEFRUNE_FREE_NPC_FRAMETIME){
+            associated.RemoveComponent(top_layer_sprite);
+            top_layer_sprite = nullptr;
+        }
         cooldownTimer.Update(dt);
         if(cooldownTimer.Get() >= DEFRUNE_COOLDOWN_TIME && !active){
             sp->Open(BASE_DEFRUNE_FILE);
             sp->SetFrameCount(BASE_DEFRUNE_FRAMES);
             sp->SetFrameTime(BASE_DEFRUNE_FRAMETIME);
-            sp->SetScale(1, 1);
-            associated.box.x -= 32;
-            associated.box.y -= 20;
             active = true;
             changeTimer.Restart();
         }
