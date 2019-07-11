@@ -29,6 +29,10 @@
 #define TAPU_BULLET_FRAME	5
 #define TAPU_BULLET_TIME	0.05
 
+#define TAPU_SHOOT			"assets/img/tapu/efeito_disparo.png"
+#define TAPU_SHOOT_FRAME	10
+#define TAPU_SHOOT_TIME		0.05
+
 Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component(associated) {
 	angle = 0;
 	this->yawara = Yawara;
@@ -239,6 +243,18 @@ void Tapu::Shoot()
 	ptr->box.x += offset.x;
 	ptr->box.y += offset.y;
 	ptr->AddComponent(bam);
+
+	go = new GameObject();
+	weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	ptr = weak_ptr.lock();
+
+	Sprite* sp = new Sprite(*ptr, TAPU_SHOOT, TAPU_SHOOT_FRAME, TAPU_SHOOT_TIME, 4 * TAPU_SHOOT_TIME);
+	sp->SetFrame(7);
+	ptr->AddComponent(sp);	
+	ptr->box.Centered(associated.box.Center());
+	ptr->box.x += offset.x;
+	ptr->box.y += offset.y;
+	ptr->angleDeg = angle/0.0174533;
 }
 
 void Tapu::SetDamageFactor(float factor){
