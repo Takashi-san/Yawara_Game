@@ -17,7 +17,7 @@
 #define TITLE_STT_CTRLS		"assets/img/text/controles.png"
 #define TITLE_STT_ARROW		"assets/img/text/main_menu_selection.png"
 
-#define TITLE_STT_BGM			"assets/audio/musica/main_menu.mp3"
+#define TITLE_STT_BGM			"assets/audio/musica/main_menu.ogg"
 #define TITLE_STT_SLCT_SOUND	"assets/audio/sons/menu-selecionar_opcao.ogg"
 #define TITLE_STT_CHNG_SLCT		"assets/audio/sons/menu-mover.ogg"
 #define TITLE_STT_PLAY_SOUND	"assets/audio/sons/menu-jogar.ogg"
