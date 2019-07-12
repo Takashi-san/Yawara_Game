@@ -81,3 +81,23 @@
 #define TS_RUNA			"assets/img/tileset/runa.png"
 #define TS_RUNA_W		208
 #define TS_RUNA_H		128
+
+#define TS_NUVEM1		"assets/img/tileset/nuvem1.png"
+#define TS_NUVEM1_W		5120
+#define TS_NUVEM1_H		2560
+
+#define TS_NUVEM2		"assets/img/tileset/nuvem2.png"
+#define TS_NUVEM2_W		5120
+#define TS_NUVEM2_H		2560
+
+#define TS_NUVEM3		"assets/img/tileset/nuvem3.png"
+#define TS_NUVEM3_W		5120
+#define TS_NUVEM3_H		2560
+
+#define TS_NUVEM4		"assets/img/tileset/nuvem4.png"
+#define TS_NUVEM4_W		5120
+#define TS_NUVEM4_H		2560
+
+#define TS_NUVEM5		"assets/img/tileset/nuvem5.png"
+#define TS_NUVEM5_W		5120
+#define TS_NUVEM5_H		1280

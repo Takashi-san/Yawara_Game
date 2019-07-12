@@ -163,8 +163,6 @@ void TitleState::Update(float dt) {
 			StageState *stage = nullptr;
 			stage = new StageState();
 			Game::GetInstance().Push(stage);
-			if(play)
-				play->Play(1);
 		}
 	}
 
