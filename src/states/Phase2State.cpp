@@ -328,6 +328,8 @@ void Phase2State::Start()
 	ptr->AddComponent(cmfr);
 
 	started = true;
+
+	bgMusic.Play(-1, 30);
 }
 
 void Phase2State::Pause()
