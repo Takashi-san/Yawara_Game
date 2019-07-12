@@ -10,6 +10,7 @@
 #include "Tongue.h"
 #include "Sound.h"
 #include "Tapu.h"
+#include "Bullet.h"
 #include "Hitbox.h"
 #include "MapColision.h"
 
@@ -181,14 +182,17 @@ bool Yawara::Is(std::string type) {
 void Yawara::NotifyCollision(GameObject& other) {
 	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
 	
-	if (hitbox && hitbox->targetsPlayer && hitTime.Get() >= YWR_HIT_COOL_DOWN)
+	if (((hitbox && hitbox->targetsPlayer) || (other.GetComponent("Bullet") && static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer)) && hitTime.Get() >= YWR_HIT_COOL_DOWN)
 	{
 		float defended = def - 1;
 
 		if(defended > 1)
 			defended = 1;
 		
-		hp -= (1 - defended) * hitbox->GetDamage();
+		if(hitbox)
+			hp -= (1 - defended) * hitbox->GetDamage();
+		else
+			hp -= (1 - defended) * static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
 		hitTime.Restart();
 		if (!isDead) {
 			gotHit = true;
