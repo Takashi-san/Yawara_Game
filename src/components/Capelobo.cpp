@@ -12,6 +12,7 @@
 #include "Tongue.h"
 #include "Easing.h"
 
+
 #define CPLB_HB_DISTANCE_Y 150
 #define CPLB_HB_DISTANCE_X 50
 
@@ -26,7 +27,7 @@
 
 #define BOSS_VEL_ANG 0
 #define BOSS_SPEED 350
-#define BOSS_REST_BASE 1
+#define BOSS_REST_BASE 1.5
 #define BOSS_MOVEMENT 1.5
 
 #define CLAW_DAMAGE 10
@@ -38,17 +39,20 @@
 #define DIST_LOAD_ATTACK 450
 #define DIST_OUT_OF_RANGE 900
 
+#define ATTACK_SOUND_DELAY 0.5
+
+#define CPLB_BREATH 1.3
 
 // Movement sprites
 
 const std::string MOVE_RIGHT 	  = "assets/img/capelobo/capelobo_correndo_r.png";
 const std::string MOVE_RIGHT_DOWN = "assets/img/capelobo/capelobo_correndo_rd.png";
-const std::string MOVE_DOWN		  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
+const std::string MOVE_DOWN		  = "assets/img/capelobo/capelobo_correndo_ld.png";
 const std::string MOVE_LEFT_DOWN  = "assets/img/capelobo/capelobo_correndo_ld.png";
 const std::string MOVE_LEFT		  = "assets/img/capelobo/capelobo_correndo_l.png";
-const std::string MOVE_LEFT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_lu.png";
-const std::string MOVE_UP		  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
-const std::string MOVE_RIGHT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_ru.png";
+const std::string MOVE_LEFT_UP	  = "assets/img/capelobo/capelobo_correndo_lu.png";
+const std::string MOVE_UP		  = "assets/img/capelobo/capelobo_correndo_r.png";
+const std::string MOVE_RIGHT_UP	  = "assets/img/capelobo/capelobo_correndo_ru.png";
 
 // Resting sprites
 
@@ -65,11 +69,11 @@ const std::string REST_RIGHT_UP		= "assets/img/capelobo/capelobo_idle_right_up.p
 
 const std::string ATTACK_RIGHT		= "assets/img/capelobo/capelobo_attack_r.png";
 const std::string ATTACK_RIGHT_DOWN	= "assets/img/capelobo/capelobo_attack_r.png";
-const std::string ATTACK_DOWN		= "assets/img/capelobo/capelobo_attack_r.png";
+const std::string ATTACK_DOWN		= "assets/img/capelobo/capelobo_attack_d.png";
 const std::string ATTACK_LEFT_DOWN	= "assets/img/capelobo/capelobo_attack_l.png";
 const std::string ATTACK_LEFT		= "assets/img/capelobo/capelobo_attack_l.png";
 const std::string ATTACK_LEFT_UP	= "assets/img/capelobo/capelobo_attack_l.png";
-const std::string ATTACK_UP			= "assets/img/capelobo/capelobo_attack_r.png";
+const std::string ATTACK_UP			= "assets/img/capelobo/capelobo_attack_u.png";
 const std::string ATTACK_RIGHT_UP	= "assets/img/capelobo/capelobo_attack_r.png";
 
 // Load attack sprites
@@ -93,16 +97,28 @@ const std::string EFFECT_3			= "assets/img/capelobo/camada3_efeitomorteboss.png"
 const std::string EFFECT_4			= "assets/img/capelobo/camada4_efeitomorteboss.png";
 const std::string EFFECT_5			= "assets/img/capelobo/camada5_efeitomorteboss.png";
 
+// Sounds
+
+const std::string CPLB_HIT_SOUND	= "assets/audio/sons/capelobo/hit.ogg";
+const std::string CPLB_B_ATK_SOUND1	= "assets/audio/sons/capelobo/ataque1.ogg";
+const std::string CPLB_B_ATK_SOUND2	= "assets/audio/sons/capelobo/ataque2.ogg";
+const std::string CPLB_L_ATK_SOUND	= "assets/audio/sons/capelobo/LINGUA VAI.ogg";
+const std::string BREATH_SOUND		= "assets/audio/sons/capelobo/respira.ogg";
+const std::string CPLB_EXPLODE		= "assets/audio/sons/capelobo/explosao.ogg";
+const std::string CPLB_DEATH		= "assets/audio/sons/capelobo/grunhido_morte.ogg";
+const std::string SAW_YAWARA		= "assets/audio/sons/capelobo/ve_inimigo.ogg";
+
 Capelobo *Capelobo::boss;
 
 bool cplbStartedAttack = false;
 bool cplbStartedMoving = true;
 bool cplbSpriteChanged = false;
 bool endEffects = false;
+int timesPlayed = 0;
 
 Vec2 temp_speed;
 
-Capelobo::Capelobo(GameObject &associated, float restOffset) : Enemy(associated)
+Capelobo::Capelobo(GameObject &associated, std::weak_ptr<GameObject> weak_shadow, float restOffset) : Enemy(associated)
 {
 	boss = this;
 	moveAllowed = true;
@@ -111,24 +127,23 @@ Capelobo::Capelobo(GameObject &associated, float restOffset) : Enemy(associated)
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(sp);
 	associated.AddComponent(cl);
-	
+
 	speed = Vec2{0,0};
 
 	state = SLEEPING;
 	hp = 60;
 	this->restOffset = restOffset;
+	this->weak_shadow = weak_shadow;
 }
 
 void Capelobo::Start()
 {
-	std::weak_ptr<GameObject> weak_ptr;
-	std::shared_ptr<GameObject> ptr;
-	
 	// Reset all timers
 	restTimer.Restart();
 	moveTimer.Restart();
 	attackTimer.Restart();
 	hitTimer.Restart();
+	soundTimer.Restart();
 	deathTimer.Restart();
 }
 
@@ -141,8 +156,16 @@ Capelobo::~Capelobo()
 void Capelobo::Update(float dt)
 {
 	associated.angleDeg += (BOSS_VEL_ANG / (PI / 180)) * dt;
+	std::shared_ptr<GameObject> shadow = weak_shadow.lock();
+	shadow->box.Centered(associated.box.Center());
+
+	GameObject *go = new GameObject();
+	std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
+	Sound *so = new Sound(*ptr, BREATH_SOUND);
 
 	hitTimer.Update(dt);
+	soundTimer.Update(dt);
 
 	if (Yawara::player != nullptr && hp > 0)
 	{
@@ -188,6 +211,9 @@ void Capelobo::Update(float dt)
 					cplbStartedAttack = false;
 					cplbSpriteChanged = false;
 					state = BASIC_ATTACK;
+					timesPlayed = 0;
+					velAttackOffset = 1;
+					soundOffset = 0;
 					cplbStartedMoving = false;
 					break;
 				}
@@ -236,6 +262,7 @@ void Capelobo::Update(float dt)
 				{
 					state = RESTING;
 					restTimer.Restart();
+					cplbSpriteChanged = true;
 				}
 				// Move.
 				else
@@ -250,10 +277,14 @@ void Capelobo::Update(float dt)
 			}
 			break;
 
-		case RESTING:
+		case RESTING:{
+
 			restTimer.Update(dt);
-			if (!change_sprite)
+			if (!cplbSpriteChanged){
 				change_sprite = true;
+				cplbSpriteChanged = true;
+			}
+			else change_sprite = false;
 
 			// Rest for a determinated time
 			if (restTimer.Get() > BOSS_REST_BASE + restOffset)
@@ -269,18 +300,34 @@ void Capelobo::Update(float dt)
 				cplbStartedMoving = true;
 				moveAllowed = 1;
 				moveTimer.Restart();
+				so->Open(SAW_YAWARA);
+				so->Play(1);
+
+			}
+			if(soundTimer.Get() > CPLB_BREATH && (yawaraPos - associated.box.Center()).Modulo() < 1800){
+				so->Play(1);
+				soundTimer.Restart();
 			}
 			break;
+		}
 
-		case SLEEPING:
+		case SLEEPING:{
 			// Stay asleep if Yawara don't get closer
 			if ((yawaraPos - associated.box.Center()).Modulo() <= DIST_DETECT_YAWARA){
 				state = PURSUE;
 				moveTimer.Restart();
 				cplbStartedMoving = true;
+				so->Open(SAW_YAWARA);
+				so->Play(1);
+				break;
+			}
+			if(soundTimer.Get() > CPLB_BREATH && (yawaraPos - associated.box.Center()).Modulo() < 1800){
+				so->Open(BREATH_SOUND);
+				so->Play(1);
+				soundTimer.Restart();
 			}
 			break;
-
+		}
 		case BASIC_ATTACK:
 			attackTimer.Update(dt);
 
@@ -295,16 +342,32 @@ void Capelobo::Update(float dt)
 				cplbSpriteChanged = true;
 			}
 
+			if(dir == UP || dir == DOWN){
+				velAttackOffset = 2;
+				soundOffset = 0.45;
+			}
+
 			// Create Hitbox if it wasn't created yet. Create it 0.3s after render the sprite (time that he actualy attack on the sprite)
-			if (!cplbStartedAttack && attackTimer.Get() > 0.3)
+			if (attackTimer.Get() > 0.3 * velAttackOffset)
 			{
+				GameObject *soundGO = new GameObject();
+				std::weak_ptr<GameObject> weak_claw = Game::GetInstance().GetCurrentState().AddObject(soundGO);
+				std::shared_ptr<GameObject> shared_claw = weak_claw.lock();
+				Sound *so = new Sound(*shared_claw, CPLB_B_ATK_SOUND1);
+				shared_claw->AddComponent(so);
+				
 				// Create first Claw hitbox
 				GameObject *clawGO = new GameObject();
-				std::weak_ptr<GameObject> weak_claw = Game::GetInstance().GetCurrentState().AddObject(clawGO);
-				std::shared_ptr<GameObject> shared_claw = weak_claw.lock();
+				weak_claw = Game::GetInstance().GetCurrentState().AddObject(clawGO);
+				shared_claw = weak_claw.lock();
 				Claw *theClaw;
 
-				cplbStartedAttack = true;
+				if(timesPlayed < 2 && soundTimer.Get() > ATTACK_SOUND_DELAY - soundOffset){
+					so->Play(1, MIX_MAX_VOLUME);
+					so->Open(CPLB_B_ATK_SOUND2);
+					++timesPlayed;
+					soundTimer.Restart();
+				}
 
 				std::weak_ptr<GameObject> weak_Boss = Game::GetInstance().GetCurrentState().GetObjectPtr(&associated);
 
@@ -356,12 +419,14 @@ void Capelobo::Update(float dt)
 				state = RESTING;
 				attackTimer.Restart();
 				restTimer.Restart();
+				cplbSpriteChanged = false;
 			}
 			break;
 		
 		case LOAD_ATTACK:
 			
 			attackTimer.Update(dt);
+
 
 			// Make change sprite just when the attack start and if it hasn't changed yet
 			if (change_sprite && !cplbStartedAttack){
@@ -378,7 +443,11 @@ void Capelobo::Update(float dt)
 			// Create Hitbox if it wasn't created yet. Create it 0.3s after render the sprite (time that he actualy attack on the sprite)
 			if (!cplbStartedAttack)
 			{
-				cplbStartedAttack = true;
+				GameObject *soundGO = new GameObject();
+				std::weak_ptr<GameObject> weak_claw = Game::GetInstance().GetCurrentState().AddObject(soundGO);
+				std::shared_ptr<GameObject> shared_claw = weak_claw.lock();
+				Sound *so = new Sound(*shared_claw, CPLB_L_ATK_SOUND);
+				shared_claw->AddComponent(so);
 
 				GameObject *tongueGO = new GameObject();
 				std::weak_ptr<GameObject> weak_tongue = Game::GetInstance().GetCurrentState().AddObject(tongueGO);
@@ -393,42 +462,33 @@ void Capelobo::Update(float dt)
 				if (angle < 0)
 					angle += 360;
 
+				so->Play(1, MIX_MAX_VOLUME);
+
+				cplbStartedAttack = true;
 
 				// Corect direction and angle. Capelobo will attack diagonally just if it is on a range od 15 deg from the 45 deg diagonal
-				if(angle > 330 || angle < 30){
+				if(angle > 330 || angle < 60){
 					angle = 360;
 					dir = RIGHT;
+					distOffset = 0;
 				}
-				else if(angle > 30 && angle < 60){
-					angle = 45;
-					dir = RIGHT_DOWN;	
-				}
-				else if(angle > 60 && angle < 120){
+				else if(angle > 60 && angle < 150){
 					angle = 90;
 					dir = DOWN;
+					distOffset = 100;
 				}
-				else if(angle > 120 && angle < 150){
-					angle = 135;
-					dir = LEFT_DOWN;
-				}
-				else if(angle > 150 && angle < 210){
+				else if(angle > 150 && angle < 240){
 					angle = 180;
 					dir = LEFT;
-				}
-				else if(angle > 210 && angle < 240){
-					angle = 225;
-					dir = LEFT_UP;
-				}
-				else if(angle > 240 && angle < 300){
-					angle = 270;
-					dir = UP;
+					distOffset = 0;
 				}
 				else{
-					angle = 315;
-					dir = RIGHT_UP;
+					angle = 270;
+					dir = UP;
+					distOffset = 100;
 				}
 
-				Tongue *theTongue = new Tongue(*shared_tongue, TONGUE_DAMAGE, TONGUE_SPEED, angle, TONGUE_MAX_DIST, true);
+				Tongue *theTongue = new Tongue(*shared_tongue, TONGUE_DAMAGE, TONGUE_SPEED, angle, TONGUE_MAX_DIST - distOffset, true);
 
 				shared_tongue->AddComponent(theTongue);
 				if(shared_tongue != nullptr)
@@ -442,9 +502,13 @@ void Capelobo::Update(float dt)
 				cplbStartedMoving = true;
 				attackTimer.Restart();
 				restTimer.Restart();
+				so->Open(SAW_YAWARA);
+				so->Play(1);
 			}
 			break;
 		default:
+			state = RESTING;
+			restTimer.Restart();
 			break;
 		}
 	}
@@ -452,17 +516,17 @@ void Capelobo::Update(float dt)
 	// Capelobo is dead
 	if (hp <= 0)
 	{
+		change_sprite = true;
 		state = RESTING;
 		deathTimer.Update(dt);
 		
-		GameObject *go = new GameObject();
-		std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
-		std::shared_ptr<GameObject> ptr = weak_ptr.lock();
 		Sprite *sp;
 
 		if(deathTimer.Get() < DEATH_EFFECT_TIME){
-			if(deathTimer.Get() < DEATH_EFFECT_TIME / 10)
+			if(deathTimer.Get() < DEATH_EFFECT_TIME / 10){
 				sp = new Sprite(*ptr, EFFECT_1, 1, DEATH_EFFECT_TIME / 10, DEATH_EFFECT_TIME / 10);
+				timesPlayed = 0;
+			}
 			else if (deathTimer.Get() < (DEATH_EFFECT_TIME * 2) / 10)
 				sp = new Sprite(*ptr, EFFECT_2, 1, DEATH_EFFECT_TIME / 10, DEATH_EFFECT_TIME / 10);
 			else if (deathTimer.Get() < (DEATH_EFFECT_TIME * 3) / 10){
@@ -476,27 +540,32 @@ void Capelobo::Update(float dt)
 				sp->SetColorMod(150,30,140);
 			}
 			else{
+				so->Open(CPLB_EXPLODE);
 				sp = new Sprite(*ptr, EFFECT_5, 7, DEATH_EFFECT_TIME /10, 7 * (DEATH_EFFECT_TIME /10));
 				sp->SetColorMod(150,30,140);
 				sp->SetAlphaMod(200);
 				// sp->SetBlendMode(BLEND_ADD);
+				if(timesPlayed == 0){
+					so->Play(1, MIX_MAX_VOLUME);
+					++timesPlayed;
+				}
 			}
 		}
 		else{
+			shadow->RequestDelete();
 			associated.RequestDelete();
 
 			if(dir == RIGHT || dir == RIGHT_DOWN || dir == RIGHT_UP || dir == UP)
 				sp = new Sprite(*ptr, DEATH_RIGHT, 9, 0.1, 9 * 0.1);
 			else
 				sp = new Sprite(*ptr, DEATH_LEFT, 9, 0.1, 9 * 0.1);
-			// Sound *so = new Sound(*ptr, "assets/audio/boom.wav");
-			// ptr->AddComponent(so);
+			so->Open(CPLB_DEATH);
+			ptr->AddComponent(so);
 
-			// so->Play(1);
+			so->Play(1);
 		}
 		ptr->box.Centered(associated.box.Center());
 		ptr->AddComponent(sp);
-		
 	}
 }
 
@@ -622,13 +691,15 @@ void Capelobo::Render()
 				break;
 
 			case UP:
+				sp->SetFrameTime(0.15);
 				sp->Open(ATTACK_UP);
-				sp->SetFrameCount(16);
+				sp->SetFrameCount(5);
 				break;
 
 			case DOWN:
+				sp->SetFrameTime(0.15);
 				sp->Open(ATTACK_DOWN);
-				sp->SetFrameCount(16);
+				sp->SetFrameCount(5);
 				break;
 
 			case RIGHT_UP:
@@ -716,4 +787,13 @@ void Capelobo::Render()
 bool Capelobo::Is(std::string type)
 {
 	return !std::min(strcmp(type.c_str(), "Capelobo"),strcmp(type.c_str(), "Enemy"));
+}
+
+void Capelobo::HitSound(){
+    GameObject *soundGO = new GameObject();
+    std::weak_ptr<GameObject> weak_hit = Game::GetInstance().GetCurrentState().AddObject(soundGO);
+    std::shared_ptr<GameObject> shared_hit = weak_hit.lock();
+    Sound *so = new Sound(*shared_hit, CPLB_HIT_SOUND);
+    shared_hit->AddComponent(so);
+    so->Play(1,MIX_MAX_VOLUME);
 }

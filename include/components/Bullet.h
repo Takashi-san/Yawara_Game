@@ -9,20 +9,21 @@
 #include <stdbool.h>
 #include <memory>
 
-class Bullet : public Hitbox
+class Bullet : public Component
 {
 private:
 	Vec2 speed;
-	float timeLeft;
 	int damage;
+	float distanceLeft;
+	std::string spriteEnd;
 
 public:
 	bool targetsPlayer;
-	Bullet(GameObject &, float, float, int, float, std::string, int = 1, float = 1, bool = true, bool = true);
+	Bullet(GameObject &, float, float, int, float, std::string, std::string, int = 1, float = 1, bool = true);
 
 	void Update(float);
 	void Render();
 	bool Is(std::string);
-	void NotifyCollision(GameObject &);
 	int GetDamage();
+	void NotifyCollision(GameObject &) override;
 };

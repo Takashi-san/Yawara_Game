@@ -26,6 +26,7 @@
 #define TAPU_DL			"assets/img/tapu/tapu_down_left.png"
 
 #define TAPU_BULLET			"assets/img/tapu/disparo.png"
+#define TAPU_BULLET_END		"assets/img/tapu/disparo_colisão.png"
 #define TAPU_BULLET_FRAME	5
 #define TAPU_BULLET_TIME	0.05
 
@@ -245,16 +246,16 @@ void Tapu::Shoot()
 	std::shared_ptr<GameObject> ptr;
 
 	GameObject *go = new GameObject();
-	weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
-	ptr = weak_ptr.lock();
+	std::weak_ptr<GameObject> weak_bullet = Game::GetInstance().GetCurrentState().AddObject(go);
+	std::shared_ptr<GameObject> ptr_bullet = weak_bullet.lock();
 	
-	Bullet *bam = new Bullet(*ptr, angle, TAPU_BULLET_SPEED, TAPU_BULLET_DAMAGE * damageFactor, TAPU_BULLET_RANGE, TAPU_BULLET, TAPU_BULLET_FRAME, TAPU_BULLET_TIME, false);
-	ptr->box.Centered(associated.box.Center());
+	Bullet *bam = new Bullet(*ptr_bullet, angle, TAPU_BULLET_SPEED, TAPU_BULLET_DAMAGE * damageFactor, TAPU_BULLET_RANGE, TAPU_BULLET, TAPU_BULLET_END, TAPU_BULLET_FRAME, TAPU_BULLET_TIME, false);
+	ptr_bullet->box.Centered(associated.box.Center());
 	Vec2 offset(associated.box.w / 2, 0);
 	offset.Rotate(angle);
-	ptr->box.x += offset.x;
-	ptr->box.y += offset.y;
-	ptr->AddComponent(bam);
+	ptr_bullet->box.x += offset.x;
+	ptr_bullet->box.y += offset.y;
+	ptr_bullet->AddComponent(bam);
 
 	go = new GameObject();
 	shoot_fx = Game::GetInstance().GetCurrentState().AddObject(go);

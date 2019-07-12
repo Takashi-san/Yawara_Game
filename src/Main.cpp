@@ -2,6 +2,7 @@
 #include "TitleState.h"
 
 int main(int argc, char** argv) {
+	srand (time(NULL));
 	Game& game = Game::GetInstance();
 	TitleState* init = new TitleState();
 

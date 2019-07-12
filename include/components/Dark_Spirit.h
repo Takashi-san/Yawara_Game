@@ -12,13 +12,16 @@
 
 class Dark_Spirit : public Enemy
 {
-	private:
-		float restOffset;
-	public:
-		Dark_Spirit(GameObject &);
-		~Dark_Spirit();
+private:
+	float restOffset;
+	int alpha;
 
-		void Update(float) override;
-		void Render() override;
-		bool Is(std::string);
+public:
+	Dark_Spirit(GameObject &);
+	~Dark_Spirit();
+
+	void Update(float) override;
+	void Render() override;
+	bool Is(std::string);
+	void HitSound() override;
 };

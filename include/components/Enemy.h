@@ -36,6 +36,7 @@ protected:
 	Timer moveTimer;
 	Timer attackTimer;
 	Timer hitTimer;
+	Timer soundTimer;
 	Timer deathTimer;
 
 	int safeX;
@@ -55,4 +56,5 @@ public:
 
 	bool AllowedToMove(Vec2);
 	void Move45(Vec2&);
+	virtual void HitSound();
 };

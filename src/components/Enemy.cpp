@@ -3,6 +3,8 @@
 #include "Hitbox.h"
 #include "Bullet.h"
 #include "Floor.h"
+#include "Game.h"
+#include "Sound.h"
 #include <algorithm> 
 
 #define SAFE_UP 16
@@ -47,12 +49,13 @@ void Enemy::NotifyCollision(GameObject& other){
 	if (hitbox && !(hitbox->targetsPlayer) && hitTimer.Get() > HIT_COOL_DOWN) {
         hp -= hitbox->GetDamage();
 		hitTimer.Restart();
+        HitSound();
 	}
     if (other.GetComponent("Bullet") && !static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer && hitTimer.Get() > HIT_COOL_DOWN){
-		hp -= static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
-        
+        hp -= static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
+		hitTimer.Restart();
+        HitSound();        
         //  If the enemy can't see Yawara and got hit, it will enhance the range off vision and start pursuing Yawara
-
         if(state == MOVING || state == RESTING || state == SLEEPING){
             rangeOffset = 300;
             state = PURSUE;
@@ -98,4 +101,7 @@ void Enemy::Move45(Vec2& speed){
         int signalX = speed.x / abs(speed.x);
         speed = {signalY * signalX * speed.y, speed.y};
     }
+}
+
+void Enemy::HitSound(){
 }

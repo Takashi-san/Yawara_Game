@@ -41,8 +41,8 @@ void Hitbox::SetSelfDestruct(float selfDestruct) {
 void Hitbox::NotifyCollision(GameObject &other)
 {
 	if (hitDie) {
-		if (other.GetComponent("Capelobo") && !targetsPlayer)
-			associated.RequestDelete();
+		if (other.GetComponent("Enemy") && !targetsPlayer){
+			associated.RequestDelete();}
 
 		if (other.GetComponent("Yawara") && targetsPlayer)
 			associated.RequestDelete();
