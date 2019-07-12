@@ -12,7 +12,7 @@ class HealthRune : public Item
 {
 private:
     float hpFactor;
-    Sprite* sp, *top_layer_sprite;
+    Sprite* sp, *top_layer_sprite, *ressonance;
     Sound* activationSound;
 
 public:

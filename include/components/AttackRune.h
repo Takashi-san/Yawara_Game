@@ -17,17 +17,14 @@ private:
     
 public:
 
-    enum Color {DARK = 0, MEDIUM, LIGHT};
-    enum Image {YAWARA = 0, TAPU};
+    enum Image {INIMIGO = 0, YAWARA, ENCONTRO, AJUDA};
 
     Image top_img;
-    AttackRune(GameObject&, float, Color = DARK, Image = YAWARA);
+    AttackRune(GameObject&, float, Image = INIMIGO);
     
     void Update(float);
     void Render();
     bool Is(std::string);
 
     void Start();
-
-    void ChangeColor(Color);
 };

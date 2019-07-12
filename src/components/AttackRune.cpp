@@ -3,25 +3,18 @@
 #include "Yawara.h"
 #include "Timer.h"
 #include "Easing.h"
+#include "InputManager.h"
 
 #include <algorithm>
 
-#define BASE_ATTRUNE_FILE           "assets/img/items/runa_base.png"
-#define BASE_ATTRUNE_FRAMES         3
 #define TOP_ATTRUNE_FILE            "assets/img/items/runa_imagem.png"
-#define TOP_ATTRUNE_FRAMES          2
+#define TOP_ATTRUNE_FRAMES          4
 
-#define ATTRUNE_ACTIVATION_DISTANCE 45
+#define ATTRUNE_ACTIVATION_DISTANCE 100
 #define ATTRUNE_COOLDOWN_TIME       30
 
 /* 1 < factor <= 2 increased attack damage */
-AttackRune::AttackRune(GameObject& associated, float attFactor, Color color, Image img) : Item(associated){
-
-    sp = new Sprite(associated, BASE_ATTRUNE_FILE, BASE_ATTRUNE_FRAMES);
-    sp->SetScale(1, 1);
-    sp->SetFrame(color);
-    sp->SetStopFrame(color);
-	associated.AddComponent(sp);
+AttackRune::AttackRune(GameObject& associated, float attFactor, Image img) : Item(associated){
 
     activationSound = new Sound(associated, RUNE_SOUND_PATH);
     associated.AddComponent(activationSound);
@@ -41,7 +34,9 @@ void AttackRune::Update(float dt){
     if(Yawara::player){
         float dist = (associated.box.Center() - Yawara::player->GetCenterPos()).Modulo();
 
-        if(dist <= ATTRUNE_ACTIVATION_DISTANCE && active){
+        InputManager& input = InputManager::GetInstance();
+
+        if(dist <= ATTRUNE_ACTIVATION_DISTANCE && active && input.KeyPress(E_KEY)){
             Yawara::player->Boost(Yawara::ATTBOOST, attFactor);
             cooldownTimer.Restart();
             active = false;
@@ -98,12 +93,4 @@ bool AttackRune::Is(std::string type){
 void AttackRune::Start(){
 
 
-}
-
-void AttackRune::ChangeColor(Color color){
-    Sprite* sp = static_cast<Sprite*> (associated.GetComponent("Sprite"));
-    if(sp){
-        sp->SetFrame(color);
-        sp->SetStopFrame(color);
-    }
 }

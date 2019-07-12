@@ -2,6 +2,7 @@
 #include "Sprite.h"
 #include "Yawara.h"
 #include "Timer.h"
+#include "InputManager.h"
 
 #include <algorithm>
 
@@ -21,7 +22,7 @@
 #define DEFRUNE_FREE_NPC_FRAMES         3
 #define DEFRUNE_FREE_NPC_FRAMETIME      0.12
 
-#define DEFRUNE_ACTIVATION_DISTANCE     45
+#define DEFRUNE_ACTIVATION_DISTANCE     100
 #define DEFRUNE_COOLDOWN_TIME           30
 
 /* 1 < factor <= 2 means an increased defense */
@@ -35,6 +36,8 @@ DefenseRune::DefenseRune(GameObject& associated, float defFactor) : Item(associa
     associated.AddComponent(activationSound);
 
     this->defFactor = defFactor;
+
+    top_layer_sprite = nullptr;
 }
 
 void DefenseRune::Update(float dt){
@@ -47,7 +50,9 @@ void DefenseRune::Update(float dt){
 
         changeTimer.Update(dt);
 
-        if(dist <= DEFRUNE_ACTIVATION_DISTANCE && active){
+        InputManager& input = InputManager::GetInstance();
+
+        if(dist <= DEFRUNE_ACTIVATION_DISTANCE && active && input.KeyPress(E_KEY)){
             Yawara::player->Boost(Yawara::DEFBOOST, defFactor);
             changeTimer.Restart();
             changed = true;
@@ -58,6 +63,9 @@ void DefenseRune::Update(float dt){
             cooldownTimer.Restart();
             active = false;
             activationSound->Play(1, MIX_MAX_VOLUME);
+            top_layer_sprite = new Sprite(associated, DEFRUNE_FREE_NPC_FILE, DEFRUNE_FREE_NPC_FRAMES, DEFRUNE_FREE_NPC_FRAMETIME);
+            associated.AddComponent(top_layer_sprite);
+            removeTopTimer.Restart();
         }
 
         if((changeTimer.Get() >= INTERACTED_DEFRUNE_FRAMES * INTERACTED_DEFRUNE_FRAMETIME) && changed && !active){
@@ -67,9 +75,6 @@ void DefenseRune::Update(float dt){
             associated.box.x += 15;
             changed = false;
             changeTimer.Restart();
-            top_layer_sprite = new Sprite(associated, DEFRUNE_FREE_NPC_FILE, DEFRUNE_FREE_NPC_FRAMES, DEFRUNE_FREE_NPC_FRAMETIME);
-            associated.AddComponent(top_layer_sprite);
-            removeTopTimer.Restart();
         }
         removeTopTimer.Update(dt);
 
