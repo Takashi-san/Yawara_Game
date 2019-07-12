@@ -73,88 +73,7 @@ StageState::StageState()
 
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_17_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
 
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_30_nuvem1", 4, 9, 80, 80, TS_NUVEM1, TS_NUVEM1_W, TS_NUVEM1_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_31_nuvem2", 4, 9, 80, 80, TS_NUVEM2, TS_NUVEM2_W, TS_NUVEM2_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_32_nuvem3", 4, 9, 80, 80, TS_NUVEM3, TS_NUVEM3_W, TS_NUVEM3_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_33_nuvem4", 4, 9, 80, 80, TS_NUVEM4, TS_NUVEM4_W, TS_NUVEM4_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_34_nuvem5", 4, 9, 80, 80, TS_NUVEM5, TS_NUVEM5_W, TS_NUVEM5_H);
-
 	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
-	
-
-	/* // Fase2
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_1_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_2_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_3_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_4_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_5_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_6_arvorevoid3", 4, 9, 80, 80, TS_ARVORE3V, TS_ARVORE3V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_7_arvorevoid2", 4, 9, 80, 80, TS_ARVORE2V, TS_ARVORE2V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_8_arvorevoid1", 4, 9, 80, 80, TS_ARVORE1V, TS_ARVORE1V_F, TS_FRAME_TIME);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_9_arvorecerrado2", 4, 9, 80, 80, TS_ARVORE2C, TS_ARVORE2C_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_10_arvorecerrado3", 4, 9, 80, 80, TS_ARVORE3C, TS_ARVORE3C_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_11_arvorecerrado1", 4, 9, 80, 80, TS_ARVORE1C, TS_ARVORE1C_F, TS_FRAME_TIME);
-
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_12_pedra", 4, 9, 80, 80, TS_PEDRA, TS_PEDRA_W, TS_PEDRA_H);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_13_planta1", 4, 9, 80, 80, TS_PLANTA1V, TS_PLANTA1V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_14_planta2", 4, 9, 80, 80, TS_PLANTA2V, TS_PLANTA2V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_15_planta3", 4, 9, 80, 80, TS_PLANTA3V, TS_PLANTA3V_F, TS_FRAME_TIME);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_16_planta4", 4, 9, 80, 80, TS_PLANTA1C, TS_PLANTA1C_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_17_planta5", 4, 9, 80, 80, TS_PLANTA2C, TS_PLANTA2C_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_2/camada_18_planta6", 4, 9, 80, 80, TS_PLANTA3C, TS_PLANTA3C_F, TS_FRAME_TIME);
-
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_19_runa", 4, 9, 80, 80, TS_RUNA, TS_RUNA_W, TS_RUNA_H);
-
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_22_pilar", 4, 9, 80, 80, TS_PILAR, TS_PILAR_W, TS_PILAR_H);
-
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_23_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
-
-	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_24_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
-	*/
-
-	/* // Fase3
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_1_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_2_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_3_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_4_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_5_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_6_arvorevoid3", 4, 9, 80, 80, TS_ARVORE3V, TS_ARVORE3V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_7_arvorevoid2", 4, 9, 80, 80, TS_ARVORE2V, TS_ARVORE2V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_8_arvorevoid1", 4, 9, 80, 80, TS_ARVORE1V, TS_ARVORE1V_F, TS_FRAME_TIME);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_9_arvorecerrado2", 4, 9, 80, 80, TS_ARVORE2C, TS_ARVORE2C_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_10_arvorecerrado3", 4, 9, 80, 80, TS_ARVORE3C, TS_ARVORE3C_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_11_arvorecerrado1", 4, 9, 80, 80, TS_ARVORE1C, TS_ARVORE1C_F, TS_FRAME_TIME);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_12_arvoremata3", 4, 9, 80, 80, TS_ARVORE3M, TS_ARVORE3M_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_13_arvoremata1", 4, 9, 80, 80, TS_ARVORE1M, TS_ARVORE1M_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_14_arvoremata2", 4, 9, 80, 80, TS_ARVORE2M, TS_ARVORE2M_F, TS_FRAME_TIME);
-
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_15_pedra", 4, 9, 80, 80, TS_PEDRA, TS_PEDRA_W, TS_PEDRA_H);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_16_planta1", 4, 9, 80, 80, TS_PLANTA1V, TS_PLANTA1V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_17_planta2", 4, 9, 80, 80, TS_PLANTA2V, TS_PLANTA2V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_18_planta3", 4, 9, 80, 80, TS_PLANTA3V, TS_PLANTA3V_F, TS_FRAME_TIME);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_19_planta4", 4, 9, 80, 80, TS_PLANTA1C, TS_PLANTA1C_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_20_planta5", 4, 9, 80, 80, TS_PLANTA2C, TS_PLANTA2C_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_21_planta6", 4, 9, 80, 80, TS_PLANTA3C, TS_PLANTA3C_F, TS_FRAME_TIME);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_22_planta7", 4, 9, 80, 80, TS_PLANTA1M, TS_PLANTA1M_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_23_planta8", 4, 9, 80, 80, TS_PLANTA2M, TS_PLANTA2M_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_3/camada_24_planta9", 4, 9, 80, 80, TS_PLANTA3M, TS_PLANTA3M_F, TS_FRAME_TIME);
-
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_25_runa", 4, 9, 80, 80, TS_RUNA, TS_RUNA_W, TS_RUNA_H);
-
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_28_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
-
-	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_29_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
-	*/
 
 	//Runas
 	GameObject *gorune = new GameObject();
@@ -213,6 +132,70 @@ StageState::StageState()
 
 	Camera::Follow(GetObjectPtr(goya), weak_ptr);
 	Camera::ratio = STAGE_STT_CAMERA_RATIO;
+
+	// nuvens.
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	Sprite* nuvem = new Sprite(*ptr, "assets/img/background/nuvem/y1.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*0;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/y2.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*1;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/y3.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*2;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/y4.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*3;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/y5.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*4;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/y6.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*5;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/y7.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*6;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/y8.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*7;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/y9.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*8;
 
 	// BGM
 	bgMusic.Open(STAGE_STT_BGM);
