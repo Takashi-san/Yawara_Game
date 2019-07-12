@@ -64,7 +64,7 @@ Game::Game(std::string title, int width, int height)
 		std::cout << "Erro inicialização Mix_OpenAudio: " << SDL_GetError() << "\n";
 		exit(EXIT_FAILURE);
 	}
-	Mix_AllocateChannels(32);
+	Mix_AllocateChannels(128);
 
 	// Inicia a SDL_ttf.
 	i = TTF_Init();

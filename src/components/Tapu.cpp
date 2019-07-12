@@ -9,7 +9,7 @@
 #include "Easing.h"
 
 #define TAPU_BULLET_SPEED	750
-#define TAPU_BULLET_DAMAGE	10
+#define TAPU_BULLET_DAMAGE	15
 #define TAPU_BULLET_RANGE	1000
 #define TAPU_SHOOT_CD		0.4
 #define TAPU_RAIO			100

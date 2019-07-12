@@ -25,6 +25,7 @@ protected:
 	int hp;
 	bool change_sprite;
 	bool moveAllowed;
+	int timesPlayed;
 	float rangeOffset;
 
 	enum Direction { RIGHT, RIGHT_UP, UP, LEFT_UP, LEFT, LEFT_DOWN, DOWN, RIGHT_DOWN};
