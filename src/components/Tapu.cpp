@@ -30,7 +30,7 @@
 #define TAPU_BULLET_TIME	0.05
 
 #define TAPU_SHOOT			"assets/img/tapu/efeito_disparo.png"
-#define TAPU_SHOOT_FRAME	10
+#define TAPU_SHOOT_FRAME	5
 #define TAPU_SHOOT_TIME		0.05
 #define TAPU_SHOOT_SOUND	"assets/audio/sons/tapu/disparo.ogg"
 
@@ -108,6 +108,13 @@ void Tapu::Update(float dt)
 				shadow_sprite->SetScale(1 + (0.45 * ease), 1 + (0.45 * ease));
 			}
 		}
+
+		std::shared_ptr<GameObject> muzzle = shoot_fx.lock();
+		if(muzzle){
+			muzzle->box.Centered(associated.box.Center());
+			muzzle->box.x += shoot_fx_offset.x;
+			muzzle->box.y += shoot_fx_offset.y;
+		}		
 
 		dist = TapuCenter - YwrCenter;
 		changedDir = false;
@@ -250,15 +257,16 @@ void Tapu::Shoot()
 	ptr->AddComponent(bam);
 
 	go = new GameObject();
-	weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
-	ptr = weak_ptr.lock();
+	shoot_fx = Game::GetInstance().GetCurrentState().AddObject(go);
+	ptr = shoot_fx.lock();
 
-	Sprite* sp = new Sprite(*ptr, TAPU_SHOOT, TAPU_SHOOT_FRAME, TAPU_SHOOT_TIME, 4 * TAPU_SHOOT_TIME);
-	sp->SetFrame(7);
+	Sprite* sp = new Sprite(*ptr, TAPU_SHOOT, TAPU_SHOOT_FRAME, TAPU_SHOOT_TIME, TAPU_SHOOT_FRAME * TAPU_SHOOT_TIME);
+	sp->SetFrame(0);
 	ptr->AddComponent(sp);	
 	ptr->box.Centered(associated.box.Center());
 	ptr->box.x += offset.x;
 	ptr->box.y += offset.y;
+	shoot_fx_offset = offset;
 	ptr->angleDeg = angle/0.0174533;
 
 	shoot->PlayFadeIn(800);

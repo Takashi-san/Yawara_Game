@@ -22,6 +22,8 @@ class Tapu : public Component
         bool changedDir;
 
         std::weak_ptr<GameObject> shadow_ptr;
+        std::weak_ptr<GameObject> shoot_fx;
+        Vec2 shoot_fx_offset;
 
         float damageFactor;
 

@@ -5,6 +5,7 @@
 #include "Music.h"
 #include "State.h"
 #include "TileSet.h"
+#include "Sprite.h"
 
 #include <string>
 #include <iostream>
@@ -19,6 +20,8 @@ class StageState : public State
 private:
 	Music bgMusic;
 	TileSet *tileset;
+
+	Sprite* black;
 
 public:
 	StageState();

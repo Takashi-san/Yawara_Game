@@ -22,6 +22,8 @@
 #include "DefenseRune.h"
 #include "HealthFeedback.h"
 #include "YawaraShadow.h"
+#include "Timer.h"
+#include "Easing.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -31,12 +33,14 @@
 #define STAGE_STT_CURSOR_SPRITE "assets/img/cursor/cursor.png"
 #define STAGE_STT_CAMERA_RATIO 0.37
 
+#define STAGE_STT_BLACK 			"assets/img/background/tela_preta.png"
+#define STAGE_STT_WHITE 			"assets/img/background/tela_branca.png"
+#define STAGE_STT_FADE 	6
+
 StageState::StageState()
 {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
-
-	Floor::Load(CL_MAP1, TILE, TILE);
 
 	// Background
 	GameObject *gobg = new GameObject();
@@ -159,9 +163,17 @@ StageState::StageState()
 	weak_ptr = AddObject(gorune);
 	ptr = weak_ptr.lock();
 	HealthRune *rune1 = new HealthRune(*ptr, 1.5);
-	ptr->box.Centered(550,1200);
+	ptr->box.Centered(3090,1780);
 	ptr->AddComponent(rune1);
 
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	rune1 = new HealthRune(*ptr, 1.5);
+	ptr->box.Centered(1850,890);
+	ptr->AddComponent(rune1);
+
+	/*
 	GameObject *gorune2 = new GameObject();
 	weak_ptr = AddObject(gorune2);
 	ptr = weak_ptr.lock();
@@ -175,13 +187,13 @@ StageState::StageState()
 	DefenseRune *rune3 = new DefenseRune(*ptr, 1.5);
 	ptr->box.Centered(1300,500);
 	ptr->AddComponent(rune3);
-
+	*/
 	// Capelobo
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
 	ptr = weak_ptr.lock();
 	Capelobo *cape = new Capelobo(*ptr, 0.1);
-	ptr->box.Centered({512, 850});
+	ptr->box.Centered({840, 1845});
 	ptr->AddComponent(cape);
 
 	// HealthFeedback.
@@ -203,7 +215,7 @@ StageState::StageState()
 	weak_ptr = AddObject(goya);
 	ptr = weak_ptr.lock();
 	Yawara *yawara = new Yawara(*ptr);
-	ptr->box.Centered({1150, 30});
+	ptr->box.Centered({510, 716});
 	ptr->AddComponent(yawara);
 
 	// Cursor
@@ -222,6 +234,15 @@ StageState::StageState()
 	// BGM
 	bgMusic.Open(STAGE_STT_BGM);
 	bgMusic.Play();
+
+	// Black screen;
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	black = new Sprite(*ptr, STAGE_STT_BLACK);
+	CameraFollower* cmfr = new CameraFollower(*ptr);
+	ptr->AddComponent(black);
+	ptr->AddComponent(cmfr);
 }
 
 StageState::~StageState()
@@ -231,6 +252,20 @@ StageState::~StageState()
 
 void StageState::Update(float dt)
 {
+	static Timer fadein;
+	static bool flag = true;
+	if (black && flag) {
+		fadein.Update(dt);
+		
+		black->SetAlphaMod(255 * (1 - QuadraticEaseIn(fadein.Get() / STAGE_STT_FADE)));
+
+		if (fadein.Get() > STAGE_STT_FADE) {
+			//black->SetSelfDestruct(0.0000001);
+			fadein.Restart();
+			flag = false;
+		}
+	}
+
 	InputManager &input = InputManager::GetInstance();
 
 	// verifica fechamento do jogo.
