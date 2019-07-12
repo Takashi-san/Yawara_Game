@@ -27,6 +27,7 @@
 #include "Phase3State.h"
 #include "MapColision.h"
 #include "Event.h"
+#include "MusicEvent.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -103,6 +104,24 @@ Phase2State::Phase2State()
 	ptr = weak_ptr.lock();
 	Event* event = new Event(*ptr, 3275, 3755, 760, 545);
 	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	MusicEvent* eventm = new MusicEvent(*ptr, 2922, 7807, 209, 652, "assets/audio/musica/battle_music.ogg");
+	ptr->AddComponent(eventm);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	eventm = new MusicEvent(*ptr, 2035, 3750, 340, 168, "assets/audio/musica/tema_triste.ogg");
+	ptr->AddComponent(eventm);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	eventm = new MusicEvent(*ptr, 397, 5328, 349, 97, "assets/audio/musica/tema_triste.ogg");
+	ptr->AddComponent(eventm);
 
 	goeve = new GameObject();
 	weak_ptr = AddObject(goeve);
