@@ -27,7 +27,7 @@
 
 #define BOSS_VEL_ANG 0
 #define BOSS_SPEED 350
-#define BOSS_REST_BASE 1
+#define BOSS_REST_BASE 1.5
 #define BOSS_MOVEMENT 1.5
 
 #define CLAW_DAMAGE 10
@@ -41,17 +41,18 @@
 
 #define ATTACK_SOUND_DELAY 0.5
 
+#define CPLB_BREATH 1.3
 
 // Movement sprites
 
 const std::string MOVE_RIGHT 	  = "assets/img/capelobo/capelobo_correndo_r.png";
 const std::string MOVE_RIGHT_DOWN = "assets/img/capelobo/capelobo_correndo_rd.png";
-const std::string MOVE_DOWN		  = "assets/img/capelobo/capelobo_correndo_line_art_l.png";
+const std::string MOVE_DOWN		  = "assets/img/capelobo/capelobo_correndo_ld.png";
 const std::string MOVE_LEFT_DOWN  = "assets/img/capelobo/capelobo_correndo_ld.png";
 const std::string MOVE_LEFT		  = "assets/img/capelobo/capelobo_correndo_l.png";
-const std::string MOVE_LEFT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_lu.png";
-const std::string MOVE_UP		  = "assets/img/capelobo/capelobo_correndo_line_art_r.png";
-const std::string MOVE_RIGHT_UP	  = "assets/img/capelobo/capelobo_correndo_line_art_ru.png";
+const std::string MOVE_LEFT_UP	  = "assets/img/capelobo/capelobo_correndo_lu.png";
+const std::string MOVE_UP		  = "assets/img/capelobo/capelobo_correndo_r.png";
+const std::string MOVE_RIGHT_UP	  = "assets/img/capelobo/capelobo_correndo_ru.png";
 
 // Resting sprites
 
@@ -102,7 +103,10 @@ const std::string CPLB_HIT_SOUND	= "assets/audio/sons/capelobo/hit.ogg";
 const std::string CPLB_B_ATK_SOUND1	= "assets/audio/sons/capelobo/ataque1.ogg";
 const std::string CPLB_B_ATK_SOUND2	= "assets/audio/sons/capelobo/ataque2.ogg";
 const std::string CPLB_L_ATK_SOUND	= "assets/audio/sons/capelobo/LINGUA VAI.ogg";
+const std::string BREATH_SOUND		= "assets/audio/sons/capelobo/respira.ogg";
+const std::string CPLB_EXPLODE		= "assets/audio/sons/capelobo/explosao.ogg";
 const std::string CPLB_DEATH		= "assets/audio/sons/capelobo/grunhido_morte.ogg";
+const std::string SAW_YAWARA		= "assets/audio/sons/capelobo/ve_inimigo.ogg";
 
 Capelobo *Capelobo::boss;
 
@@ -154,6 +158,11 @@ void Capelobo::Update(float dt)
 	associated.angleDeg += (BOSS_VEL_ANG / (PI / 180)) * dt;
 	std::shared_ptr<GameObject> shadow = weak_shadow.lock();
 	shadow->box.Centered(associated.box.Center());
+
+	GameObject *go = new GameObject();
+	std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
+	Sound *so = new Sound(*ptr, BREATH_SOUND);
 
 	hitTimer.Update(dt);
 	soundTimer.Update(dt);
@@ -253,6 +262,7 @@ void Capelobo::Update(float dt)
 				{
 					state = RESTING;
 					restTimer.Restart();
+					cplbSpriteChanged = true;
 				}
 				// Move.
 				else
@@ -267,10 +277,14 @@ void Capelobo::Update(float dt)
 			}
 			break;
 
-		case RESTING:
+		case RESTING:{
+
 			restTimer.Update(dt);
-			if (!change_sprite)
+			if (!cplbSpriteChanged){
 				change_sprite = true;
+				cplbSpriteChanged = true;
+			}
+			else change_sprite = false;
 
 			// Rest for a determinated time
 			if (restTimer.Get() > BOSS_REST_BASE + restOffset)
@@ -286,18 +300,34 @@ void Capelobo::Update(float dt)
 				cplbStartedMoving = true;
 				moveAllowed = 1;
 				moveTimer.Restart();
+				so->Open(SAW_YAWARA);
+				so->Play(1);
+
+			}
+			if(soundTimer.Get() > CPLB_BREATH && (yawaraPos - associated.box.Center()).Modulo() < 1800){
+				so->Play(1);
+				soundTimer.Restart();
 			}
 			break;
+		}
 
-		case SLEEPING:
+		case SLEEPING:{
 			// Stay asleep if Yawara don't get closer
 			if ((yawaraPos - associated.box.Center()).Modulo() <= DIST_DETECT_YAWARA){
 				state = PURSUE;
 				moveTimer.Restart();
 				cplbStartedMoving = true;
+				so->Open(SAW_YAWARA);
+				so->Play(1);
+				break;
+			}
+			if(soundTimer.Get() > CPLB_BREATH && (yawaraPos - associated.box.Center()).Modulo() < 1800){
+				so->Open(BREATH_SOUND);
+				so->Play(1);
+				soundTimer.Restart();
 			}
 			break;
-
+		}
 		case BASIC_ATTACK:
 			attackTimer.Update(dt);
 
@@ -389,6 +419,7 @@ void Capelobo::Update(float dt)
 				state = RESTING;
 				attackTimer.Restart();
 				restTimer.Restart();
+				cplbSpriteChanged = false;
 			}
 			break;
 		
@@ -483,6 +514,8 @@ void Capelobo::Update(float dt)
 				cplbStartedMoving = true;
 				attackTimer.Restart();
 				restTimer.Restart();
+				so->Open(SAW_YAWARA);
+				so->Play(1);
 			}
 			break;
 		default:
@@ -495,19 +528,17 @@ void Capelobo::Update(float dt)
 	// Capelobo is dead
 	if (hp <= 0)
 	{
+		change_sprite = true;
 		state = RESTING;
 		deathTimer.Update(dt);
 		
-		// std::cout<<"DIE!!!!!"<<std::endl;
-		
-		GameObject *go = new GameObject();
-		std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
-		std::shared_ptr<GameObject> ptr = weak_ptr.lock();
 		Sprite *sp;
 
 		if(deathTimer.Get() < DEATH_EFFECT_TIME){
-			if(deathTimer.Get() < DEATH_EFFECT_TIME / 10)
+			if(deathTimer.Get() < DEATH_EFFECT_TIME / 10){
 				sp = new Sprite(*ptr, EFFECT_1, 1, DEATH_EFFECT_TIME / 10, DEATH_EFFECT_TIME / 10);
+				timesPlayed = 0;
+			}
 			else if (deathTimer.Get() < (DEATH_EFFECT_TIME * 2) / 10)
 				sp = new Sprite(*ptr, EFFECT_2, 1, DEATH_EFFECT_TIME / 10, DEATH_EFFECT_TIME / 10);
 			else if (deathTimer.Get() < (DEATH_EFFECT_TIME * 3) / 10){
@@ -521,10 +552,15 @@ void Capelobo::Update(float dt)
 				sp->SetColorMod(150,30,140);
 			}
 			else{
+				so->Open(CPLB_EXPLODE);
 				sp = new Sprite(*ptr, EFFECT_5, 7, DEATH_EFFECT_TIME /10, 7 * (DEATH_EFFECT_TIME /10));
 				sp->SetColorMod(150,30,140);
 				sp->SetAlphaMod(200);
 				// sp->SetBlendMode(BLEND_ADD);
+				if(timesPlayed == 0){
+					so->Play(1, MIX_MAX_VOLUME);
+					++timesPlayed;
+				}
 			}
 		}
 		else{
@@ -535,7 +571,7 @@ void Capelobo::Update(float dt)
 				sp = new Sprite(*ptr, DEATH_RIGHT, 9, 0.1, 9 * 0.1);
 			else
 				sp = new Sprite(*ptr, DEATH_LEFT, 9, 0.1, 9 * 0.1);
-			Sound *so = new Sound(*ptr, CPLB_DEATH);
+			so->Open(CPLB_DEATH);
 			ptr->AddComponent(so);
 
 			so->Play(1);
