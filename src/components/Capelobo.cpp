@@ -304,7 +304,7 @@ void Capelobo::Update(float dt)
 				so->Play(1);
 
 			}
-			if(soundTimer.Get() > CPLB_BREATH && (yawaraPos - associated.box.Center()).Modulo() < 1800){
+			if(soundTimer.Get() > CPLB_BREATH && (yawaraPos - associated.box.Center()).Modulo() < 1000){
 				so->Play(1);
 				soundTimer.Restart();
 			}
@@ -321,7 +321,7 @@ void Capelobo::Update(float dt)
 				so->Play(1);
 				break;
 			}
-			if(soundTimer.Get() > CPLB_BREATH && (yawaraPos - associated.box.Center()).Modulo() < 1800){
+			if(soundTimer.Get() > CPLB_BREATH && (yawaraPos - associated.box.Center()).Modulo() < 1000){
 				so->Open(BREATH_SOUND);
 				so->Play(1);
 				soundTimer.Restart();
