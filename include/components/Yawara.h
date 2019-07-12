@@ -47,6 +47,7 @@ private:
 	Howl* howl;
 	Sound* bite;
 	Sound* hit_scream;
+	Sound* dash_sound;
 
 	bool gotHit;
 	bool isDead;

@@ -509,7 +509,7 @@ void StageState::Start()
 	ptr = weak_ptr.lock();
 	attrune = new AttackRune(*ptr, 1.5, AttackRune::AJUDA);
 	ptr->box.x = 288;
-	ptr->box.y = 3952;
+	ptr->box.y = 3932;
 	ptr->AddComponent(attrune);
 
 	gorune = new GameObject();

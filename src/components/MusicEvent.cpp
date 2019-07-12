@@ -19,7 +19,7 @@ void MusicEvent::Update(float dt) {
     if(Yawara::player){
         if(associated.box.Within(Yawara::player->GetCenterPos().x, Yawara::player->GetCenterPos().y) && flag){
             bgMusic.Open(musica.c_str());
-            bgMusic.Play(-1);
+            bgMusic.Play(-1, 20);
             flag = false;
         }
     }

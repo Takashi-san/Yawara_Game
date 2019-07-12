@@ -32,6 +32,7 @@
 #define YWR_DGE 		"assets/img/yawara/yawara_dash.png"
 #define YWR_DGE_FRAME 	5
 #define YWR_DGE_TIME	0.04
+#define YWR_DASH_SOUND		"assets/audio/sons/yawara/dash.ogg"
 
 #define YWR_SIT_GO		5
 #define YWR_SIT_FRAME	4
@@ -114,6 +115,8 @@ Yawara::Yawara(GameObject& associated) : Component(associated) {
 	associated.AddComponent(bite);
 	hit_scream = new Sound(associated, YWR_HIT_SOUND);
 	associated.AddComponent(hit_scream);
+	dash_sound = new Sound(associated, YWR_DASH_SOUND);
+	associated.AddComponent(dash_sound);
 
 	hp = YWR_HP;
 	att = YWR_ATT;
@@ -779,6 +782,8 @@ void Yawara::SetDge() {
 		}
 	}
 	associated.box.Centered(position);
+
+	dash_sound->Play(1, 130);
 }
 
 void Yawara::SetAtk() {
