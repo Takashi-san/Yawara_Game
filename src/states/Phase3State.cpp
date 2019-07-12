@@ -25,6 +25,7 @@
 #include "Timer.h"
 #include "Easing.h"
 #include "MapColision.h"
+#include "CreditosState.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -171,7 +172,7 @@ void Phase3State::Update(float dt)
 	// verifica fechamento do jogo.
 	if (input.KeyPress(ESCAPE_KEY))
 	{
-		PauseState *stage = new PauseState();
+		CreditosState *stage = new CreditosState();
 		Game::GetInstance().Push(stage);
 	}
 
