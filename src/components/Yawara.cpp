@@ -11,12 +11,16 @@
 #include "Sound.h"
 #include "Tapu.h"
 #include "Hitbox.h"
+#include "MapColision.h"
 
 #define YWR_HP			100
 #define YWR_SPEED		500
 #define YWR_ATT			15
 #define YWR_DEF			1
 #define YWR_HIT_COOL_DOWN 	1
+
+#define YWR_WALK_OFFSET 10
+#define YWR_WALK_RATIO	1
 
 #define YWR_ATK_CD		0.5
 #define YWR_HOWL_CD		0.5
@@ -101,7 +105,7 @@ Yawara* Yawara::player;
 Yawara::Yawara(GameObject& associated) : Component(associated) {
 	player = this;
 
-	Sprite* sp = new Sprite(associated, YWR_IDLE_R, YWR_IDLE_FRAME, YWR_RUN_TIME);
+	Sprite* sp = new Sprite(associated, YWR_IDLE_R, YWR_IDLE_FRAME_LR, YWR_IDLE_TIME);
 	associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
@@ -139,6 +143,21 @@ void Yawara::Start() {
 
 	howl = new Howl(*ptr);
 	ptr->AddComponent(howl);
+	
+	// Gera hurtbox de caminhada do yawara.
+	go = new GameObject();
+	weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	ptr = weak_ptr.lock();
+	walk = weak_ptr;
+
+	ptr->box.w = associated.box.w*0.90;
+	walkbase = associated.box.w*0.9;
+	ptr->box.h = associated.box.h/3 + YWR_WALK_OFFSET;
+	ptr->box.Centered(associated.box.Center());
+	walkdif = ptr->box.y - associated.box.y;
+	ptr->box.y = ptr->box.y + walkdif;
+	Collider *cl = new Collider(*ptr);
+	ptr->AddComponent(cl);
 
 	// Gera Tapu.
 	go = new GameObject();
@@ -487,6 +506,8 @@ void Yawara::DoAction(float dt) {
 	static Timer sit;
 	static bool good_boy;
 	Vec2 pos;
+	
+	std::shared_ptr<GameObject> ptr = walk.lock();
 
 	switch (act) {
 		case MOV:
@@ -528,8 +549,13 @@ void Yawara::DoAction(float dt) {
 			}
 
 			SetMov();
-			associated.box.x += speed.x*dt;
-			associated.box.y += speed.y*dt;
+			if (ptr) {
+				pos = MapColision::GetInstance().Validate(ptr->box, speed, dt);
+				ptr->box.x = pos.x;
+				ptr->box.y = pos.y;
+				associated.box.Centered(ptr->box.Center());
+				associated.box.y = associated.box.y - walkdif;
+			}
 		break;
 
 		case ATK:
@@ -541,8 +567,13 @@ void Yawara::DoAction(float dt) {
 			sit.Restart();
 			good_boy = false;
 
-			associated.box.x += speed.x*dt;
-			associated.box.y += speed.y*dt;
+			if (ptr) {
+				pos = MapColision::GetInstance().Validate(ptr->box, speed, dt);
+				ptr->box.x = pos.x;
+				ptr->box.y = pos.y;
+				associated.box.Centered(ptr->box.Center());
+				associated.box.y = associated.box.y - walkdif;
+			}
 		break;
 
 		case HOWL:
@@ -563,102 +594,124 @@ void Yawara::SetMov() {
 			speed = {0, 0};
 			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 			if (sp) {
-				switch (dir) {
-					case RIGHT:
-						sp->Open(YWR_IDLE_R);
-						sp->SetFrameCount(YWR_IDLE_FRAME_LR);
-					break;
+				std::shared_ptr<GameObject> ptr = walk.lock();
+				if (ptr) {
+					switch (dir) {
+						case RIGHT:
+							sp->Open(YWR_IDLE_R);
+							sp->SetFrameCount(YWR_IDLE_FRAME_LR);
+							ptr->box.w = walkbase;
+						break;
 
-					case LEFT:
-						sp->Open(YWR_IDLE_L);
-						sp->SetFrameCount(YWR_IDLE_FRAME_LR);
-					break;
+						case LEFT:
+							sp->Open(YWR_IDLE_L);
+							sp->SetFrameCount(YWR_IDLE_FRAME_LR);
+							ptr->box.w = walkbase;
+						break;
 
-					case UP:
-						sp->Open(YWR_IDLE_U);
-						sp->SetFrameCount(YWR_IDLE_FRAME);
-					break;
+						case UP:
+							sp->Open(YWR_IDLE_U);
+							sp->SetFrameCount(YWR_IDLE_FRAME);
+							ptr->box.w = walkbase*YWR_WALK_RATIO;
+						break;
 
-					case DOWN:
-						sp->Open(YWR_IDLE_D);
-						sp->SetFrameCount(YWR_IDLE_FRAME_D);
-					break;
+						case DOWN:
+							sp->Open(YWR_IDLE_D);
+							sp->SetFrameCount(YWR_IDLE_FRAME_D);
+							ptr->box.w = walkbase*YWR_WALK_RATIO;
+						break;
 
-					case UP_RIGHT:
-						sp->Open(YWR_IDLE_UR);
-						sp->SetFrameCount(YWR_IDLE_FRAME);
-					break;
+						case UP_RIGHT:
+							sp->Open(YWR_IDLE_UR);
+							sp->SetFrameCount(YWR_IDLE_FRAME);
+							ptr->box.w = walkbase;
+						break;
 
-					case DOWN_RIGHT:
-						sp->Open(YWR_IDLE_DR);
-						sp->SetFrameCount(YWR_IDLE_FRAME_D);
-					break;
+						case DOWN_RIGHT:
+							sp->Open(YWR_IDLE_DR);
+							sp->SetFrameCount(YWR_IDLE_FRAME_D);
+							ptr->box.w = walkbase;
+						break;
 
-					case UP_LEFT:
-						sp->Open(YWR_IDLE_UL);
-						sp->SetFrameCount(YWR_IDLE_FRAME);
-					break;
+						case UP_LEFT:
+							sp->Open(YWR_IDLE_UL);
+							sp->SetFrameCount(YWR_IDLE_FRAME);
+							ptr->box.w = walkbase;
+						break;
 
-					case DOWN_LEFT:
-						sp->Open(YWR_IDLE_DL);
-						sp->SetFrameCount(YWR_IDLE_FRAME_D);
-					break;
+						case DOWN_LEFT:
+							sp->Open(YWR_IDLE_DL);
+							sp->SetFrameCount(YWR_IDLE_FRAME_D);
+							ptr->box.w = walkbase;
+						break;
 
-					default:
-					break;
+						default:
+						break;
+					}
+					sp->SetFrameTime(YWR_IDLE_TIME);
 				}
-				sp->SetFrameTime(YWR_IDLE_TIME);
 			}
 		} else {
 			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 			if (sp) {
-				switch (dir) {
-					case RIGHT:
-						speed = {YWR_SPEED, 0};
-						sp->Open(YWR_RUN_R);
-					break;
+				std::shared_ptr<GameObject> ptr = walk.lock();
+				if (ptr) {
+					switch (dir) {
+						case RIGHT:
+							speed = {YWR_SPEED, 0};
+							sp->Open(YWR_RUN_R);
+							ptr->box.w = walkbase;
+						break;
 
-					case LEFT:
-						speed = {-YWR_SPEED, 0};
-						sp->Open(YWR_RUN_L);
-					break;
+						case LEFT:
+							speed = {-YWR_SPEED, 0};
+							sp->Open(YWR_RUN_L);
+							ptr->box.w = walkbase;
+						break;
 
-					case DOWN:
-						speed = {0, YWR_SPEED};
-						sp->Open(YWR_RUN_D);
-					break;
+						case DOWN:
+							speed = {0, YWR_SPEED};
+							sp->Open(YWR_RUN_D);
+							ptr->box.w = walkbase*YWR_WALK_RATIO;
+						break;
 
-					case DOWN_RIGHT:
-						speed = {YWR_SPEED/2, YWR_SPEED/2};
-						sp->Open(YWR_RUN_DR);
-					break;
+						case DOWN_RIGHT:
+							speed = {YWR_SPEED/2, YWR_SPEED/2};
+							sp->Open(YWR_RUN_DR);
+							ptr->box.w = walkbase;
+						break;
 
-					case DOWN_LEFT:
-						speed = {-YWR_SPEED/2, YWR_SPEED/2};
-						sp->Open(YWR_RUN_DL);
-					break;
+						case DOWN_LEFT:
+							speed = {-YWR_SPEED/2, YWR_SPEED/2};
+							sp->Open(YWR_RUN_DL);
+							ptr->box.w = walkbase;
+						break;
 
-					case UP:
-						speed = {0, -YWR_SPEED};
-						sp->Open(YWR_RUN_U);
-					break;
+						case UP:
+							speed = {0, -YWR_SPEED};
+							sp->Open(YWR_RUN_U);
+							ptr->box.w = walkbase*YWR_WALK_RATIO;
+						break;
 
-					case UP_RIGHT:
-						speed = {YWR_SPEED/2, -YWR_SPEED/2};
-						sp->Open(YWR_RUN_UR);
-					break;
+						case UP_RIGHT:
+							speed = {YWR_SPEED/2, -YWR_SPEED/2};
+							sp->Open(YWR_RUN_UR);
+							ptr->box.w = walkbase;
+						break;
 
-					case UP_LEFT:
-						speed = {-YWR_SPEED/2, -YWR_SPEED/2};
-						sp->Open(YWR_RUN_UL);
-					break;
+						case UP_LEFT:
+							speed = {-YWR_SPEED/2, -YWR_SPEED/2};
+							sp->Open(YWR_RUN_UL);
+							ptr->box.w = walkbase;
+						break;
 
-					default:
-						speed = {0, 0};
-					break;
+						default:
+							speed = {0, 0};
+						break;
+					}
+					sp->SetFrameCount(YWR_RUN_FRAME);
+					sp->SetFrameTime(YWR_RUN_TIME);
 				}
-				sp->SetFrameCount(YWR_RUN_FRAME);
-				sp->SetFrameTime(YWR_RUN_TIME);
 			}
 		}
 		associated.box.Centered(position);
@@ -670,53 +723,57 @@ void Yawara::SetDge() {
 	
 	Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 	if (sp) {
-		sp->Open(YWR_DGE);
-		sp->SetFrameCount(YWR_DGE_FRAME);
-		sp->SetFrameTime(YWR_DGE_TIME);
-		switch (dir) {
-			case RIGHT:
-				speed = {YWR_DGE_SPEED, 0};
-				associated.angleDeg = 0;
-			break;
+		std::shared_ptr<GameObject> ptr = walk.lock();
+		if (ptr) {
+			ptr->box.w = walkbase*YWR_WALK_RATIO;
+			sp->Open(YWR_DGE);
+			sp->SetFrameCount(YWR_DGE_FRAME);
+			sp->SetFrameTime(YWR_DGE_TIME);
+			switch (dir) {
+				case RIGHT:
+					speed = {YWR_DGE_SPEED, 0};
+					associated.angleDeg = 0;
+				break;
 
-			case LEFT:
-				speed = {-YWR_DGE_SPEED, 0};
-				associated.angleDeg = 180;
-			break;
+				case LEFT:
+					speed = {-YWR_DGE_SPEED, 0};
+					associated.angleDeg = 180;
+				break;
 
-			case DOWN:
-				speed = {0, YWR_DGE_SPEED};
-				associated.angleDeg = 90;
-			break;
+				case DOWN:
+					speed = {0, YWR_DGE_SPEED};
+					associated.angleDeg = 90;
+				break;
 
-			case DOWN_RIGHT:
-				speed = {YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
-				associated.angleDeg = 45;
-			break;
+				case DOWN_RIGHT:
+					speed = {YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
+					associated.angleDeg = 45;
+				break;
 
-			case DOWN_LEFT:
-				speed = {-YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
-				associated.angleDeg = 135;
-			break;
+				case DOWN_LEFT:
+					speed = {-YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
+					associated.angleDeg = 135;
+				break;
 
-			case UP:
-				speed = {0, -YWR_DGE_SPEED};
-				associated.angleDeg = 270;
-			break;
+				case UP:
+					speed = {0, -YWR_DGE_SPEED};
+					associated.angleDeg = 270;
+				break;
 
-			case UP_RIGHT:
-				speed = {YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
-				associated.angleDeg = 315;
-			break;
+				case UP_RIGHT:
+					speed = {YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
+					associated.angleDeg = 315;
+				break;
 
-			case UP_LEFT:
-				speed = {-YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
-				associated.angleDeg = 225;
-			break;
+				case UP_LEFT:
+					speed = {-YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
+					associated.angleDeg = 225;
+				break;
 
-			default:
-				speed = {0, 0};
-			break;
+				default:
+					speed = {0, 0};
+				break;
+			}
 		}
 	}
 	associated.box.Centered(position);

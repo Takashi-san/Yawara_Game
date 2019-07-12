@@ -24,6 +24,7 @@
 #include "YawaraShadow.h"
 #include "Timer.h"
 #include "Easing.h"
+#include "MapColision.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -39,7 +40,7 @@
 
 Phase3State::Phase3State()
 {
-	std::cout << "BEM VINDO A FASE 2\n";
+	std::cout << "BEM VINDO A FASE 3\n";
 	Data::lose = false;
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
@@ -97,6 +98,7 @@ Phase3State::Phase3State()
 
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_28_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
 
+	MapColision::GetInstance().SetMapColision("assets/tilemap/fase_3/camada_29_colisao", 4, 9, 80, 80);
 	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_29_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
 	
 	//Runas
