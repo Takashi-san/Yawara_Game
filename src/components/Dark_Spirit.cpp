@@ -307,6 +307,8 @@ void Dark_Spirit::Update(float dt) {
 
             if(deathTimer.Get() < DEATH_EFFECT_TIME){}
             else{
+                
+            	/*
                 if(Capelobo::boss != nullptr){
                     GameObject *goSpirit = new GameObject();
                     std::weak_ptr<GameObject> weak_ptr_sprt = Game::GetInstance().GetCurrentState().AddObject(goSpirit);
@@ -319,6 +321,7 @@ void Dark_Spirit::Update(float dt) {
                         ptr_sprt->box.Centered({ptr_sprt->box.Center().x, associated.box.y + rand()%2500});
                     ptr_sprt->AddComponent(sprt);
                 }
+                */
                 associated.RequestDelete();
 				// sp = new Sprite(*ptr, DEATH_RIGHT, 9, 0.1, 9 * 0.1);
                 // Sound *so = new Sound(*ptr, "assets/audio/boom.wav");

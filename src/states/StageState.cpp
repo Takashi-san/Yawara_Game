@@ -25,6 +25,7 @@
 #include "Timer.h"
 #include "Easing.h"
 #include "Phase2State.h"
+#include "Event.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -40,7 +41,7 @@
 
 StageState::StageState()
 {
-	std::cout << "BEM VINDO A FASE 3\n";
+	std::cout << "BEM VINDO A FASE 1\n";
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
@@ -79,12 +80,123 @@ StageState::StageState()
 
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_13_runa", 4, 9, 80, 80, TS_RUNA, TS_RUNA_W, TS_RUNA_H);
 
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_16_pilar", 4, 9, 80, 80, TS_PILAR, TS_PILAR_W, TS_PILAR_H);
+	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_16_pilar", 4, 9, 80, 80, TS_PILAR, TS_PILAR_W, TS_PILAR_H);
 
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_17_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
 
 	MapColision::GetInstance().SetMapColision("assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80);
 	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
+
+	//EVENTS
+	GameObject *goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	Event* event = new Event(*ptr, 2720, 2440, 540, 471);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 2720, 2440, 540, 471);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 2720, 2440, 540, 471);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 2030, 2745, 490, 355);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 2030, 2745, 490, 355);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 330, 4215, 830, 525);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 330, 4215, 830, 525);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 330, 4215, 830, 525);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 330, 4215, 830, 525);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 330, 4215, 830, 525);
+	ptr->AddComponent(event);
+
+	//PILAR
+	GameObject *gopil = new GameObject();
+	weak_ptr = AddObject(gopil);
+	ptr = weak_ptr.lock();
+	Sprite* pil = new Sprite(*ptr, "assets/img/tileset/pilar_bloqueio.png");
+	ptr->AddComponent(pil);
+	ptr->box.Centered({480,5367});
+
+	gopil = new GameObject();
+	weak_ptr = AddObject(gopil);
+	ptr = weak_ptr.lock();
+	pil = new Sprite(*ptr, "assets/img/tileset/pilar_bloqueio.png");
+	ptr->AddComponent(pil);
+	ptr->box.Centered({523,5342});
+
+	gopil = new GameObject();
+	weak_ptr = AddObject(gopil);
+	ptr = weak_ptr.lock();
+	pil = new Sprite(*ptr, "assets/img/tileset/pilar_bloqueio.png");
+	ptr->AddComponent(pil);
+	ptr->box.Centered({578,5310});
+
+	gopil = new GameObject();
+	weak_ptr = AddObject(gopil);
+	ptr = weak_ptr.lock();
+	pil = new Sprite(*ptr, "assets/img/tileset/pilar_bloqueio.png");
+	ptr->AddComponent(pil);
+	ptr->box.Centered({2107,3715});
+
+	gopil = new GameObject();
+	weak_ptr = AddObject(gopil);
+	ptr = weak_ptr.lock();
+	pil = new Sprite(*ptr, "assets/img/tileset/pilar_bloqueio.png");
+	ptr->AddComponent(pil);
+	ptr->box.Centered({2165,3715});
+
+	gopil = new GameObject();
+	weak_ptr = AddObject(gopil);
+	ptr = weak_ptr.lock();
+	pil = new Sprite(*ptr, "assets/img/tileset/pilar_bloqueio.png");
+	ptr->AddComponent(pil);
+	ptr->box.Centered({2225,3715});
+
+	gopil = new GameObject();
+	weak_ptr = AddObject(gopil);
+	ptr = weak_ptr.lock();
+	pil = new Sprite(*ptr, "assets/img/tileset/pilar_bloqueio.png");
+	ptr->AddComponent(pil);
+	ptr->box.Centered({2300,3715});
 
 	//Runas
 	GameObject *gorune = new GameObject();

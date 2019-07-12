@@ -26,6 +26,7 @@
 #include "Easing.h"
 #include "Phase3State.h"
 #include "MapColision.h"
+#include "Event.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -89,12 +90,37 @@ Phase2State::Phase2State()
 
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_19_runa", 4, 9, 80, 80, TS_RUNA, TS_RUNA_W, TS_RUNA_H);
 
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_22_pilar", 4, 9, 80, 80, TS_PILAR, TS_PILAR_W, TS_PILAR_H);
+	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_22_pilar", 4, 9, 80, 80, TS_PILAR, TS_PILAR_W, TS_PILAR_H);
 
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_23_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
 
 	MapColision::GetInstance().SetMapColision("assets/tilemap/fase_2/camada_24_colisao", 4, 9, 80, 80);
 	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_24_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
+
+	//EVENTS
+	GameObject *goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	Event* event = new Event(*ptr, 3275, 3755, 760, 545);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 3275, 3755, 760, 545);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 3275, 3755, 760, 545);
+	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	event = new Event(*ptr, 3275, 3755, 760, 545);
+	ptr->AddComponent(event);
 
 	//Runas
 	GameObject *gorune = new GameObject();
