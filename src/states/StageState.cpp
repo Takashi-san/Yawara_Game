@@ -26,6 +26,7 @@
 #include "Easing.h"
 #include "Phase2State.h"
 #include "Event.h"
+#include "MusicEvent.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -94,6 +95,12 @@ StageState::StageState()
 	ptr = weak_ptr.lock();
 	Event* event = new Event(*ptr, 2720, 2440, 540, 471);
 	ptr->AddComponent(event);
+
+	goeve = new GameObject();
+	weak_ptr = AddObject(goeve);
+	ptr = weak_ptr.lock();
+	MusicEvent* eventm = new MusicEvent(*ptr, 2720, 2440, 540, 471, "assets/audio/musica/main_menu.ogg");
+	ptr->AddComponent(eventm);
 
 	goeve = new GameObject();
 	weak_ptr = AddObject(goeve);
