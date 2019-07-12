@@ -467,40 +467,28 @@ void Capelobo::Update(float dt)
 				cplbStartedAttack = true;
 
 				// Corect direction and angle. Capelobo will attack diagonally just if it is on a range od 15 deg from the 45 deg diagonal
-				if(angle > 330 || angle < 30){
+				if(angle > 330 || angle < 60){
 					angle = 360;
 					dir = RIGHT;
+					distOffset = 0;
 				}
-				else if(angle > 30 && angle < 60){
-					angle = 45;
-					dir = RIGHT_DOWN;	
-				}
-				else if(angle > 60 && angle < 120){
+				else if(angle > 60 && angle < 150){
 					angle = 90;
 					dir = DOWN;
+					distOffset = 100;
 				}
-				else if(angle > 120 && angle < 150){
-					angle = 135;
-					dir = LEFT_DOWN;
-				}
-				else if(angle > 150 && angle < 210){
+				else if(angle > 150 && angle < 240){
 					angle = 180;
 					dir = LEFT;
-				}
-				else if(angle > 210 && angle < 240){
-					angle = 225;
-					dir = LEFT_UP;
-				}
-				else if(angle > 240 && angle < 300){
-					angle = 270;
-					dir = UP;
+					distOffset = 0;
 				}
 				else{
-					angle = 315;
-					dir = RIGHT_UP;
+					angle = 270;
+					dir = UP;
+					distOffset = 100;
 				}
 
-				Tongue *theTongue = new Tongue(*shared_tongue, TONGUE_DAMAGE, TONGUE_SPEED, angle, TONGUE_MAX_DIST, true);
+				Tongue *theTongue = new Tongue(*shared_tongue, TONGUE_DAMAGE, TONGUE_SPEED, angle, TONGUE_MAX_DIST - distOffset, true);
 
 				shared_tongue->AddComponent(theTongue);
 				if(shared_tongue != nullptr)

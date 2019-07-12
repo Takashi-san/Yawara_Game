@@ -21,6 +21,7 @@ private:
 	float restOffset;
 	float velAttackOffset; // Correct time of attack execution due to some sprites of attack are with 5 sprites and othes 16
 	float soundOffset;
+	float distOffset;
 	std::weak_ptr<GameObject> weak_shadow;
 
 public:
