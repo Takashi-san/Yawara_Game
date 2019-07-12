@@ -176,7 +176,7 @@ Phase3State::Phase3State()
 
 	// BGM
 	bgMusic.Open(PHASE2_STT_BGM);
-	bgMusic.Play();
+	bgMusic.Play(-1, 30);
 
 	flag = true;
 	ignore = false;
