@@ -19,8 +19,8 @@
 #define SPRT_ENEMY_DIST_Y 250
 #define SPRT_ENEMY_DIST_X 250
 
-#define SPRT_DIST_DETECT_YAWARA     400
-#define SPRT_DIST_OUT_OF_RANGE      600
+#define SPRT_DIST_DETECT_YAWARA     800
+#define SPRT_DIST_OUT_OF_RANGE      1600
 #define SPRT_FREE_TIME_MOVEMENT     1
 #define SPRT_PURSUE_MOVEMENT        2 
 #define SPRT_LIMIT_TIME_MOVEMENT    1.5
@@ -67,7 +67,7 @@ Dark_Spirit::Dark_Spirit(GameObject & associated) : Enemy(associated){
 	shoot = new Sound(associated, SPRT_SHOOT_SOUND);
 	timesPlayed = 0;
 
-	hp = 40;
+	hp = 30;
 	speed = Vec2{0,0};
 	Sprite *sp = new Sprite(associated, MOVE_DOWN, 7, 0.15);
 	sp->SetScale({1.5,1.5});
