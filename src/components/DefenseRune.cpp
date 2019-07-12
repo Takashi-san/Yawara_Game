@@ -59,6 +59,7 @@ void DefenseRune::Update(float dt){
             sp->Open(INTERACTED_DEFRUNE_FILE);
             sp->SetFrameCount(INTERACTED_DEFRUNE_FRAMES);
             sp->SetFrameTime(INTERACTED_DEFRUNE_FRAMETIME);
+            sp->SetStopFrame(INTERACTED_DEFRUNE_FRAMES - 1);
             associated.box.x -= 15;
             cooldownTimer.Restart();
             active = false;
@@ -69,9 +70,10 @@ void DefenseRune::Update(float dt){
         }
 
         if((changeTimer.Get() >= INTERACTED_DEFRUNE_FRAMES * INTERACTED_DEFRUNE_FRAMETIME) && changed && !active){
-            sp->Open(ACTIVATED_DEFRUNE_FILE);
-            sp->SetFrameCount(ACTIVATED_DEFRUNE_FRAMES);
-            sp->SetFrameTime(ACTIVATED_DEFRUNE_FRAMETIME);
+            // sp->Open(ACTIVATED_DEFRUNE_FILE);
+            // sp->SetFrameCount(ACTIVATED_DEFRUNE_FRAMES);
+            // sp->SetFrameTime(ACTIVATED_DEFRUNE_FRAMETIME);
+            // sp->SetStopFrame(-1);
             associated.box.x += 15;
             changed = false;
             changeTimer.Restart();
@@ -87,6 +89,7 @@ void DefenseRune::Update(float dt){
             sp->Open(BASE_DEFRUNE_FILE);
             sp->SetFrameCount(BASE_DEFRUNE_FRAMES);
             sp->SetFrameTime(BASE_DEFRUNE_FRAMETIME);
+            sp->SetStopFrame(-1);
             active = true;
             changeTimer.Restart();
         }
