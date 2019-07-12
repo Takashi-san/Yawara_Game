@@ -100,86 +100,6 @@ Phase3State::Phase3State()
 
 	MapColision::GetInstance().SetMapColision("assets/tilemap/fase_3/camada_29_colisao", 4, 9, 80, 80);
 	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_29_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
-	
-	//Runas
-	GameObject *gorune = new GameObject();
-	weak_ptr = AddObject(gorune);
-	ptr = weak_ptr.lock();
-	HealthRune *rune1 = new HealthRune(*ptr, 1.5);
-	ptr->box.Centered(3090,1780);
-	ptr->AddComponent(rune1);
-
-	gorune = new GameObject();
-	weak_ptr = AddObject(gorune);
-	ptr = weak_ptr.lock();
-	rune1 = new HealthRune(*ptr, 1.5);
-	ptr->box.Centered(1850,890);
-	ptr->AddComponent(rune1);
-	
-	gorune = new GameObject();
-	weak_ptr = AddObject(gorune);
-	ptr = weak_ptr.lock();
-	AttackRune* attrune = new AttackRune(*ptr, 1.2, AttackRune::INIMIGO);
-	ptr->box.x = 3312;
-	ptr->box.y = 117;
-	ptr->AddComponent(attrune);
-
-	gorune = new GameObject();
-	weak_ptr = AddObject(gorune);
-	ptr = weak_ptr.lock();
-	attrune = new AttackRune(*ptr, 1.3, AttackRune::YAWARA);
-	ptr->box.x = 4544;
-	ptr->box.y = 1701;
-	ptr->AddComponent(attrune);
-
-	gorune = new GameObject();
-	weak_ptr = AddObject(gorune);
-	ptr = weak_ptr.lock();
-	attrune = new AttackRune(*ptr, 1.4, AttackRune::ENCONTRO);
-	ptr->box.x = 160;
-	ptr->box.y = 2901;
-	ptr->AddComponent(attrune);
-
-	gorune = new GameObject();
-	weak_ptr = AddObject(gorune);
-	ptr = weak_ptr.lock();
-	attrune = new AttackRune(*ptr, 1.5, AttackRune::AJUDA);
-	ptr->box.x = 288;
-	ptr->box.y = 3957;
-	ptr->AddComponent(attrune);
-
-	gorune = new GameObject();
-	weak_ptr = AddObject(gorune);
-	ptr = weak_ptr.lock();
-	attrune = new AttackRune(*ptr, 1.2, AttackRune::INIMIGO);
-	ptr->box.x = 1312;
-	ptr->box.y = 5173;
-	ptr->AddComponent(attrune);
-
-	gorune = new GameObject();
-	weak_ptr = AddObject(gorune);
-	ptr = weak_ptr.lock();
-	attrune = new AttackRune(*ptr, 1.4, AttackRune::ENCONTRO);
-	ptr->box.x = 2000;
-	ptr->box.y = 9797;
-	ptr->AddComponent(attrune);
-	
-	/*
-	// Capelobo Shadow
-	GameObject* gosh = new GameObject();
-	std::weak_ptr<GameObject> capsh_ptr = AddObject(gosh);
-	ptr = capsh_ptr.lock();
-	Sprite* capsh = new Sprite(*ptr, "assets/img/capelobo/sombra_capelobo.png");
-	ptr->AddComponent(capsh);
-	
-	// Capelobo
-	GameObject *goali1 = new GameObject();
-	weak_ptr = AddObject(goali1);
-	ptr = weak_ptr.lock();
-	Capelobo *cape = new Capelobo(*ptr, capsh_ptr, 0.1);
-	ptr->box.Centered({840, 1845});
-	ptr->AddComponent(cape);
-	*/
 
 	// HealthFeedback.
 	GameObject* go = new GameObject();
@@ -443,6 +363,69 @@ void Phase3State::Start()
 	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/9.png");
 	ptr->AddComponent(nuvem);
 	ptr->box.y = 1280*8;
+
+	//Runas
+	GameObject *gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	HealthRune *rune1 = new HealthRune(*ptr, 1.5);
+	ptr->box.Centered(3090,1780);
+	ptr->AddComponent(rune1);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	rune1 = new HealthRune(*ptr, 1.5);
+	ptr->box.Centered(1850,890);
+	ptr->AddComponent(rune1);
+	
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	AttackRune* attrune = new AttackRune(*ptr, 1.2, AttackRune::INIMIGO);
+	ptr->box.x = 3312;
+	ptr->box.y = 117;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.3, AttackRune::YAWARA);
+	ptr->box.x = 4544;
+	ptr->box.y = 1701;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.4, AttackRune::ENCONTRO);
+	ptr->box.x = 160;
+	ptr->box.y = 2901;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.5, AttackRune::AJUDA);
+	ptr->box.x = 288;
+	ptr->box.y = 3957;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.2, AttackRune::INIMIGO);
+	ptr->box.x = 1312;
+	ptr->box.y = 5173;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.4, AttackRune::ENCONTRO);
+	ptr->box.x = 2000;
+	ptr->box.y = 9797;
+	ptr->AddComponent(attrune);
 
 	bgMusic.Play(-1, 30);
 }
