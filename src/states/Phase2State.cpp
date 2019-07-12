@@ -235,70 +235,6 @@ Phase2State::Phase2State()
 	Camera::Follow(GetObjectPtr(goya), weak_ptr);
 	Camera::ratio = PHASE2_STT_CAMERA_RATIO;
 
-	// nuvens.
-	go = new GameObject();
-	weak_ptr = AddObject(go);
-	ptr = weak_ptr.lock();
-	Sprite* nuvem = new Sprite(*ptr, "assets/img/background/nuvem/1.png");
-	ptr->AddComponent(nuvem);
-	ptr->box.y = 1280*0;
-
-	go = new GameObject();
-	weak_ptr = AddObject(go);
-	ptr = weak_ptr.lock();
-	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/2.png");
-	ptr->AddComponent(nuvem);
-	ptr->box.y = 1280*1;
-
-	go = new GameObject();
-	weak_ptr = AddObject(go);
-	ptr = weak_ptr.lock();
-	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/3.png");
-	ptr->AddComponent(nuvem);
-	ptr->box.y = 1280*2;
-
-	go = new GameObject();
-	weak_ptr = AddObject(go);
-	ptr = weak_ptr.lock();
-	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/4.png");
-	ptr->AddComponent(nuvem);
-	ptr->box.y = 1280*3;
-
-	go = new GameObject();
-	weak_ptr = AddObject(go);
-	ptr = weak_ptr.lock();
-	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/5.png");
-	ptr->AddComponent(nuvem);
-	ptr->box.y = 1280*4;
-
-	go = new GameObject();
-	weak_ptr = AddObject(go);
-	ptr = weak_ptr.lock();
-	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/6.png");
-	ptr->AddComponent(nuvem);
-	ptr->box.y = 1280*5;
-
-	go = new GameObject();
-	weak_ptr = AddObject(go);
-	ptr = weak_ptr.lock();
-	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/7.png");
-	ptr->AddComponent(nuvem);
-	ptr->box.y = 1280*6;
-
-	go = new GameObject();
-	weak_ptr = AddObject(go);
-	ptr = weak_ptr.lock();
-	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/8.png");
-	ptr->AddComponent(nuvem);
-	ptr->box.y = 1280*7;
-
-	go = new GameObject();
-	weak_ptr = AddObject(go);
-	ptr = weak_ptr.lock();
-	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/9.png");
-	ptr->AddComponent(nuvem);
-	ptr->box.y = 1280*8;
-
 	// BGM
 	bgMusic.Open(PHASE2_STT_BGM);
 	bgMusic.Play(-1, 30);
@@ -322,6 +258,7 @@ void Phase2State::Update(float dt)
 		white->SetAlphaMod(255 * (1 - QuadraticEaseIn(fadein.Get() / PHASE2_STT_FADE)));
 
 		if (fadein.Get() > PHASE2_STT_FADE) {
+			white->SetAlphaMod(0);
 			fadein.Restart();
 			flag = false;
 		}
@@ -460,6 +397,70 @@ void Phase2State::Start()
 	ptr->AddComponent(cmfr);
 
 	started = true;
+
+	// nuvens.
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	Sprite* nuvem = new Sprite(*ptr, "assets/img/background/nuvem/1.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*0;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/2.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*1;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/3.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*2;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/4.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*3;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/5.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*4;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/6.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*5;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/7.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*6;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/8.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*7;
+
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	nuvem = new Sprite(*ptr, "assets/img/background/nuvem/9.png");
+	ptr->AddComponent(nuvem);
+	ptr->box.y = 1280*8;
 
 	bgMusic.Play(-1, 30);
 }
