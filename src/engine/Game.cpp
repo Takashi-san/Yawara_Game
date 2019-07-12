@@ -2,8 +2,8 @@
 #include "Resources.h"
 #include "InputManager.h"
 
-#define GAME_SIZE_W	1024
-#define GAME_SIZE_H	600
+#define GAME_SIZE_W	1280
+#define GAME_SIZE_H	720
 
 #define RESOLUTION_W	1280
 #define RESOLUTION_H	720

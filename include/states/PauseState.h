@@ -2,6 +2,7 @@
 
 #include "State.h"
 #include "Sound.h"
+#include "Sprite.h"
 
 #include <string>
 #include <iostream>
@@ -17,6 +18,7 @@ private:
 
 	float xpos[2], ypos;
 	Sound *changeSelection, *select, *play;
+	Sprite *selectionSprite;
 
 public:
 

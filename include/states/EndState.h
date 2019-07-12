@@ -3,6 +3,7 @@
 #include "State.h"
 #include "Music.h"
 #include "Sound.h"
+#include "Sprite.h"
 
 #include <string>
 #include <iostream>
@@ -31,5 +32,6 @@ private:
 	Option Opt;
 
 	float xpos[2], ypos;
-	Sound *changeSelection, *select, *play;
+	Sound *changeSelection, *select;
+	Sprite *selectionSprite;
 };
