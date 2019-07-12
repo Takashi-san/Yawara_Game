@@ -137,26 +137,18 @@ Phase2State::Phase2State()
 	ptr->box.Centered(1850,890);
 	ptr->AddComponent(rune1);
 
-	/*
-	GameObject *gorune2 = new GameObject();
-	weak_ptr = AddObject(gorune2);
-	ptr = weak_ptr.lock();
-	AttackRune *rune2 = new AttackRune(*ptr, 1.5);
-	ptr->box.Centered(1000,850);
-	ptr->AddComponent(rune2);
-	
-	GameObject *gorune3 = new GameObject();
-	weak_ptr = AddObject(gorune3);
-	ptr = weak_ptr.lock();
-	DefenseRune *rune3 = new DefenseRune(*ptr, 1.5);
-	ptr->box.Centered(1300,500);
-	ptr->AddComponent(rune3);
-	*/
+	// Capelobo Shadow
+	GameObject* gosh = new GameObject();
+	std::weak_ptr<GameObject> capsh_ptr = AddObject(gosh);
+	ptr = capsh_ptr.lock();
+	Sprite* capsh = new Sprite(*ptr, "assets/img/capelobo/sombra_capelobo.png");
+	ptr->AddComponent(capsh);
+
 	// Capelobo
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
 	ptr = weak_ptr.lock();
-	Capelobo *cape = new Capelobo(*ptr, 0.1);
+	Capelobo *cape = new Capelobo(*ptr, capsh_ptr, 0.1);
 	ptr->box.Centered({840, 1845});
 	ptr->AddComponent(cape);
 
