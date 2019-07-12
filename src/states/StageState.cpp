@@ -75,8 +75,8 @@ StageState::StageState()
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_17_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
 
 	MapColision::GetInstance().SetMapColision("assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
-	
+	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
+
 
 	/* // Fase2
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_1_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
@@ -109,6 +109,7 @@ StageState::StageState()
 
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_23_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
 
+	MapColision::GetInstance().SetMapColision("assets/tilemap/fase_2/camada_24_colisao", 4, 9, 80, 80);
 	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_24_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
 	*/
 
@@ -149,6 +150,7 @@ StageState::StageState()
 
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_28_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
 
+	MapColision::GetInstance().SetMapColision("assets/tilemap/fase_3/camada_29_colisao", 4, 9, 80, 80);
 	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_29_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
 	*/
 

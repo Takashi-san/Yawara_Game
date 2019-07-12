@@ -20,7 +20,7 @@
 #define YWR_HIT_COOL_DOWN 	1
 
 #define YWR_WALK_OFFSET 10
-#define YWR_WALK_RATIO	0.4
+#define YWR_WALK_RATIO	1
 
 #define YWR_ATK_CD		0.5
 #define YWR_HOWL_CD		0.5
@@ -105,7 +105,7 @@ Yawara* Yawara::player;
 Yawara::Yawara(GameObject& associated) : Component(associated) {
 	player = this;
 
-	Sprite* sp = new Sprite(associated, YWR_IDLE_R, YWR_IDLE_FRAME, YWR_IDLE_TIME);
+	Sprite* sp = new Sprite(associated, YWR_IDLE_R, YWR_IDLE_FRAME_LR, YWR_IDLE_TIME);
 	associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
@@ -150,8 +150,8 @@ void Yawara::Start() {
 	ptr = weak_ptr.lock();
 	walk = weak_ptr;
 
-	ptr->box.w = associated.box.w;
-	walkbase = associated.box.w;
+	ptr->box.w = associated.box.w*0.90;
+	walkbase = associated.box.w*0.9;
 	ptr->box.h = associated.box.h/3 + YWR_WALK_OFFSET;
 	ptr->box.Centered(associated.box.Center());
 	walkdif = ptr->box.y - associated.box.y;
