@@ -53,7 +53,7 @@ void DefenseRune::Update(float dt){
             associated.box.y -= 20;
             cooldownTimer.Restart();
             active = false;
-            activationSound->Play(1, MIX_MAX_VOLUME);
+            activationSound->Play(1, 100);
         }
 
         if((changeTimer.Get() >= INTERACTED_DEFRUNE_FRAMES * INTERACTED_DEFRUNE_FRAMETIME) && changed && !active){
