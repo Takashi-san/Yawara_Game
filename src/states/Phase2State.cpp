@@ -480,6 +480,55 @@ void Phase2State::Start()
 	rune1 = new HealthRune(*ptr, 1.5);
 	ptr->box.Centered(1850,890);
 	ptr->AddComponent(rune1);
+	
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	DefenseRune* defrune = new DefenseRune(*ptr, 1.2);
+	ptr->box.Centered(1382, 2828);
+	ptr->AddComponent(defrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	defrune = new DefenseRune(*ptr, 1.3);
+	ptr->box.Centered(1425, 4622);
+	ptr->AddComponent(defrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	defrune = new DefenseRune(*ptr, 1.4);
+	ptr->box.Centered(3651, 4605);
+	ptr->AddComponent(defrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	defrune = new DefenseRune(*ptr, 1.15);
+	ptr->box.Centered(3039, 5016);
+	ptr->AddComponent(defrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	defrune = new DefenseRune(*ptr, 1.25);
+	ptr->box.Centered(4751, 3285);
+	ptr->AddComponent(defrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	defrune = new DefenseRune(*ptr, 1.5);
+	ptr->box.Centered(1871, 8095);
+	ptr->AddComponent(defrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	defrune = new DefenseRune(*ptr, 1.36);
+	ptr->box.Centered(1773, 9245);
+	ptr->AddComponent(defrune);
 
 	bgMusic.Play(-1, 30);
 }
