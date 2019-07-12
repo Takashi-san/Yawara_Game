@@ -273,7 +273,7 @@ StageState::StageState()
 
 	// BGM
 	bgMusic.Open(STAGE_STT_BGM);
-	bgMusic.Play();
+	bgMusic.Play(-1, 30);
 }
 
 StageState::~StageState()

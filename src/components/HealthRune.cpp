@@ -43,7 +43,7 @@ void HealthRune::Update(float dt){
             top_layer_sprite = new Sprite(associated, TOP_HEALTHRUNE_FILE);
             top_layer_sprite->SetScale(1, 1);
             associated.AddComponent(top_layer_sprite);
-            activationSound->Play(1, MIX_MAX_VOLUME);
+            activationSound->Play(1, 100);
         }
 
         cooldownTimer.Update(dt);

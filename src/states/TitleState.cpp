@@ -116,7 +116,7 @@ TitleState::TitleState() {
 
 	// BGM
 	bgMusic.Open(TITLE_STT_BGM);
-	bgMusic.Play();
+	bgMusic.Play(-1, 20);
 
 	//Sounds
 	GameObject *chngslctgo = new GameObject();
@@ -225,7 +225,6 @@ void TitleState::Update(float dt) {
 	}
 
 	if (input.KeyPress(ENTER_KEY) || input.KeyPress(ENTER_KEY2)) {
-		StageState *stage = nullptr;
 		switch (opt) {
 			case PLAY:
 				flag = true;
@@ -317,8 +316,6 @@ void TitleState::Start(){
 	ptr->AddComponent(cmfr);
 	white->SetAlphaMod(0);
 
-	bgMusic.Play();
-
 	started = true;
 }
 
@@ -335,5 +332,5 @@ void TitleState::Resume() {
 		white->SetAlphaMod(0);
 	}
 
-	bgMusic.Play();
+	bgMusic.Play(-1, 20);
 }
