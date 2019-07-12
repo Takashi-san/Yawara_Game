@@ -22,7 +22,7 @@
 #define DEFRUNE_FREE_NPC_FRAMES         3
 #define DEFRUNE_FREE_NPC_FRAMETIME      0.12
 
-#define DEFRUNE_ACTIVATION_DISTANCE     100
+#define DEFRUNE_ACTIVATION_DISTANCE     300
 #define DEFRUNE_COOLDOWN_TIME           30
 
 /* 1 < factor <= 2 means an increased defense */

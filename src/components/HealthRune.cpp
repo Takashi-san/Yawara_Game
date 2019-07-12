@@ -16,7 +16,7 @@
 
 #define HEALTHRUNE_SOUND                "assets/audio/sons/interacao_cristal.ogg"
 
-#define HEALTHRUNE_ACTIVATION_DISTANCE  800
+#define HEALTHRUNE_ACTIVATION_DISTANCE  300
 #define HEALTHRUNE_COOLDOWN_TIME        30
 
 /* 1 < factor <= 2 means an increased health */
