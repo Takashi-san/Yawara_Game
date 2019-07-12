@@ -114,7 +114,6 @@ bool cplbStartedAttack = false;
 bool cplbStartedMoving = true;
 bool cplbSpriteChanged = false;
 bool endEffects = false;
-int timesPlayed = 0;
 
 Vec2 temp_speed;
 
@@ -122,6 +121,7 @@ Capelobo::Capelobo(GameObject &associated, std::weak_ptr<GameObject> weak_shadow
 {
 	boss = this;
 	moveAllowed = true;
+	timesPlayed = 0;
 
 	Sprite *sp = new Sprite(associated, REST_RIGHT, 8, 0.150);
 	Collider *cl = new Collider(associated);
@@ -512,7 +512,7 @@ void Capelobo::Update(float dt)
 			break;
 		}
 	}
-
+	std::cout << hp << std::endl;
 	// Capelobo is dead
 	if (hp <= 0)
 	{
