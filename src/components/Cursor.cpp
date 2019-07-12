@@ -12,7 +12,6 @@ void Cursor::Update(float dt)
 	InputManager &input = InputManager::GetInstance();
 
 	associated.box.Centered({(float)input.GetMouseX() + Camera::pos.x, (float)input.GetMouseY() + Camera::pos.y});
-	std::cout << "x: " << associated.box.Center().x << " y: " << associated.box.Center().y << ".\n";
 }
 
 void Cursor::Render()

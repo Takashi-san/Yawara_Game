@@ -10,7 +10,7 @@
 #define TOP_ATTRUNE_FILE            "assets/img/items/runa_imagem.png"
 #define TOP_ATTRUNE_FRAMES          4
 
-#define ATTRUNE_ACTIVATION_DISTANCE 100
+#define ATTRUNE_ACTIVATION_DISTANCE 300
 #define ATTRUNE_COOLDOWN_TIME       30
 
 /* 1 < factor <= 2 increased attack damage */
@@ -53,6 +53,7 @@ void AttackRune::Update(float dt){
             active = true;
             associated.RemoveComponent(top_layer_sprite);
             top_layer_sprite = nullptr;
+            cooldownTimer.Restart();
         }
 
         if(top_layer_sprite){

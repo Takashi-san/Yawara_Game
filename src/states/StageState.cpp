@@ -83,6 +83,7 @@ StageState::StageState()
 	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_16_pilar", 4, 9, 80, 80, TS_PILAR, TS_PILAR_W, TS_PILAR_H);
 
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_17_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
+	// tmpmap->SetMapLayerRune(*this, "assets/tilemap/fase_1/camada_13_runa", 4, 9, 80, 80);
 
 	MapColision::GetInstance().SetMapColision("assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80);
 	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
@@ -199,7 +200,55 @@ StageState::StageState()
 	ptr->box.Centered({2300,3715});
 
 	//Runas
-	GameObject *gorune = new GameObject();
+	GameObject* gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	AttackRune* attrune = new AttackRune(*ptr, 1.2, AttackRune::INIMIGO);
+	ptr->box.x = 3312;
+	ptr->box.y = 117;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.3, AttackRune::YAWARA);
+	ptr->box.x = 4544;
+	ptr->box.y = 1701;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.4, AttackRune::ENCONTRO);
+	ptr->box.x = 160;
+	ptr->box.y = 2901;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.5, AttackRune::AJUDA);
+	ptr->box.x = 288;
+	ptr->box.y = 3957;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.2, AttackRune::INIMIGO);
+	ptr->box.x = 1312;
+	ptr->box.y = 5173;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.4, AttackRune::ENCONTRO);
+	ptr->box.x = 2000;
+	ptr->box.y = 9797;
+	ptr->AddComponent(attrune);
+	
+	gorune = new GameObject();
 	weak_ptr = AddObject(gorune);
 	ptr = weak_ptr.lock();
 	HealthRune *rune1 = new HealthRune(*ptr, 1.5);

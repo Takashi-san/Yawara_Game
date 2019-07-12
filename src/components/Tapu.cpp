@@ -178,9 +178,6 @@ void Tapu::Update(float dt)
 			Shoot();
 			cd.Restart();
 		}
-		if(input.MousePress(SDL_BUTTON_MIDDLE)) {
-			std::cout << "x: " << input.GetMouseX() << " y: " << input.GetMouseY() << std::endl;
-		}
 
 	} else {
 		associated.RequestDelete();
