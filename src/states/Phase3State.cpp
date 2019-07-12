@@ -115,6 +115,55 @@ Phase3State::Phase3State()
 	rune1 = new HealthRune(*ptr, 1.5);
 	ptr->box.Centered(1850,890);
 	ptr->AddComponent(rune1);
+	
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	AttackRune* attrune = new AttackRune(*ptr, 1.2, AttackRune::INIMIGO);
+	ptr->box.x = 3312;
+	ptr->box.y = 117;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.3, AttackRune::YAWARA);
+	ptr->box.x = 4544;
+	ptr->box.y = 1701;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.4, AttackRune::ENCONTRO);
+	ptr->box.x = 160;
+	ptr->box.y = 2901;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.5, AttackRune::AJUDA);
+	ptr->box.x = 288;
+	ptr->box.y = 3957;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.2, AttackRune::INIMIGO);
+	ptr->box.x = 1312;
+	ptr->box.y = 5173;
+	ptr->AddComponent(attrune);
+
+	gorune = new GameObject();
+	weak_ptr = AddObject(gorune);
+	ptr = weak_ptr.lock();
+	attrune = new AttackRune(*ptr, 1.4, AttackRune::ENCONTRO);
+	ptr->box.x = 2000;
+	ptr->box.y = 9797;
+	ptr->AddComponent(attrune);
+	
 	/*
 	// Capelobo Shadow
 	GameObject* gosh = new GameObject();
@@ -122,7 +171,7 @@ Phase3State::Phase3State()
 	ptr = capsh_ptr.lock();
 	Sprite* capsh = new Sprite(*ptr, "assets/img/capelobo/sombra_capelobo.png");
 	ptr->AddComponent(capsh);
-
+	
 	// Capelobo
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
@@ -131,6 +180,7 @@ Phase3State::Phase3State()
 	ptr->box.Centered({840, 1845});
 	ptr->AddComponent(cape);
 	*/
+	
 	// HealthFeedback.
 	GameObject* go = new GameObject();
 	weak_ptr = AddObject(go);

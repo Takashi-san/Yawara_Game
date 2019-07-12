@@ -2,6 +2,9 @@
 #include "Sprite.h"
 #include "Yawara.h"
 #include "Timer.h"
+#include "InputManager.h"
+
+#include <algorithm>
 
 #define BASE_DEFRUNE_FILE               "assets/img/items/espirito_corrompido.png"
 #define BASE_DEFRUNE_FRAMES             9
@@ -15,7 +18,11 @@
 #define ACTIVATED_DEFRUNE_FRAMES        8
 #define ACTIVATED_DEFRUNE_FRAMETIME     0.2
 
-#define DEFRUNE_ACTIVATION_DISTANCE     45
+#define DEFRUNE_FREE_NPC_FILE           "assets/img/npc/efeito_npc.png"
+#define DEFRUNE_FREE_NPC_FRAMES         3
+#define DEFRUNE_FREE_NPC_FRAMETIME      0.12
+
+#define DEFRUNE_ACTIVATION_DISTANCE     100
 #define DEFRUNE_COOLDOWN_TIME           30
 
 /* 1 < factor <= 2 means an increased defense */
@@ -29,11 +36,13 @@ DefenseRune::DefenseRune(GameObject& associated, float defFactor) : Item(associa
     associated.AddComponent(activationSound);
 
     this->defFactor = defFactor;
+
+    top_layer_sprite = nullptr;
 }
 
 void DefenseRune::Update(float dt){
 
-    static Timer cooldownTimer, changeTimer;
+    static Timer cooldownTimer, changeTimer, removeTopTimer;
     static bool active = true, changed = false;
     
     if(Yawara::player){
@@ -41,40 +50,43 @@ void DefenseRune::Update(float dt){
 
         changeTimer.Update(dt);
 
-        if(dist <= DEFRUNE_ACTIVATION_DISTANCE && active){
+        InputManager& input = InputManager::GetInstance();
+
+        if(dist <= DEFRUNE_ACTIVATION_DISTANCE && active && input.KeyPress(E_KEY)){
             Yawara::player->Boost(Yawara::DEFBOOST, defFactor);
             changeTimer.Restart();
             changed = true;
             sp->Open(INTERACTED_DEFRUNE_FILE);
             sp->SetFrameCount(INTERACTED_DEFRUNE_FRAMES);
             sp->SetFrameTime(INTERACTED_DEFRUNE_FRAMETIME);
-            sp->SetScale(1, 1);
-            associated.box.x -= 16;
-            associated.box.y -= 20;
+            associated.box.x -= 15;
             cooldownTimer.Restart();
             active = false;
             activationSound->Play(1, 100);
+            top_layer_sprite = new Sprite(associated, DEFRUNE_FREE_NPC_FILE, DEFRUNE_FREE_NPC_FRAMES, DEFRUNE_FREE_NPC_FRAMETIME);
+            removeTopTimer.Restart();
+            associated.AddComponent(top_layer_sprite);
         }
 
         if((changeTimer.Get() >= INTERACTED_DEFRUNE_FRAMES * INTERACTED_DEFRUNE_FRAMETIME) && changed && !active){
             sp->Open(ACTIVATED_DEFRUNE_FILE);
             sp->SetFrameCount(ACTIVATED_DEFRUNE_FRAMES);
             sp->SetFrameTime(ACTIVATED_DEFRUNE_FRAMETIME);
-            sp->SetScale(1, 1);
-            associated.box.x += 48;
-            associated.box.y += 40;
+            associated.box.x += 15;
             changed = false;
             changeTimer.Restart();
         }
+        removeTopTimer.Update(dt);
 
+        if(top_layer_sprite && removeTopTimer.Get() >= DEFRUNE_FREE_NPC_FRAMES * DEFRUNE_FREE_NPC_FRAMETIME){
+            associated.RemoveComponent(top_layer_sprite);
+            top_layer_sprite = nullptr;
+        }
         cooldownTimer.Update(dt);
         if(cooldownTimer.Get() >= DEFRUNE_COOLDOWN_TIME && !active){
             sp->Open(BASE_DEFRUNE_FILE);
             sp->SetFrameCount(BASE_DEFRUNE_FRAMES);
             sp->SetFrameTime(BASE_DEFRUNE_FRAMETIME);
-            sp->SetScale(1, 1);
-            associated.box.x -= 32;
-            associated.box.y -= 20;
             active = true;
             changeTimer.Restart();
         }
@@ -88,7 +100,7 @@ void DefenseRune::Render(){
 
 bool DefenseRune::Is(std::string type){
 
-	return !strcmp(type.c_str(), "DefenseRune");
+	return !std::min(strcmp(type.c_str(), "DefenseRune"), strcmp(type.c_str(), "Item"));
 }
 
 void DefenseRune::Start(){

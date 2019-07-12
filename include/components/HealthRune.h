@@ -12,12 +12,12 @@ class HealthRune : public Item
 {
 private:
     float hpFactor;
-    Sprite* sp, *top_layer_sprite;
+    Sprite* sp, *top_layer_sprite, *ressonance;
     Sound* activationSound;
 
+public:
     enum Color {DARK = 0, MEDIUM, LIGHT};
 
-public:
     HealthRune(GameObject&, float, Color = DARK);
     
     void Update(float);
