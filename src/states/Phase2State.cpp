@@ -28,6 +28,7 @@
 #include "MapColision.h"
 #include "Event.h"
 #include "MusicEvent.h"
+#include "Cobra.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
@@ -140,20 +141,13 @@ Phase2State::Phase2State()
 	ptr = weak_ptr.lock();
 	event = new Event(*ptr, 3275, 3755, 760, 545);
 	ptr->AddComponent(event);
-	
-	// Capelobo Shadow
-	GameObject* gosh = new GameObject();
-	std::weak_ptr<GameObject> capsh_ptr = AddObject(gosh);
-	ptr = capsh_ptr.lock();
-	Sprite* capsh = new Sprite(*ptr, "assets/img/capelobo/sombra_capelobo.png");
-	ptr->AddComponent(capsh);
 
 	// Capelobo
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
 	ptr = weak_ptr.lock();
-	Capelobo *cape = new Capelobo(*ptr, capsh_ptr, 0.1);
-	ptr->box.Centered({3630, 8120});
+	Cobra *cape = new Cobra(*ptr);
+	ptr->box.Centered({4230, 8120});
 	ptr->AddComponent(cape);
 
 	// HealthFeedback.
@@ -241,7 +235,7 @@ void Phase2State::Update(float dt)
 		EndState *stage = new EndState();
 		Game::GetInstance().Push(stage);
 	}
-	else if (Capelobo::boss == nullptr)
+	else if (Cobra::boss == nullptr)
 	{
 		if (white) {
 			fadein.Update(dt);
