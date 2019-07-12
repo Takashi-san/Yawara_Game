@@ -1,4 +1,4 @@
-#include "StageState.h"
+#include "Phase2State.h"
 
 #include "PauseState.h"
 #include "Sprite.h"
@@ -24,22 +24,24 @@
 #include "YawaraShadow.h"
 #include "Timer.h"
 #include "Easing.h"
-#include "Phase2State.h"
+#include "Phase3State.h"
 
 #include "Tilesets.h"
 #include "Tilemaps.h"
 
-#define STAGE_STT_BG "assets/penguin/img/ocean.jpg"
-#define STAGE_STT_BGM "assets/audio/musica/tema_triste.ogg"
-#define STAGE_STT_CURSOR_SPRITE "assets/img/cursor/cursor.png"
-#define STAGE_STT_CAMERA_RATIO 0.37
+#define PHASE2_STT_BG "assets/penguin/img/ocean.jpg"
+#define PHASE2_STT_BGM "assets/audio/musica/tema_triste.ogg"
+#define PHASE2_STT_CURSOR_SPRITE "assets/img/cursor/cursor.png"
+#define PHASE2_STT_CAMERA_RATIO 0.37
 
-#define STAGE_STT_BLACK 			"assets/img/background/tela_preta.png"
-#define STAGE_STT_WHITE 			"assets/img/background/tela_branca.png"
-#define STAGE_STT_FADE 	6
+#define PHASE2_STT_BLACK 			"assets/img/background/tela_preta.png"
+#define PHASE2_STT_WHITE 			"assets/img/background/tela_branca.png"
+#define PHASE2_STT_FADE 	6
 
-StageState::StageState()
+Phase2State::Phase2State()
 {
+	std::cout << "BEM VINDO A FASE 2\n";
+	Data::lose = false;
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
 
@@ -49,7 +51,7 @@ StageState::StageState()
 	ptr = weak_ptr.lock();
 	ptr->box.x = 0;
 	ptr->box.y = 0;
-	Sprite *sp = new Sprite(*ptr, STAGE_STT_BG);
+	Sprite *sp = new Sprite(*ptr, PHASE2_STT_BG);
 	sp->SetFullscreen();
 	CameraFollower *cmfl = new CameraFollower(*ptr);
 	ptr->AddComponent(sp);
@@ -59,33 +61,7 @@ StageState::StageState()
 	GameObject* tmpgo = new GameObject();
 	TileMap* tmpmap = new TileMap(*tmpgo);
 
-	 // Fase1
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_1_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_2_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_3_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_4_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_5_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_1/camada_6_arvorevoid3", 4, 9, 80, 80, TS_ARVORE3V, TS_ARVORE3V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_1/camada_7_arvorevoid2", 4, 9, 80, 80, TS_ARVORE2V, TS_ARVORE2V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_1/camada_8_arvorevoid1", 4, 9, 80, 80, TS_ARVORE1V, TS_ARVORE1V_F, TS_FRAME_TIME);
-
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_9_pedra", 4, 9, 80, 80, TS_PEDRA, TS_PEDRA_W, TS_PEDRA_H);
-
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_1/camada_10_planta1", 4, 9, 80, 80, TS_PLANTA1V, TS_PLANTA1V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_1/camada_11_planta2", 4, 9, 80, 80, TS_PLANTA2V, TS_PLANTA2V_F, TS_FRAME_TIME);
-	tmpmap->SetMapLayerAnimation(*this, "assets/tilemap/fase_1/camada_12_planta3", 4, 9, 80, 80, TS_PLANTA3V, TS_PLANTA3V_F, TS_FRAME_TIME);
-
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_13_runa", 4, 9, 80, 80, TS_RUNA, TS_RUNA_W, TS_RUNA_H);
-
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_16_pilar", 4, 9, 80, 80, TS_PILAR, TS_PILAR_W, TS_PILAR_H);
-
-	TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_17_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
-
-	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_1/camada_18_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
-	
-
-	/* // Fase2
+	// Fase2
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_1_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_2_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_3_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
@@ -117,8 +93,7 @@ StageState::StageState()
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_23_luz", 4, 9, 80, 80, TS_LUZ, TS_LUZ_W, TS_LUZ_H);
 
 	//TileMap::SetMapLayer(*this, "assets/tilemap/fase_2/camada_24_colisao", 4, 9, 80, 80, TS_DEBUG, TS_DEBUG_W, TS_DEBUG_H);
-	*/
-
+	
 	/* // Fase3
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_1_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
 	TileMap::SetMapLayer(*this, "assets/tilemap/fase_3/camada_2_solo", 4, 9, 80, 80, TS_SOLO, TS_SOLO_W, TS_SOLO_H);
@@ -224,35 +199,37 @@ StageState::StageState()
 	weak_ptr = AddObject(gocur);
 	ptr = weak_ptr.lock();
 	Cursor *cur = new Cursor(*ptr);
-	Sprite *spcur = new Sprite(*ptr, STAGE_STT_CURSOR_SPRITE);
+	Sprite *spcur = new Sprite(*ptr, PHASE2_STT_CURSOR_SPRITE);
 	spcur->SetScale(1, 1);
 	ptr->AddComponent(cur);
 	ptr->AddComponent(spcur);
 
 	Camera::Follow(GetObjectPtr(goya), weak_ptr);
-	Camera::ratio = STAGE_STT_CAMERA_RATIO;
+	Camera::ratio = PHASE2_STT_CAMERA_RATIO;
 
 	// BGM
-	bgMusic.Open(STAGE_STT_BGM);
+	bgMusic.Open(PHASE2_STT_BGM);
 	bgMusic.Play();
+
+	ignore = false;
+	flag = true;
 }
 
-StageState::~StageState()
+Phase2State::~Phase2State()
 {
 	objectArray.clear();
 }
 
-void StageState::Update(float dt)
+void Phase2State::Update(float dt)
 {
 	static Timer fadein;
 
-	if (black && flag) {
+	if (white && flag) {
 		fadein.Update(dt);
 		
-		black->SetAlphaMod(255 * (1 - QuadraticEaseIn(fadein.Get() / STAGE_STT_FADE)));
+		white->SetAlphaMod(255 * (1 - QuadraticEaseIn(fadein.Get() / PHASE2_STT_FADE)));
 
-		if (fadein.Get() > STAGE_STT_FADE) {
-			//black->SetSelfDestruct(0.0000001);
+		if (fadein.Get() > PHASE2_STT_FADE) {
 			fadein.Restart();
 			flag = false;
 		}
@@ -271,7 +248,6 @@ void StageState::Update(float dt)
 		quitRequested = true;
 	}
 
-
 	// verifica condições de vitoria.
 	if ((Yawara::player == nullptr) && !ignore)
 	{
@@ -285,12 +261,12 @@ void StageState::Update(float dt)
 		if (white) {
 			fadein.Update(dt);
 			
-			white->SetAlphaMod(255 * QuadraticEaseIn(fadein.Get() / STAGE_STT_FADE));
+			white->SetAlphaMod(255 * QuadraticEaseIn(fadein.Get() / PHASE2_STT_FADE));
 
-			if (fadein.Get() > STAGE_STT_FADE) {
+			if (fadein.Get() > PHASE2_STT_FADE) {
 				popRequested = true;
 				//Data::playerVictory = true;
-				Phase2State *stage = new Phase2State();
+				Phase3State *stage = new Phase3State();
 				Game::GetInstance().Push(stage);
 				ignore = true;
 			}
@@ -352,16 +328,16 @@ void StageState::Update(float dt)
 	}
 }
 
-void StageState::Render()
+void Phase2State::Render()
 {
 	RenderArray();
 }
 
-void StageState::LoadAssets()
+void Phase2State::LoadAssets()
 {
 }
 
-void StageState::Start()
+void Phase2State::Start()
 {
 	LoadAssets();
 
@@ -374,31 +350,28 @@ void StageState::Start()
 	GameObject* go = new GameObject();
 	weak_ptr = AddObject(go);
 	ptr = weak_ptr.lock();
-	black = new Sprite(*ptr, STAGE_STT_BLACK);
+	black = new Sprite(*ptr, PHASE2_STT_BLACK);
 	CameraFollower* cmfr = new CameraFollower(*ptr);
 	ptr->AddComponent(black);
 	ptr->AddComponent(cmfr);
+	black->SetAlphaMod(0);
 
 	// White screen;
 	go = new GameObject();
 	weak_ptr = AddObject(go);
 	ptr = weak_ptr.lock();
-	white = new Sprite(*ptr, STAGE_STT_WHITE);
+	white = new Sprite(*ptr, PHASE2_STT_WHITE);
 	cmfr = new CameraFollower(*ptr);
 	ptr->AddComponent(white);
 	ptr->AddComponent(cmfr);
-	white->SetAlphaMod(0);
 
-
-	ignore = false;
-	flag = true;
 	started = true;
 }
 
-void StageState::Pause()
+void Phase2State::Pause()
 {
 }
 
-void StageState::Resume()
+void Phase2State::Resume()
 {
 }

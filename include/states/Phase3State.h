@@ -15,7 +15,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-class StageState : public State
+class Phase3State : public State
 {
 private:
 	Music bgMusic;
@@ -24,11 +24,10 @@ private:
 	Sprite* black;
 	Sprite* white;
 
-	bool ignore;
-	bool flag;
+	bool ignore, flag;
 public:
-	StageState();
-	~StageState();
+	Phase3State();
+	~Phase3State();
 
 	void LoadAssets();
 	void Update(float dt);

@@ -148,6 +148,8 @@ void Yawara::Start() {
 
 	Tapu* tp = new Tapu(*ptr, Game::GetInstance().GetCurrentState().GetObjectPtr(&associated));
 	ptr->AddComponent(tp);
+
+	player = this;
 }
 
 void Yawara::Render() {

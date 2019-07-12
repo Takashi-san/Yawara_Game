@@ -4,4 +4,5 @@ class Data
 {
 public:
 	static bool playerVictory;
+	static bool lose;
 };

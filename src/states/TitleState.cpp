@@ -22,6 +22,10 @@
 #define TITLE_STT_CHNG_SLCT		"assets/audio/sons/menu-mover.ogg"
 #define TITLE_STT_PLAY_SOUND	"assets/audio/sons/menu-jogar.ogg"
 
+#define TITLE_STT_BLACK 			"assets/img/background/tela_preta.png"
+#define TITLE_STT_WHITE 			"assets/img/background/tela_branca.png"
+#define TITLE_STT_FADE 				3
+
 TitleState::TitleState() {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
@@ -124,6 +128,25 @@ void TitleState::Update(float dt) {
 	static CameraFollower* cmfll = nullptr;
 	static Sprite* controlScreen = nullptr;
 
+	static bool flag = false;
+	static Timer fadein;
+
+	if (black && flag) {
+		fadein.Update(dt);
+		
+		black->SetAlphaMod(255 * QuadraticEaseIn(fadein.Get() / TITLE_STT_FADE));
+
+		if (fadein.Get() > TITLE_STT_FADE) {
+			fadein.Restart();
+			flag = false;
+			StageState *stage = nullptr;
+			stage = new StageState();
+			Game::GetInstance().Push(stage);
+			if(play)
+				play->Play(1);
+		}
+	}
+
 	// Fecha o jogo.
 	if (input.QuitRequested()) {
 		quitRequested = true;
@@ -184,10 +207,7 @@ void TitleState::Update(float dt) {
 		StageState *stage = nullptr;
 		switch (opt) {
 			case PLAY:
-				stage = new StageState();
-				Game::GetInstance().Push(stage);
-				if(play)
-					play->Play(1);
+				flag = true;
 			break;
 
 			case QUIT:
@@ -251,6 +271,29 @@ void TitleState::Start(){
 	
 	StartArray();
 
+	std::weak_ptr<GameObject> weak_ptr;
+	std::shared_ptr<GameObject> ptr;
+	
+	// Black screen;
+	GameObject* go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	black = new Sprite(*ptr, TITLE_STT_BLACK);
+	CameraFollower* cmfr = new CameraFollower(*ptr);
+	ptr->AddComponent(black);
+	ptr->AddComponent(cmfr);
+	black->SetAlphaMod(0);
+
+	// White screen;
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	white = new Sprite(*ptr, TITLE_STT_WHITE);
+	cmfr = new CameraFollower(*ptr);
+	ptr->AddComponent(white);
+	ptr->AddComponent(cmfr);
+	white->SetAlphaMod(0);
+
 	bgMusic.Play();
 
 	started = true;
@@ -263,6 +306,11 @@ void TitleState::Pause() {
 void TitleState::Resume() {
 	Camera::pos.x = 0;
 	Camera::pos.y = 0;
+
+	if (black) {
+		black->SetAlphaMod(0);
+		white->SetAlphaMod(0);
+	}
 
 	bgMusic.Play();
 }
