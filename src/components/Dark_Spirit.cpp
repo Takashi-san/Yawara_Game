@@ -36,27 +36,11 @@ const std::string MOVE_LEFT_UP	  = "assets/img/dark_spirit/dark_spirit.png";
 const std::string MOVE_UP		  = "assets/img/dark_spirit/dark_spirit.png";
 const std::string MOVE_RIGHT_UP	  = "assets/img/dark_spirit/dark_spirit.png";
 
-// Resting sprites
+// Sounds
 
-const std::string REST_RIGHT		= "assets/img/capelobo/capelobo_idle_right.png";
-const std::string REST_RIGHT_DOWN 	= "assets/img/capelobo/capelobo_idle_right.png";
-const std::string REST_DOWN		 	= "assets/img/capelobo/capelobo_idle_right.png";
-const std::string REST_LEFT_DOWN	= "assets/img/capelobo/capelobo_idle_left.png";
-const std::string REST_LEFT		 	= "assets/img/capelobo/capelobo_idle_left.png";
-const std::string REST_LEFT_UP	 	= "assets/img/capelobo/capelobo_idle_left.png";
-const std::string REST_UP		 	= "assets/img/capelobo/capelobo_idle_left.png";
-const std::string REST_RIGHT_UP		= "assets/img/capelobo/capelobo_idle_right.png";
-
-// Attacking sprites
-
-const std::string ATTACK_RIGHT		= "assets/img/capelobo/capelobo_attack_r.png";
-const std::string ATTACK_RIGHT_DOWN	= "assets/img/capelobo/capelobo_attack_r.png";
-const std::string ATTACK_DOWN		= "assets/img/capelobo/capelobo_attack_r.png";
-const std::string ATTACK_LEFT_DOWN	= "assets/img/capelobo/capelobo_attack_l.png";
-const std::string ATTACK_LEFT		= "assets/img/capelobo/capelobo_attack_l.png";
-const std::string ATTACK_LEFT_UP	= "assets/img/capelobo/capelobo_attack_l.png";
-const std::string ATTACK_UP			= "assets/img/capelobo/capelobo_attack_r.png";
-const std::string ATTACK_RIGHT_UP	= "assets/img/capelobo/capelobo_attack_r.png";
+const std::string SPRT_HIT_SOUND	= "assets/audio/sons/spirit/hit.ogg";
+const std::string SPRT_B_ATK_SOUND	= "assets/audio/sons/spirit/ataque.ogg";
+const std::string SPRT_DEATH		= "assets/audio/sons/spirit/grunhido_morte.ogg";
 
 bool sprtStartedMoving = false;
 
@@ -337,4 +321,13 @@ void Dark_Spirit::Render() {
 
 bool Dark_Spirit::Is(std::string type){
 	return !std::min(strcmp(type.c_str(), "Dark_Spirit"),strcmp(type.c_str(), "Enemy"));
+}
+
+void Dark_Spirit::HitSound(){
+    GameObject *soundGO = new GameObject();
+    std::weak_ptr<GameObject> weak_hit = Game::GetInstance().GetCurrentState().AddObject(soundGO);
+    std::shared_ptr<GameObject> shared_hit = weak_hit.lock();
+    Sound *so = new Sound(*shared_hit, SPRT_HIT_SOUND);
+    shared_hit->AddComponent(so);
+    so->Play(1,MIX_MAX_VOLUME);
 }

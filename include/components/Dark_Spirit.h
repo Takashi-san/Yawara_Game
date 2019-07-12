@@ -21,4 +21,5 @@ class Dark_Spirit : public Enemy
 		void Update(float) override;
 		void Render() override;
 		bool Is(std::string);
+		void HitSound() override;
 };
