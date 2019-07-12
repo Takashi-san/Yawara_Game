@@ -512,7 +512,7 @@ void Capelobo::Update(float dt)
 			break;
 		}
 	}
-	std::cout << hp << std::endl;
+
 	// Capelobo is dead
 	if (hp <= 0)
 	{
