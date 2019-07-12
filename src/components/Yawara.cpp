@@ -523,6 +523,7 @@ void Yawara::DoAction(float dt) {
 							case UP_RIGHT:
 							case DOWN_RIGHT:
 								sp->Open(YWR_SIT_R);
+								dir = RIGHT;
 							break;
 
 							case LEFT:
@@ -530,6 +531,7 @@ void Yawara::DoAction(float dt) {
 							case DOWN_LEFT:
 							case UP_LEFT:
 								sp->Open(YWR_SIT_L);
+								dir = LEFT;
 							break;
 
 							default:
@@ -891,6 +893,7 @@ void Yawara::SetHowl() {
 			case DOWN_RIGHT:
 			case UP_RIGHT:
 				sp->Open(YWR_HOWL_R);
+				dir = RIGHT;
 			break;
 
 			case LEFT:
@@ -898,6 +901,7 @@ void Yawara::SetHowl() {
 			case DOWN_LEFT:
 			case UP_LEFT:
 				sp->Open(YWR_HOWL_L);
+				dir = LEFT;
 			break;
 
 			default:
