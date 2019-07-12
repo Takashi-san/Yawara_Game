@@ -19,7 +19,7 @@ private:
 	Option opt;
 	Music bgMusic;
 	Sprite* selectionSprite;
-	Sound *changeSelection, *play, *select;
+	Sound *changeSelection, *select;
 
 	float xpos[3], ypos;
 

@@ -12,15 +12,21 @@
 
 #define TITLE_STT_BG		"assets/img/background/main_menu.png"
 #define TITLE_STT_BGCTRLS	"assets/img/background/menu_controles.png"
-#define TITLE_STT_PLAY		"assets/img/text/main_menu_jogar.png"
-#define TITLE_STT_QUIT		"assets/img/text/main_menu_sair.png"
+#define TITLE_STT_PLAY		"assets/img/text/jogar.png"
+#define TITLE_STT_QUIT		"assets/img/text/sair.png"
 #define TITLE_STT_CTRLS		"assets/img/text/controles.png"
-#define TITLE_STT_ARROW		"assets/img/cursor/cursor.png"
+#define TITLE_STT_PLAY_GLW	"assets/img/text/jogar_brilho.png"
+#define TITLE_STT_QUIT_GLW	"assets/img/text/sair_brilho.png"
+#define TITLE_STT_CTRLS_GLW	"assets/img/text/controles_brilho.png"
+#define TITLE_STT_CURSOR	"assets/img/cursor/cursor.png"
+
+#define YWR_SLEEPING		"assets/img/yawara/yawara_sleeping.png"
+#define YWR_SLEEPING_FRAMES	4
+#define YWR_SLEEP_FRAMETIME	0.35
 
 #define TITLE_STT_BGM			"assets/audio/musica/main_menu.ogg"
 #define TITLE_STT_SLCT_SOUND	"assets/audio/sons/menu-selecionar_opcao.ogg"
 #define TITLE_STT_CHNG_SLCT		"assets/audio/sons/menu-mover.ogg"
-#define TITLE_STT_PLAY_SOUND	"assets/audio/sons/menu-jogar.ogg"
 
 #define TITLE_STT_BLACK 			"assets/img/background/tela_preta.png"
 #define TITLE_STT_WHITE 			"assets/img/background/tela_branca.png"
@@ -44,32 +50,52 @@ TitleState::TitleState() {
 	ptr->AddComponent(sp);
 	ptr->AddComponent(cmfl);
 
+	Vec2 scale = Vec2(0.5, 0.5);
+	Vec2 ywrpos(500*sp->GetScale().x, 430*sp->GetScale().y);
+
+	// yawara
+	GameObject *ywrgo = new GameObject();
+	weak_ptr = AddObject(ywrgo);
+	ptr = weak_ptr.lock();
+	Sprite *ywrsleep = new Sprite(*ptr, YWR_SLEEPING, YWR_SLEEPING_FRAMES, YWR_SLEEP_FRAMETIME);
+	ptr->box.Centered(ywrpos);
+	ptr->AddComponent(ywrsleep);
+
 	// Title txt.
 	GameObject *t1go = new GameObject();
 	weak_ptr = AddObject(t1go);
 	ptr = weak_ptr.lock();
 	Sprite* tx1 = new Sprite(*ptr, TITLE_STT_PLAY);
-	tx1->SetScale(0.5, 0.5);
+	Sprite* glw1 = new Sprite(*ptr, TITLE_STT_PLAY_GLW);
+	tx1->SetScale(scale);
+	glw1->SetScale(scale);
 	Vec2 pos1 = {((float) tx1->GetWidth())/2 + offset, Game::GetInstance().GetWindowSize().y - tx1->GetHeight()};
 	ptr->box.Centered(pos1);
+	ptr->AddComponent(glw1);
 	ptr->AddComponent(tx1);
 
 	GameObject *t2go = new GameObject();
 	weak_ptr = AddObject(t2go);
 	ptr = weak_ptr.lock();
 	Sprite* tx2 = new Sprite(*ptr, TITLE_STT_CTRLS);
-	tx2->SetScale(0.2, 0.2);
+	Sprite* glw2 = new Sprite(*ptr, TITLE_STT_CTRLS_GLW);
+	tx2->SetScale(scale);
+	glw2->SetScale(scale);
 	Vec2 pos2 = {(Game::GetInstance().GetWindowSize().x/2), Game::GetInstance().GetWindowSize().y - tx1->GetHeight()};
 	ptr->box.Centered(pos2);
+	ptr->AddComponent(glw2);
 	ptr->AddComponent(tx2);
 
 	GameObject *t3go = new GameObject();
 	weak_ptr = AddObject(t3go);
 	ptr = weak_ptr.lock();
 	Sprite* tx3 = new Sprite(*ptr, TITLE_STT_QUIT);
-	tx3->SetScale(0.3, 0.3);
+	Sprite* glw3 = new Sprite(*ptr, TITLE_STT_QUIT_GLW);
+	tx3->SetScale(scale);
+	glw3->SetScale(scale);
 	Vec2 pos3 = {Game::GetInstance().GetWindowSize().x - ((float)tx3->GetWidth())/2 - offset, Game::GetInstance().GetWindowSize().y - tx1->GetHeight()};
 	ptr->box.Centered(pos3);
+	ptr->AddComponent(glw3);
 	ptr->AddComponent(tx3);
 
 	// Selection.
@@ -77,8 +103,8 @@ TitleState::TitleState() {
 	weak_ptr = AddObject(sgo);
 	ptr = weak_ptr.lock();
 	selection = sgo;
-	Sprite* txs = new Sprite(*ptr, TITLE_STT_ARROW);
-	txs->SetScale(1.3, 1.3);
+	Sprite* txs = new Sprite(*ptr, TITLE_STT_CURSOR);
+	txs->SetScale(1.5, 1.5);
 	xpos[0] = pos1.x - tx1->GetWidth()/2 - txs->GetWidth()/2;
 	xpos[1] = pos2.x - tx2->GetWidth()/2 - txs->GetWidth()/2;
 	xpos[2] = pos3.x - tx3->GetWidth()/2 - txs->GetWidth()/2;
@@ -102,11 +128,6 @@ TitleState::TitleState() {
 	weak_ptr = AddObject(slctgo);
 	ptr = weak_ptr.lock();
 	select = new Sound(*ptr, TITLE_STT_SLCT_SOUND);
-
-	GameObject *playgo = new GameObject();
-	weak_ptr = AddObject(playgo);
-	ptr = weak_ptr.lock();
-	play = new Sound(*ptr, TITLE_STT_PLAY_SOUND);
 
 	//Controls screen
 	GameObject* controls_go = new GameObject();
@@ -208,6 +229,8 @@ void TitleState::Update(float dt) {
 		switch (opt) {
 			case PLAY:
 				flag = true;
+				if(selectionSprite)
+					selectionSprite->SetAlphaMod(255);
 			break;
 
 			case QUIT:
