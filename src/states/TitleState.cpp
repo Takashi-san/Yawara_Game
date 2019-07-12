@@ -185,6 +185,7 @@ void TitleState::Update(float dt) {
 		switch (opt) {
 			case PLAY:
 				stage = new StageState();
+				if(selectionSprite)
 				Game::GetInstance().Push(stage);
 				if(play)
 					play->Play(1);
