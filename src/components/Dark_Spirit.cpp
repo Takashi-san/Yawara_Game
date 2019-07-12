@@ -41,6 +41,7 @@ const std::string MOVE_RIGHT_UP	  = "assets/img/dark_spirit/Minion roxo costa.pn
 const std::string SPRT_HIT_SOUND	= "assets/audio/sons/spirit/hit.ogg";
 const std::string SPRT_B_ATK_SOUND	= "assets/audio/sons/spirit/ataque.ogg";
 const std::string SPRT_DEATH		= "assets/audio/sons/spirit/morte.ogg";
+const std::string SPRT_SHOOT_SOUND	= "assets/audio/sons/spirit/disparo.ogg";
 
 // Bullet sprites
 
@@ -63,6 +64,8 @@ int sprttimesPlayed = 0;
 
 Dark_Spirit::Dark_Spirit(GameObject & associated) : Enemy(associated){
     moveAllowed = true;
+	shoot = new Sound(associated, SPRT_SHOOT_SOUND);
+	timesPlayed = 0;
 
 	hp = 40;
 	speed = Vec2{0,0};
@@ -185,6 +188,7 @@ void Dark_Spirit::Update(float dt) {
 					// Change to BASIC_ATTACK state.
 					// changed = false;
 					state = BASIC_ATTACK;
+					timesPlayed = 0;
 					restTimer.Restart();
 					moveTimer.Restart();
                     break;
@@ -277,7 +281,10 @@ void Dark_Spirit::Update(float dt) {
                 std::shared_ptr<GameObject> ptr = weak_bullet.lock();
 
                 float angle = (yawaraPos - associated.box.Center()).Inclination();
-                
+                if(timesPlayed == 0){
+					shoot->Play(1, MIX_MAX_VOLUME);
+					++timesPlayed;
+				}
 				if (angle <= 0)
 					angle += 360;
                     
