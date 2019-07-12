@@ -64,9 +64,10 @@ int sprttimesPlayed = 0;
 Dark_Spirit::Dark_Spirit(GameObject & associated) : Enemy(associated){
     moveAllowed = true;
 
-	hp = 70;
+	hp = 40;
 	speed = Vec2{0,0};
 	Sprite *sp = new Sprite(associated, MOVE_DOWN, 7, 0.15);
+	sp->SetScale({1.5,1.5});
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(sp);
 	associated.AddComponent(cl);
