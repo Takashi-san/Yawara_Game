@@ -383,6 +383,8 @@ void StageState::Update(float dt)
 			white->SetAlphaMod(255 * QuadraticEaseIn(fadein.Get() / STAGE_STT_FADE));
 
 			if (fadein.Get() > STAGE_STT_FADE) {
+				Data::pos = Yawara::player->GetCenterPos();
+
 				popRequested = true;
 				//Data::playerVictory = true;
 				Phase2State *stage = new Phase2State();

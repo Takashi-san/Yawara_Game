@@ -34,8 +34,8 @@
 #define PHASE2_STT_CURSOR_SPRITE "assets/img/cursor/cursor.png"
 #define PHASE2_STT_CAMERA_RATIO 0.37
 
-#define PHASE2_STT_BLACK 			"assets/img/background/tela_preta.png"
-#define PHASE2_STT_WHITE 			"assets/img/background/tela_branca.png"
+#define PHASE2_STT_BLACK 	"assets/img/background/tela_preta.png"
+#define PHASE2_STT_WHITE 	"assets/img/background/tela_branca.png"
 #define PHASE2_STT_FADE 	6
 
 Phase3State::Phase3State()
@@ -115,7 +115,7 @@ Phase3State::Phase3State()
 	rune1 = new HealthRune(*ptr, 1.5);
 	ptr->box.Centered(1850,890);
 	ptr->AddComponent(rune1);
-
+	/*
 	// Capelobo Shadow
 	GameObject* gosh = new GameObject();
 	std::weak_ptr<GameObject> capsh_ptr = AddObject(gosh);
@@ -130,7 +130,7 @@ Phase3State::Phase3State()
 	Capelobo *cape = new Capelobo(*ptr, capsh_ptr, 0.1);
 	ptr->box.Centered({840, 1845});
 	ptr->AddComponent(cape);
-
+	*/
 	// HealthFeedback.
 	GameObject* go = new GameObject();
 	weak_ptr = AddObject(go);
@@ -150,7 +150,7 @@ Phase3State::Phase3State()
 	weak_ptr = AddObject(goya);
 	ptr = weak_ptr.lock();
 	Yawara *yawara = new Yawara(*ptr);
-	ptr->box.Centered({510, 716});
+	ptr->box.Centered({Data::pos.x, Data::pos.y});
 	ptr->AddComponent(yawara);
 
 	// Cursor
@@ -272,6 +272,7 @@ void Phase3State::Update(float dt)
 		quitRequested = true;
 	}
 
+	/*
 	// verifica condições de vitoria.
 	if ((Yawara::player == nullptr) && !ignore)
 	{
@@ -297,6 +298,7 @@ void Phase3State::Update(float dt)
 		}
 
 	}
+	*/
 
 	UpdateArray(dt);
 

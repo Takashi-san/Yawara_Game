@@ -149,7 +149,7 @@ Phase2State::Phase2State()
 	weak_ptr = AddObject(goali1);
 	ptr = weak_ptr.lock();
 	Capelobo *cape = new Capelobo(*ptr, capsh_ptr, 0.1);
-	ptr->box.Centered({840, 1845});
+	ptr->box.Centered({3630, 8120});
 	ptr->AddComponent(cape);
 
 	// HealthFeedback.
@@ -171,7 +171,7 @@ Phase2State::Phase2State()
 	weak_ptr = AddObject(goya);
 	ptr = weak_ptr.lock();
 	Yawara *yawara = new Yawara(*ptr);
-	ptr->box.Centered({510, 716});
+	ptr->box.Centered({Data::pos.x, Data::pos.y});
 	ptr->AddComponent(yawara);
 
 	// Cursor
@@ -308,6 +308,8 @@ void Phase2State::Update(float dt)
 			white->SetAlphaMod(255 * QuadraticEaseIn(fadein.Get() / PHASE2_STT_FADE));
 
 			if (fadein.Get() > PHASE2_STT_FADE) {
+				Data::pos = Yawara::player->GetCenterPos();
+				
 				popRequested = true;
 				//Data::playerVictory = true;
 				Phase3State *stage = new Phase3State();
