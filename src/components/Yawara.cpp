@@ -16,7 +16,7 @@
 
 #define YWR_HP			100
 #define YWR_SPEED		500
-#define YWR_ATT			15
+#define YWR_ATT			30
 #define YWR_DEF			1
 #define YWR_HIT_COOL_DOWN 	1
 
