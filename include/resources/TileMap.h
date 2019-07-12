@@ -21,6 +21,7 @@ private:
 	float parallax;
 
 public:
+	TileMap(GameObject&);
 	TileMap(GameObject &, int, int, std::string, TileSet *);
 
 	void Load(std::string);
@@ -41,4 +42,5 @@ public:
 	bool Is(std::string type);
 
 	static void SetMapLayer(State&, std::string, int, int, int, int, std::string, int, int, int = 0, int = 0);
+	void SetMapLayerAnimation(State&, std::string, int, int, int, int, std::string, int, float, int = 0, int = 0);
 };

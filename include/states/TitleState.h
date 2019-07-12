@@ -23,6 +23,8 @@ private:
 
 	float xpos[3], ypos;
 
+	Sprite* black;
+	Sprite* white;
 public:
 
 	TitleState();
