@@ -62,10 +62,10 @@ void DefenseRune::Update(float dt){
             associated.box.x -= 15;
             cooldownTimer.Restart();
             active = false;
-            activationSound->Play(1, MIX_MAX_VOLUME);
+            activationSound->Play(1, 100);
             top_layer_sprite = new Sprite(associated, DEFRUNE_FREE_NPC_FILE, DEFRUNE_FREE_NPC_FRAMES, DEFRUNE_FREE_NPC_FRAMETIME);
-            associated.AddComponent(top_layer_sprite);
             removeTopTimer.Restart();
+            associated.AddComponent(top_layer_sprite);
         }
 
         if((changeTimer.Get() >= INTERACTED_DEFRUNE_FRAMES * INTERACTED_DEFRUNE_FRAMETIME) && changed && !active){

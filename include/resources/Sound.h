@@ -14,20 +14,23 @@ class Sound : public Component
 {
 private:
 	std::shared_ptr<Mix_Chunk> chunk;
-	int channel;
+	int channel, volume;
 
 public:
 	Sound(GameObject &);
 	Sound(GameObject &, std::string);
 	~Sound();
 
-	void Play(int = 1, int = MIX_MAX_VOLUME/2);
+	void Play(int = 1, int = 50);
 	void Stop();
 	void Open(std::string);
 	bool IsOpen();
 
 	void FadeOut(int);
-	void PlayFadeIn(int, int = MIX_MAX_VOLUME/2, int = 1, int = -1);
+	void PlayFadeIn(int, int = 50, int = 1, int = -1);
+
+	void SetVolume(int volume);
+	int GetVolume();
 
 	void Update(float);
 	void Render();

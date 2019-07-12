@@ -176,7 +176,7 @@ Phase3State::Phase3State()
 
 	// BGM
 	bgMusic.Open(PHASE2_STT_BGM);
-	bgMusic.Play();
+	bgMusic.Play(-1, 30);
 
 	flag = true;
 	ignore = false;
@@ -334,6 +334,8 @@ void Phase3State::Start()
 	ptr->AddComponent(cmfr);
 
 	started = true;
+
+	bgMusic.Play(-1, 30);
 }
 
 void Phase3State::Pause()
