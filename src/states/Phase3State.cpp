@@ -31,7 +31,7 @@
 #include "Tilemaps.h"
 
 #define PHASE2_STT_BG "assets/img/background/nuvem/back.png"
-#define PHASE2_STT_BGM "assets/audio/musica/tema_triste.ogg"
+#define PHASE2_STT_BGM "assets/audio/musica/musica_baiao.ogg"
 #define PHASE2_STT_CURSOR_SPRITE "assets/img/cursor/cursor.png"
 #define PHASE2_STT_CAMERA_RATIO 0.37
 
