@@ -99,7 +99,7 @@ StageState::StageState()
 	goeve = new GameObject();
 	weak_ptr = AddObject(goeve);
 	ptr = weak_ptr.lock();
-	MusicEvent* eventm = new MusicEvent(*ptr, 2720, 2440, 540, 471, "assets/audio/musica/main_menu.ogg");
+	MusicEvent* eventm = new MusicEvent(*ptr, 1161, 1514, 368, 590, "assets/audio/musica/battle_music.ogg");
 	ptr->AddComponent(eventm);
 
 	goeve = new GameObject();
