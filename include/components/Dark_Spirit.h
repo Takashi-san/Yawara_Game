@@ -1,7 +1,6 @@
 #pragma once // Alows to initializate the header just once
 
 #include "Enemy.h"
-#include "Sound.h"
 
 #include <string>
 #include <iostream>
@@ -16,7 +15,6 @@ class Dark_Spirit : public Enemy
 private:
 	float restOffset;
 	int alpha;
-	Sound* shoot;
 
 public:
 	Dark_Spirit(GameObject &);

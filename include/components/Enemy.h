@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Vec2.h"
 #include "Timer.h"
+#include "Sound.h"
 
 #include <string>
 #include <iostream>
@@ -39,6 +40,8 @@ protected:
 	Timer hitTimer;
 	Timer soundTimer;
 	Timer deathTimer;
+
+	Sound *so;
 
 	int safeX;
 	int safeY;

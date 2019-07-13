@@ -5,7 +5,6 @@
 #include "Bullet.h"
 #include "Game.h"
 #include "Hitbox.h"
-#include "Capelobo.h"
 
 #define SPRT_SPEED              250
 #define SPRT_BULLET_SPEED       750
@@ -48,23 +47,12 @@ const std::string SPRT_SHOOT_SOUND	= "assets/audio/sons/spirit/disparo.ogg";
 const std::string SPRT_BULLET_SOURCE = "assets/img/dark_spirit/efeito_disparo_inimigo.png";
 const std::string SPRT_BULLET_END 	= "assets/img/dark_spirit/disparo_destruido.png";
 
-// Death sprites
-
-const std::string DEATH_RIGHT		= "assets/img/capelobo/capelobo_morte_r.png";
-const std::string DEATH_LEFT	 	= "assets/img/capelobo/capelobo_morte_l.png";
-const std::string EFFECT_1			= "assets/img/capelobo/camada1_efeitomorteboss.png";
-const std::string EFFECT_2			= "assets/img/capelobo/camada2_efeitomorteboss.png";
-const std::string EFFECT_3			= "assets/img/capelobo/camada3_efeitomorteboss.png";
-const std::string EFFECT_4			= "assets/img/capelobo/camada4_efeitomorteboss.png";
-const std::string EFFECT_5			= "assets/img/capelobo/camada5_efeitomorteboss.png";
-
-
 bool sprtStartedMoving = false;
 int sprttimesPlayed = 0;
 
 Dark_Spirit::Dark_Spirit(GameObject & associated) : Enemy(associated){
     moveAllowed = true;
-	shoot = new Sound(associated, SPRT_SHOOT_SOUND);
+	so = new Sound(associated, SPRT_SHOOT_SOUND);
 	timesPlayed = 0;
 
 	hp = 30;
@@ -282,7 +270,7 @@ void Dark_Spirit::Update(float dt) {
 
                 float angle = (yawaraPos - associated.box.Center()).Inclination();
                 if(timesPlayed == 0){
-					shoot->Play(1, MIX_MAX_VOLUME);
+					so->Play(1, MIX_MAX_VOLUME);
 					++timesPlayed;
 				}
 				if (angle <= 0)

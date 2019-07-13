@@ -51,7 +51,7 @@ void Enemy::NotifyCollision(GameObject& other){
 		hitTimer.Restart();
         HitSound();
 	}
-    if (other.GetComponent("Bullet") && !static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer && hitTimer.Get() > HIT_COOL_DOWN){
+    if (other.GetComponent("Bullet") && !static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer){
         hp -= static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
 		hitTimer.Restart();
         HitSound();        
