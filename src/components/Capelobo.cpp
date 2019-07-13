@@ -43,6 +43,12 @@
 
 #define CPLB_BREATH 1.3
 
+#define PURSUE_FRAMES 12
+#define RESTING_FRAMES 5
+#define B_ATTACK_FRAMES 16
+#define DEATH_FRAMES 9.0
+#define DEATH_FRAME_TIME 0.1
+
 // Movement sprites
 
 const std::string MOVE_RIGHT 	  = "assets/img/capelobo/capelobo_correndo_r.png";
@@ -79,13 +85,9 @@ const std::string ATTACK_RIGHT_UP	= "assets/img/capelobo/capelobo_attack_r.png";
 // Load attack sprites
 
 const std::string LOAD_RIGHT		= "assets/img/capelobo/capelobo_ataque_lingua_r.png";
-const std::string LOAD_RIGHT_DOWN 	= "";
 const std::string LOAD_DOWN		 	= "assets/img/capelobo/capelobo_lingua_d.png";
-const std::string LOAD_LEFT_DOWN	= "assets/img/capelobo/capelobo_ataque_lingua_ld.png";
 const std::string LOAD_LEFT		 	= "assets/img/capelobo/capelobo_ataque_lingua_l.png";
-const std::string LOAD_LEFT_UP	 	= "";
 const std::string LOAD_UP			= "assets/img/capelobo/capelobo_lingua_u.png";
-const std::string LOAD_RIGHT_UP	 	= "";
 
 // Death sprites
 
@@ -555,16 +557,18 @@ void Capelobo::Update(float dt)
 			associated.RequestDelete();
 
 			if(dir == RIGHT || dir == RIGHT_DOWN || dir == RIGHT_UP || dir == UP)
-				sp = new Sprite(*ptr, DEATH_RIGHT, 9, 0.1, 9 * 0.1);
+				sp = new Sprite(*ptr, DEATH_RIGHT, DEATH_FRAMES, DEATH_FRAME_TIME, DEATH_FRAMES * DEATH_FRAME_TIME);
 			else
-				sp = new Sprite(*ptr, DEATH_LEFT, 9, 0.1, 9 * 0.1);
+				sp = new Sprite(*ptr, DEATH_LEFT, DEATH_FRAMES, DEATH_FRAME_TIME, DEATH_FRAMES * DEATH_FRAME_TIME);
 			so->Open(CPLB_DEATH);
 			ptr->AddComponent(so);
 
 			so->Play(1);
 		}
-		ptr->box.Centered(associated.box.Center());
-		ptr->AddComponent(sp);
+		if(ptr)
+			ptr->box.Centered(associated.box.Center());
+		if(ptr)
+			ptr->AddComponent(sp);
 	}
 }
 
@@ -583,42 +587,42 @@ void Capelobo::Render()
 			{
 			case RIGHT:
 				sp->Open(MOVE_RIGHT);
-				sp->SetFrameCount(12);
+				sp->SetFrameCount(PURSUE_FRAMES);
 				break;
 
 			case LEFT:
 				sp->Open(MOVE_LEFT);
-				sp->SetFrameCount(12);
+				sp->SetFrameCount(PURSUE_FRAMES);
 				break;
 
 			case UP:
 				sp->Open(MOVE_UP);
-				sp->SetFrameCount(12);
+				sp->SetFrameCount(PURSUE_FRAMES);
 				break;
 
 			case DOWN:
 				sp->Open(MOVE_DOWN);
-				sp->SetFrameCount(12);
+				sp->SetFrameCount(PURSUE_FRAMES);
 				break;
 
 			case RIGHT_UP:
 				sp->Open(MOVE_RIGHT_UP);
-				sp->SetFrameCount(12);
+				sp->SetFrameCount(PURSUE_FRAMES);
 				break;
 
 			case RIGHT_DOWN:
 				sp->Open(MOVE_RIGHT_DOWN);
-				sp->SetFrameCount(12);
+				sp->SetFrameCount(PURSUE_FRAMES);
 				break;
 
 			case LEFT_UP:
 				sp->Open(MOVE_LEFT_UP);
-				sp->SetFrameCount(12);
+				sp->SetFrameCount(PURSUE_FRAMES);
 				break;
 
 			case LEFT_DOWN:
 				sp->Open(MOVE_LEFT_DOWN);
-				sp->SetFrameCount(12);
+				sp->SetFrameCount(PURSUE_FRAMES);
 				break;
 
 			default:
@@ -642,32 +646,32 @@ void Capelobo::Render()
 
 			case UP:
 				sp->Open(REST_UP);
-				sp->SetFrameCount(5);
+				sp->SetFrameCount(RESTING_FRAMES);
 				break;
 
 			case DOWN:
 				sp->Open(REST_DOWN);
-				sp->SetFrameCount(5);
+				sp->SetFrameCount(RESTING_FRAMES);
 				break;
 
 			case RIGHT_UP:
 				sp->Open(REST_RIGHT_UP);
-				sp->SetFrameCount(5);
+				sp->SetFrameCount(RESTING_FRAMES);
 				break;
 
 			case RIGHT_DOWN:
 				sp->Open(REST_RIGHT_DOWN);
-				sp->SetFrameCount(5);
+				sp->SetFrameCount(RESTING_FRAMES);
 				break;
 
 			case LEFT_UP:
 				sp->Open(REST_LEFT_UP);
-				sp->SetFrameCount(5);
+				sp->SetFrameCount(RESTING_FRAMES);
 				break;
 
 			case LEFT_DOWN:
 				sp->Open(REST_LEFT_DOWN);
-				sp->SetFrameCount(5);
+				sp->SetFrameCount(RESTING_FRAMES);
 				break;
 
 			default:
@@ -681,12 +685,12 @@ void Capelobo::Render()
 			{
 			case RIGHT:
 				sp->Open(ATTACK_RIGHT);
-				sp->SetFrameCount(16);
+				sp->SetFrameCount(B_ATTACK_FRAMES);
 				break;
 
 			case LEFT:
 				sp->Open(ATTACK_LEFT);
-				sp->SetFrameCount(16);
+				sp->SetFrameCount(B_ATTACK_FRAMES);
 				break;
 
 			case UP:
@@ -703,22 +707,22 @@ void Capelobo::Render()
 
 			case RIGHT_UP:
 				sp->Open(ATTACK_RIGHT_UP);
-				sp->SetFrameCount(16);
+				sp->SetFrameCount(B_ATTACK_FRAMES);
 				break;
 
 			case RIGHT_DOWN:
 				sp->Open(ATTACK_RIGHT_DOWN);
-				sp->SetFrameCount(16);
+				sp->SetFrameCount(B_ATTACK_FRAMES);
 				break;
 
 			case LEFT_UP:
 				sp->Open(ATTACK_LEFT_UP);
-				sp->SetFrameCount(16);
+				sp->SetFrameCount(B_ATTACK_FRAMES);
 				break;
 
 			case LEFT_DOWN:
 				sp->Open(ATTACK_LEFT_DOWN);
-				sp->SetFrameCount(16);
+				sp->SetFrameCount(B_ATTACK_FRAMES);
 				break;
 
 			default:
@@ -750,35 +754,15 @@ void Capelobo::Render()
 				sp->SetFrameCount(6);
 				break;
 
-			case RIGHT_UP:
-				// sp->Open(LOAD_RIGHT_UP);
-				// sp->SetFrameCount(16);
-				break;
-
-			case RIGHT_DOWN:
-				// sp->Open(LOAD_RIGHT_DOWN);
-				// sp->SetFrameCount(16);
-				break;
-
-			case LEFT_UP:
-				// sp->Open(LOAD_LEFT_UP);
-				// sp->SetFrameCount(16);
-				break;
-
-			case LEFT_DOWN:
-				sp->Open(LOAD_LEFT_DOWN);
-				sp->SetFrameCount(4);
-				break;
-
 			default:
 				break;
 			}
 		}
-		else if(state == SLEEPING){
+		// else if(state == SLEEPING){
 			// sp->SetFrameTime(0.08);
 			// sp->Open(LOAD_LEFT_DOWN);
 			// sp->SetFrameCount(4);
-		}
+		// }
 	}
 	associated.box.Centered(position);
 }

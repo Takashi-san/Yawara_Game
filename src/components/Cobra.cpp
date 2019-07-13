@@ -13,6 +13,11 @@
 #include "Easing.h"
 
 Cobra *Cobra::boss;
+
+#define STATIK_FRAMES 10
+#define DEATH_FRAMES 6.0
+#define DEATH_FRAME_TIME 0.1
+
 const std::string COBRA_STATIK		= "assets/img/cobra/cobra_parada.png";
 
 // Death sprites
@@ -39,7 +44,7 @@ Cobra::Cobra(GameObject &associated) : Enemy(associated)
 
 void Cobra::Start()
 {
-	Sprite *sp = new Sprite(associated, COBRA_STATIK, 10, 0.100);
+	Sprite *sp = new Sprite(associated, COBRA_STATIK, STATIK_FRAMES, 0.100);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(sp);
 	associated.AddComponent(cl);
@@ -111,7 +116,7 @@ void Cobra::Update(float dt)
 		else{
 			associated.RequestDelete();
 
-			sp = new Sprite(*ptr, COBRA_DEATH, 6, 0.1, 6 * 0.1);
+			sp = new Sprite(*ptr, COBRA_DEATH, DEATH_FRAMES, DEATH_FRAME_TIME, DEATH_FRAMES * DEATH_FRAME_TIME);
 			so->Open(COBRA_DEATH_SOUND);
 			so->Play(1);
 		}

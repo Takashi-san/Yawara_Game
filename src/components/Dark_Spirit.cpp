@@ -255,7 +255,7 @@ void Dark_Spirit::Update(float dt) {
                 }
 				state = MOVING;
                 restOffset = 0;
-				moveAllowed = 1;
+				moveAllowed = true;
 				moveTimer.Restart();
 			}
 			break;
