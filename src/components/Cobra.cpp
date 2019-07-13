@@ -13,33 +13,42 @@
 #include "Easing.h"
 
 Cobra *Cobra::boss;
-const std::string COBRA_DEATH		= "assets/img/cobra/morte_cobra.png";
 const std::string COBRA_STATIK		= "assets/img/cobra/cobra_parada.png";
+
 // Death sprites
 
-const std::string COBRA_EFFECT_1			= "assets/img/capelobo/camada1_efeitomorteboss.png";
-const std::string COBRA_EFFECT_2			= "assets/img/capelobo/camada2_efeitomorteboss.png";
-const std::string COBRA_EFFECT_3			= "assets/img/capelobo/camada3_efeitomorteboss.png";
-const std::string COBRA_EFFECT_4			= "assets/img/capelobo/camada4_efeitomorteboss.png";
-const std::string COBRA_EFFECT_5			= "assets/img/capelobo/camada5_efeitomorteboss.png";
+const std::string COBRA_DEATH		= "assets/img/cobra/morte_cobra.png";
+const std::string COBRA_EFFECT_1	= "assets/img/capelobo/camada1_efeitomorteboss.png";
+const std::string COBRA_EFFECT_2	= "assets/img/capelobo/camada2_efeitomorteboss.png";
+const std::string COBRA_EFFECT_3	= "assets/img/capelobo/camada3_efeitomorteboss.png";
+const std::string COBRA_EFFECT_4	= "assets/img/capelobo/camada4_efeitomorteboss.png";
+const std::string COBRA_EFFECT_5	= "assets/img/capelobo/camada5_efeitomorteboss.png";
 
-const std::string COBRA_HIT_SOUND	= "assets/audio/sons/capelobo/hit.ogg";
+// Cobra sounds
+
+const std::string COBRA_HIT_SOUND	= "assets/audio/sons/cobra/hit.ogg";
+const std::string COBRA_DEATH_SOUND	= "assets/audio/sons/cobra/death.ogg";
 
 Cobra::Cobra(GameObject &associated) : Enemy(associated)
 {
 	boss = this;
 	timesPlayed = 0;
 
-	Sprite *sp = new Sprite(associated, COBRA_STATIK, 10, 0.100);
-	Collider *cl = new Collider(associated);
-	associated.AddComponent(sp);
-	associated.AddComponent(cl);
-	
 	hp = 60;
 }
 
 void Cobra::Start()
 {
+	Sprite *sp = new Sprite(associated, COBRA_STATIK, 10, 0.100);
+	Collider *cl = new Collider(associated);
+	associated.AddComponent(sp);
+	associated.AddComponent(cl);
+
+	GameObject *go = new GameObject();
+	std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
+	so = new Sound(*ptr, COBRA_HIT_SOUND);
+
 	// Reset all timers
 	restTimer.Restart();
 	moveTimer.Restart();
@@ -103,9 +112,13 @@ void Cobra::Update(float dt)
 			associated.RequestDelete();
 
 			sp = new Sprite(*ptr, COBRA_DEATH, 6, 0.1, 6 * 0.1);
+			so->Open(COBRA_DEATH_SOUND);
+			so->Play(1);
 		}
-		ptr->box.Centered(associated.box.Center());
-		ptr->AddComponent(sp);
+		if(ptr)
+			ptr->box.Centered(associated.box.Center());
+		if(ptr)
+			ptr->AddComponent(sp);
 	}
 }
 
@@ -119,10 +132,6 @@ bool Cobra::Is(std::string type)
 }
 
 void Cobra::HitSound(){
-    GameObject *soundGO = new GameObject();
-    std::weak_ptr<GameObject> weak_hit = Game::GetInstance().GetCurrentState().AddObject(soundGO);
-    std::shared_ptr<GameObject> shared_hit = weak_hit.lock();
-    Sound *so = new Sound(*shared_hit, COBRA_HIT_SOUND);
-    shared_hit->AddComponent(so);
+    so->Open(COBRA_HIT_SOUND);
     so->Play(1,MIX_MAX_VOLUME);
 }
