@@ -142,7 +142,7 @@ Phase2State::Phase2State()
 	event = new Event(*ptr, 3275, 3755, 760, 545);
 	ptr->AddComponent(event);
 
-	// Capelobo
+	// Cobra
 	GameObject *goali1 = new GameObject();
 	weak_ptr = AddObject(goali1);
 	ptr = weak_ptr.lock();
