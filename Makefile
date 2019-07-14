@@ -29,6 +29,7 @@ SRC_PATH = $(sort $(dir $(wildcard src/*/*/)))
 SRC_PATH += src/
 BIN_PATH = build/bin
 DEP_PATH = build/dep
+BUILD_PATH = build/
 
 # Uma lista de arquivos por extensão:
 CPP_FILES = $(wildcard $(addsuffix *.cpp, $(SRC_PATH)))
@@ -100,6 +101,7 @@ $(DEP_PATH)/%.d:	$$(filter $$(addsuffix $$*.cpp, $$(SRC_PATH)), $$(CPP_FILES))	|
 clean:
 		-$(RMDIR) $(DEP_PATH)
 		-$(RMDIR) $(BIN_PATH)
+		-$(RMDIR) $(BUILD_PATH)
 		-$(RM) $(EXEC)
 
 release: FLAGS += $(RFLAFS)
