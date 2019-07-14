@@ -103,16 +103,14 @@ TitleState::TitleState() {
 	weak_ptr = AddObject(sgo);
 	ptr = weak_ptr.lock();
 	selection = sgo;
-	Sprite* txs = new Sprite(*ptr, TITLE_STT_CURSOR);
-	txs->SetScale(1.5, 1.5);
-	xpos[0] = pos1.x - tx1->GetWidth()/2 - txs->GetWidth()/2;
-	xpos[1] = pos2.x - tx2->GetWidth()/2 - txs->GetWidth()/2;
-	xpos[2] = pos3.x - tx3->GetWidth()/2 - txs->GetWidth()/2;
+	selectionSprite = new Sprite(*ptr, TITLE_STT_CURSOR);
+	selectionSprite->SetScale(1.5, 1.5);
+	xpos[0] = pos1.x - tx1->GetWidth()/2 - selectionSprite->GetWidth()/2;
+	xpos[1] = pos2.x - tx2->GetWidth()/2 - selectionSprite->GetWidth()/2;
+	xpos[2] = pos3.x - tx3->GetWidth()/2 - selectionSprite->GetWidth()/2;
 	ypos = pos1.y;
 	ptr->box.Centered(xpos[0], ypos);
-	ptr->AddComponent(txs);
-
-	selectionSprite = txs;
+	ptr->AddComponent(selectionSprite);
 
 	// BGM
 	bgMusic.Open(TITLE_STT_BGM);
@@ -163,6 +161,9 @@ void TitleState::Update(float dt) {
 			StageState *stage = nullptr;
 			stage = new StageState();
 			Game::GetInstance().Push(stage);
+			if(selectionSprite){
+				selectionSprite->SetAlphaMod(255);	
+			}
 		}
 	}
 
@@ -226,8 +227,6 @@ void TitleState::Update(float dt) {
 		switch (opt) {
 			case PLAY:
 				flag = true;
-				if(selectionSprite)
-					selectionSprite->SetAlphaMod(255);
 			break;
 
 			case QUIT:
