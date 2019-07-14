@@ -2,6 +2,14 @@
 
 Jogo desenvolvido para o trabalho final de Introdução ao Desenvolvimento de Jogos da Universidade de Brasília no primeiro semestre de 2019.
 
+## Projeto
+
+O repositório do projeto pode ser encontrado no [GitHub](https://github.com/Takashi-san/Yawara_Game/)
+
+## Licensa
+
+Todos os arquivos referentes ao projeto se encontram sobre licensa de Open Source, disponíveis para serem usados, modificados e compartilhados livremente citando os autores originais.
+
 ## Iniciando
 
 Estas instruções vão ensinar a como compilar e rodar o jogo 'Yawara' desenvolvido para a disciplina de Introdução ao Desenvolvimento de Jogos
@@ -49,7 +57,7 @@ SDL2_ttf
         * TDM-GCC vem com compiladores de C e C++
 
 * SDL2:
-    * Baixe SDL2-devel-2.x.x-mingw.tar.gz (ou SDL2-devel-2.x.x-VC.zip se vocÊ usa Visual Code) do [link](http://libsdl.org/download-2.0.php)
+    * Baixe SDL2-devel-2.x.x-mingw.tar.gz (ou SDL2-devel-2.x.x-VC.zip se você usa Visual Code) do [link](http://libsdl.org/download-2.0.php)
     * Extraia o arquivo zipado e copie as pastas:
     ```
     bin
