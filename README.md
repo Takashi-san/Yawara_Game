@@ -139,9 +139,9 @@ Yawara é um jogo com foco em boss-fighting, entretando contém elementos de exp
 
 ### Controles
 Controles de Yawara (lobo-guará):
-* W, A, S, D: movimenta para cima, esquerda, baixo e direita. Combinaçoes de teclas (W + A ou S + D por exemplo) movimentam em direções intermediárias;
-* Barra de espaço: "dash", movimento de velocidade de Yawara que não aplica dano a inimigos;
-* E: uivo, interage com o ambiente onde possível (runas, espíritos corrompidos e cristais);
+* <kbd>W</kbd>, <kbd>A</kbd>, <kbd>S</kbd>, <kbd>D</kbd>: movimenta para cima, esquerda, baixo e direita. Combinaçoes de teclas (<kbd>W</kbd> + <kbd>A</kbd> ou <kbd>S</kbd> + <kbd>D</kbd> por exemplo) movimentam em direções intermediárias;
+* <kbd>Espaço</kbd>: "dash", movimento de velocidade de Yawara que não aplica dano a inimigos;
+* <kbd>E</kbd>: uivo, interage com o ambiente onde possível (runas, espíritos corrompidos e cristais);
 * Clique direito: mordida, ataque de proximidade co dano mais elevado.
 
 Controles de Tapu (espírito companheiro):
@@ -153,9 +153,9 @@ Câmera:
 
 ### Hacks
 
-* F1: eleva vida (HP), defesa e dano de Yawara;
-* F2: retorna stats (vida, defesa e dano) aos originais;
-* F3: suicídio
+* <kbd>F1</kbd>: eleva vida (HP), defesa e dano de Yawara;
+* <kbd>F2</kbd>: retorna stats (vida, defesa e dano) aos originais;
+* <kbd>F3</kbd>: suicídio
 
 ### Jogando
 
