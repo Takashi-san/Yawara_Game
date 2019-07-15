@@ -117,7 +117,7 @@ Feito isso, rode o jogo com o comando
 - Bruno Takashi
     - Responsável por Yawara, câmera, carregamento do cenário, transição de cena, estágios do jogo, colisão do mapa, cobra, cursor, eventos de música, hitbox.
 - Gabriel Vieira
-    - Responsável por Capelobo, inimigos, cobra.
+    - Responsável por Capelobo, inimigos, cobra, classe Floor (prévia do mapa de colisão), danos por colisão, eságios de pausa e fim do jogo.
 - Leonardo Alves
     - Responsável por Tapu, adaptação de funções de easing, estágios de título, pausa e fim de jogo, interações (runas, cristais e espíritos corrompidos), hacks, projéteis (Bullets), eventos.
 
