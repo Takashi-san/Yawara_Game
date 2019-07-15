@@ -49,7 +49,7 @@ SDL2_ttf
         * TDM-GCC vem com compiladores de C e C++
 
 * SDL2:
-    * Baixe SDL2-devel-2.x.x-mingw.tar.gz (ou SDL2-devel-2.x.x-VC.zip se vocÊ usa Visual Code) do [link](http://libsdl.org/download-2.0.php)
+    * Baixe SDL2-devel-2.x.x-mingw.tar.gz (ou SDL2-devel-2.x.x-VC.zip se você usa Visual Code) do [link](http://libsdl.org/download-2.0.php)
     * Extraia o arquivo zipado e copie as pastas:
     ```
     bin
@@ -107,11 +107,11 @@ Feito isso, rode o jogo com o comando
 
 **Programadores:**
 - Bruno Takashi
-    - Responsável por Yawara, câmera, carregamento do cenário, transição de cena, estágios do jogo[completar aqui]
+    - Responsável por Yawara, câmera, carregamento do cenário, transição de cena, estágios do jogo, colisão do mapa, cobra, cursor, eventos de música, hitbox.
 - Gabriel Vieira
-    - Responsável por Capelobo, minions (dark spirits), mapa de colisão[completar aqui]
+    - Responsável por Capelobo, inimigos, cobra.
 - Leonardo Alves
-    - Responsável por Tapu, adaptaçao de funções de easing, estágios de título, pausa e fim de jogo, interações (runas, cristais e espíritos corrompidos), hacks
+    - Responsável por Tapu, adaptação de funções de easing, estágios de título, pausa e fim de jogo, interações (runas, cristais e espíritos corrompidos), hacks, projéteis (Bullets), eventos.
 
 **Designers:**
 - Adriel Ramon
