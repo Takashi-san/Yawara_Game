@@ -1,8 +1,9 @@
-tile => 16x16 px
-
-solo	1x1 tile;
-arvore	23x19 tile;
-planta	9x10 tile;
-pedra	9x10 tile;
-luz	8x28 tile;
-simbolo	11x18 tile;
+solo 				|16  x 16	pixel 
+arvorecerrado1 e arvorecerrado2 |336 x 320 
+demais arvores 			|400 x 320 
+cristal e espirito 		|112 x 144 
+luz	 			|128 x 304 
+pedra 				|144 x 160 
+pilar 				|112 x 128 
+todas as plantas 		|144 x 176 
+runas 				|208 x 128

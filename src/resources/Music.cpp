@@ -4,6 +4,7 @@
 
 Music::Music() {
 	music = nullptr;
+	volume = 50;
 }
 
 Music::Music(std::string file) {
@@ -14,7 +15,11 @@ Music::Music(std::string file) {
 void Music::Play(int times, int volume) {
 	if (music != nullptr){
 		Mix_PlayMusic(music.get(), times);
-		Mix_VolumeMusic(volume);
+
+		if(volume >= 0 && volume <= 100)
+			this->volume = volume;
+
+		Mix_VolumeMusic((this->volume/100.0) * MIX_MAX_VOLUME);
 	} else {
 		std::cout << "Nenhuma musica carregada para tocar.\n";
 	}
@@ -39,6 +44,17 @@ bool Music::IsOpen() {
 	} else {
 		return true;
 	}
+}
+
+void Music::SetVolume(int volume) {
+	if(volume >= 0 && volume <= 100)
+		this->volume = volume;
+
+	Mix_VolumeMusic((this->volume/100.0) * MIX_MAX_VOLUME);
+}
+
+int Music::GetVolume(){
+	return volume;
 }
 
 Music::~Music() {

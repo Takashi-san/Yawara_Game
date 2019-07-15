@@ -10,19 +10,33 @@
 
 #include "Fonts.h"
 
-#define TITLE_STT_BG	"assets/img/background/main_menu.png"
-#define TITLE_STT_PLAY	"assets/img/background/main_menu_jogar.png"
-#define TITLE_STT_QUIT	"assets/img/background/main_menu_sair.png"
-#define TITLE_STT_ARROW	"assets/img/background/main_menu_selection.png"
+#define TITLE_STT_BG		"assets/img/background/main_menu.png"
+#define TITLE_STT_BGCTRLS	"assets/img/background/menu_controles.png"
+#define TITLE_STT_PLAY		"assets/img/text/jogar.png"
+#define TITLE_STT_QUIT		"assets/img/text/sair.png"
+#define TITLE_STT_CTRLS		"assets/img/text/controles.png"
+#define TITLE_STT_PLAY_GLW	"assets/img/text/jogar_brilho.png"
+#define TITLE_STT_QUIT_GLW	"assets/img/text/sair_brilho.png"
+#define TITLE_STT_CTRLS_GLW	"assets/img/text/controles_brilho.png"
+#define TITLE_STT_CURSOR	"assets/img/cursor/cursor.png"
 
-#define TITLE_STT_BGM			"assets/audio/musica/main_menu.mp3"
+#define YWR_SLEEPING		"assets/img/yawara/yawara_sleeping.png"
+#define YWR_SLEEPING_FRAMES	4
+#define YWR_SLEEP_FRAMETIME	0.35
+
+#define TITLE_STT_BGM			"assets/audio/musica/main_menu.ogg"
 #define TITLE_STT_SLCT_SOUND	"assets/audio/sons/menu-selecionar_opcao.ogg"
 #define TITLE_STT_CHNG_SLCT		"assets/audio/sons/menu-mover.ogg"
-#define TITLE_STT_PLAY_SOUND	"assets/audio/sons/menu-jogar.ogg"
+
+#define TITLE_STT_BLACK 			"assets/img/background/tela_preta.png"
+#define TITLE_STT_WHITE 			"assets/img/background/tela_branca.png"
+#define TITLE_STT_FADE 				3
 
 TitleState::TitleState() {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
+
+	float offset = 80;
 
 	// Title img.
 	GameObject *go = new GameObject();
@@ -31,32 +45,57 @@ TitleState::TitleState() {
 	ptr->box.x = 0;
 	ptr->box.y = 0;
 	Sprite *sp = new Sprite(*ptr, TITLE_STT_BG);
+	sp->SetFullscreen();
 	CameraFollower *cmfl = new CameraFollower(*ptr);
 	ptr->AddComponent(sp);
 	ptr->AddComponent(cmfl);
+
+	Vec2 scale = Vec2(0.5, 0.5);
+	Vec2 ywrpos(500*sp->GetScale().x, 430*sp->GetScale().y);
+
+	// yawara
+	GameObject *ywrgo = new GameObject();
+	weak_ptr = AddObject(ywrgo);
+	ptr = weak_ptr.lock();
+	Sprite *ywrsleep = new Sprite(*ptr, YWR_SLEEPING, YWR_SLEEPING_FRAMES, YWR_SLEEP_FRAMETIME);
+	ptr->box.Centered(ywrpos);
+	ptr->AddComponent(ywrsleep);
 
 	// Title txt.
 	GameObject *t1go = new GameObject();
 	weak_ptr = AddObject(t1go);
 	ptr = weak_ptr.lock();
 	Sprite* tx1 = new Sprite(*ptr, TITLE_STT_PLAY);
-	tx1->SetScale(0.5, 0.5);
-	ptr->box.Centered({200, 560});
+	Sprite* glw1 = new Sprite(*ptr, TITLE_STT_PLAY_GLW);
+	tx1->SetScale(scale);
+	glw1->SetScale(scale);
+	Vec2 pos1 = {((float) tx1->GetWidth())/2 + offset, Game::GetInstance().GetWindowSize().y - tx1->GetHeight()};
+	ptr->box.Centered(pos1);
+	ptr->AddComponent(glw1);
 	ptr->AddComponent(tx1);
 
 	GameObject *t2go = new GameObject();
 	weak_ptr = AddObject(t2go);
 	ptr = weak_ptr.lock();
-	Text* tx2 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Controles", {0, 0, 0, 255});
-	ptr->box.Centered(500, 550);
+	Sprite* tx2 = new Sprite(*ptr, TITLE_STT_CTRLS);
+	Sprite* glw2 = new Sprite(*ptr, TITLE_STT_CTRLS_GLW);
+	tx2->SetScale(scale);
+	glw2->SetScale(scale);
+	Vec2 pos2 = {(Game::GetInstance().GetWindowSize().x/2), Game::GetInstance().GetWindowSize().y - tx1->GetHeight()};
+	ptr->box.Centered(pos2);
+	ptr->AddComponent(glw2);
 	ptr->AddComponent(tx2);
 
 	GameObject *t3go = new GameObject();
 	weak_ptr = AddObject(t3go);
 	ptr = weak_ptr.lock();
 	Sprite* tx3 = new Sprite(*ptr, TITLE_STT_QUIT);
-	tx3->SetScale(0.3, 0.3);
-	ptr->box.Centered({800, 550});
+	Sprite* glw3 = new Sprite(*ptr, TITLE_STT_QUIT_GLW);
+	tx3->SetScale(scale);
+	glw3->SetScale(scale);
+	Vec2 pos3 = {Game::GetInstance().GetWindowSize().x - ((float)tx3->GetWidth())/2 - offset, Game::GetInstance().GetWindowSize().y - tx1->GetHeight()};
+	ptr->box.Centered(pos3);
+	ptr->AddComponent(glw3);
 	ptr->AddComponent(tx3);
 
 	// Selection.
@@ -64,16 +103,20 @@ TitleState::TitleState() {
 	weak_ptr = AddObject(sgo);
 	ptr = weak_ptr.lock();
 	selection = sgo;
-	Sprite* txs = new Sprite(*ptr, TITLE_STT_ARROW);
-	txs->SetScale(0.7, 0.7);
-	ptr->box.Centered({90, 550});
+	Sprite* txs = new Sprite(*ptr, TITLE_STT_CURSOR);
+	txs->SetScale(1.5, 1.5);
+	xpos[0] = pos1.x - tx1->GetWidth()/2 - txs->GetWidth()/2;
+	xpos[1] = pos2.x - tx2->GetWidth()/2 - txs->GetWidth()/2;
+	xpos[2] = pos3.x - tx3->GetWidth()/2 - txs->GetWidth()/2;
+	ypos = pos1.y;
+	ptr->box.Centered(xpos[0], ypos);
 	ptr->AddComponent(txs);
 
 	selectionSprite = txs;
 
 	// BGM
 	bgMusic.Open(TITLE_STT_BGM);
-	bgMusic.Play();
+	bgMusic.Play(-1, 20);
 
 	//Sounds
 	GameObject *chngslctgo = new GameObject();
@@ -86,10 +129,10 @@ TitleState::TitleState() {
 	ptr = weak_ptr.lock();
 	select = new Sound(*ptr, TITLE_STT_SLCT_SOUND);
 
-	GameObject *playgo = new GameObject();
-	weak_ptr = AddObject(playgo);
-	ptr = weak_ptr.lock();
-	play = new Sound(*ptr, TITLE_STT_PLAY_SOUND);
+	//Controls screen
+	GameObject* controls_go = new GameObject();
+	weak_ptr = AddObject(controls_go);
+	controlsgo = weak_ptr.lock();
 
 	opt = PLAY;
 }
@@ -103,44 +146,76 @@ void TitleState::Update(float dt) {
 	static float counter = 0;
 	static bool fadingIn = true;
 	static float ease = 0.3;
+	static CameraFollower* cmfll = nullptr;
+	static Sprite* controlScreen = nullptr;
+
+	static bool flag = false;
+	static Timer fadein;
+
+	if (black && flag) {
+		fadein.Update(dt);
+		
+		black->SetAlphaMod(255 * QuadraticEaseIn(fadein.Get() / TITLE_STT_FADE));
+
+		if (fadein.Get() > TITLE_STT_FADE) {
+			fadein.Restart();
+			flag = false;
+			StageState *stage = nullptr;
+			stage = new StageState();
+			Game::GetInstance().Push(stage);
+		}
+	}
 
 	// Fecha o jogo.
-	if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY)) {
+	if (input.QuitRequested()) {
 		quitRequested = true;
 	}
 
-	if (input.KeyPress(A_KEY) || input.KeyPress(LEFT_ARROW_KEY)) {
-		if(opt == OPTIONS)
-			opt = PLAY;
-		else if(opt == QUIT)
-			opt = OPTIONS;
+	if(!controlScreen) {
+		if (input.KeyPress(A_KEY) || input.KeyPress(LEFT_ARROW_KEY)) {
+			if(opt == OPTIONS)
+				opt = PLAY;
+			else if(opt == QUIT)
+				opt = OPTIONS;
 
-	if(changeSelection)
-		changeSelection->Play(1);
-		
-	}
-	if (input.KeyPress(D_KEY) || input.KeyPress(RIGHT_ARROW_KEY)) {
-		if(opt == PLAY)
-			opt = OPTIONS;
-		else if(opt == OPTIONS)
-			opt = QUIT;
+			if(changeSelection)
+				changeSelection->Play(1);
+			
+		}
+		if (input.KeyPress(D_KEY) || input.KeyPress(RIGHT_ARROW_KEY)) {
+			if(opt == PLAY)
+				opt = OPTIONS;
+			else if(opt == OPTIONS)
+				opt = QUIT;
 
-		if(changeSelection)
-			changeSelection->Play(1);
+			if(changeSelection)
+				changeSelection->Play(1);
+		}
+		if(input.KeyPress(ESCAPE_KEY))
+			quitRequested = true;
+	} else {
+		if(input.KeyPress(ESCAPE_KEY)){
+			controlsgo->RemoveComponent(controlScreen);
+			controlsgo->RemoveComponent(cmfll);
+			cmfll = nullptr;
+			controlScreen = nullptr;
+			if(select)
+				select->Play(1);
+		}
 	}
 
 	switch (opt)
 	{
 		case PLAY:
-			selection->box.Centered({90, 550});
+			selection->box.Centered(xpos[0], ypos);
 		break;
 
 		case OPTIONS:
-			selection->box.Centered({370, 550});
+			selection->box.Centered(xpos[1], ypos);
 		break;
 
 		case QUIT:
-			selection->box.Centered({720, 550});
+			selection->box.Centered(xpos[2], ypos);
 		break;
 		
 		default:
@@ -148,12 +223,11 @@ void TitleState::Update(float dt) {
 	}
 
 	if (input.KeyPress(ENTER_KEY) || input.KeyPress(ENTER_KEY2)) {
-		StageState *stage = new StageState();
 		switch (opt) {
 			case PLAY:
-				Game::GetInstance().Push(stage);
-				if(play)
-					play->Play(1);
+				flag = true;
+				if(selectionSprite)
+					selectionSprite->SetAlphaMod(255);
 			break;
 
 			case QUIT:
@@ -161,6 +235,18 @@ void TitleState::Update(float dt) {
 				if(select)
 					select->Play(1);
 			break;
+
+			case OPTIONS:
+				if(!controlScreen){
+					controlScreen = new Sprite(*controlsgo, TITLE_STT_BGCTRLS);
+					controlScreen->SetFullscreen();
+					cmfll = new CameraFollower(*controlsgo);
+					controlsgo->AddComponent(cmfll);
+					controlsgo->AddComponent(controlScreen);
+					if(select)
+						select->Play(1);
+				}
+				break;
 
 			default:
 				if(select)
@@ -205,7 +291,28 @@ void TitleState::Start(){
 	
 	StartArray();
 
-	bgMusic.Play();
+	std::weak_ptr<GameObject> weak_ptr;
+	std::shared_ptr<GameObject> ptr;
+	
+	// Black screen;
+	GameObject* go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	black = new Sprite(*ptr, TITLE_STT_BLACK);
+	CameraFollower* cmfr = new CameraFollower(*ptr);
+	ptr->AddComponent(black);
+	ptr->AddComponent(cmfr);
+	black->SetAlphaMod(0);
+
+	// White screen;
+	go = new GameObject();
+	weak_ptr = AddObject(go);
+	ptr = weak_ptr.lock();
+	white = new Sprite(*ptr, TITLE_STT_WHITE);
+	cmfr = new CameraFollower(*ptr);
+	ptr->AddComponent(white);
+	ptr->AddComponent(cmfr);
+	white->SetAlphaMod(0);
 
 	started = true;
 }
@@ -218,5 +325,10 @@ void TitleState::Resume() {
 	Camera::pos.x = 0;
 	Camera::pos.y = 0;
 
-	bgMusic.Play();
+	if (black) {
+		black->SetAlphaMod(0);
+		white->SetAlphaMod(0);
+	}
+
+	bgMusic.Play(-1, 20);
 }

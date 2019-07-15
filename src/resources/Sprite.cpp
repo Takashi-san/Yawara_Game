@@ -21,6 +21,8 @@ Sprite::Sprite(GameObject& associated) : Component(associated){
 	g_mod = 255;
 	b_mod = 255;
 	blend = BLEND_BLEND;
+
+	backwards = false;
 }
 
 Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float frameTime, float secondsToSelfDestruct, int stopFrame) : Component(associated){
@@ -63,6 +65,8 @@ Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float f
 	this->secondsToSelfDestruct = secondsToSelfDestruct;
 
 	Open(file);
+
+	backwards = false;
 }
 
 Sprite::~Sprite() {
@@ -160,9 +164,16 @@ void Sprite::Update(float dt){
 		timeCount.Update(dt);
 		if (timeCount.Get() >= frameTime) {
 			timeCount.Restart();
-			currentFrame++;
-			if (currentFrame == frameCount) {
-				currentFrame = 0;
+			if(!backwards){
+				currentFrame++;
+				if (currentFrame == frameCount) {
+					currentFrame = 0;
+				}
+			} else {
+				currentFrame--;
+				if(currentFrame < 0){
+					currentFrame = frameCount - 1;
+				}
 			}
 			if (currentFrame == stopFrame) {
 				stopFlag = true;
@@ -244,6 +255,11 @@ void Sprite::SetStopFrame(int stopFrame) {
 	}
 }
 
+int Sprite::GetFrame(){
+	return currentFrame;
+}
+
+
 void Sprite::Stop() {
 	stopFlag = true;
 }
@@ -307,4 +323,13 @@ void Sprite::SetBlendMode(int mode) {
 
 void Sprite::SetSelfDestruct(float secondsToSelfDestruct) {
 	this->secondsToSelfDestruct = secondsToSelfDestruct;
+}
+
+void Sprite::SetReverse(bool backwards){
+	this->backwards = backwards;
+}
+
+void Sprite::SetFullscreen() {
+	
+	SetScale(Game::GetInstance().GetWindowSize().x/GetWidth(), Game::GetInstance().GetWindowSize().y/GetHeight());
 }

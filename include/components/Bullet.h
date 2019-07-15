@@ -1,8 +1,8 @@
 #pragma once // Alows to initializate the header just once
 
-#include "Component.h"
 #include "GameObject.h"
 #include "Vec2.h"
+#include "Hitbox.h"
 
 #include <string>
 #include <iostream>
@@ -13,16 +13,17 @@ class Bullet : public Component
 {
 private:
 	Vec2 speed;
-	float distanceLeft;
 	int damage;
+	float distanceLeft;
+	std::string spriteEnd;
 
 public:
 	bool targetsPlayer;
-	Bullet(GameObject &, float, float, int, float, std::string, int = 1, float = 1, bool = true);
+	Bullet(GameObject &, float, float, int, float, std::string, std::string, int = 1, float = 1, bool = true);
 
 	void Update(float);
 	void Render();
 	bool Is(std::string);
-	void NotifyCollision(GameObject &);
 	int GetDamage();
+	void NotifyCollision(GameObject &) override;
 };

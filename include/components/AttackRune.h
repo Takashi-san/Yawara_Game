@@ -16,7 +16,11 @@ private:
     Sound* activationSound;
     
 public:
-    AttackRune(GameObject&, float);
+
+    enum Image {INIMIGO = 0, YAWARA, ENCONTRO, AJUDA};
+
+    Image top_img;
+    AttackRune(GameObject&, float, Image = INIMIGO);
     
     void Update(float);
     void Render();

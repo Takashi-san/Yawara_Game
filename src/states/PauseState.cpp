@@ -6,15 +6,27 @@
 #include "Camera.h"
 #include "Text.h"
 #include "Timer.h"
+#include "Easing.h"
 
 #include "Fonts.h"
 
-#define PAUSE_STT_BG "assets/img/background/main_menu.png"
+#define PAUSE_STT_BG		"assets/img/background/menu_pause.png"
+#define PAUSE_STT_CONT		"assets/img/text/continuar.png"
+#define PAUSE_STT_QUIT		"assets/img/text/sair.png"
+#define PAUSE_STT_CONT_GLW	"assets/img/text/continuar_brilho.png"
+#define PAUSE_STT_QUIT_GLW	"assets/img/text/sair_brilho.png"
+#define CURSOR_PATH			"assets/img/cursor/cursor.png"
+
+#define PAUSE_STT_SLCT_SOUND	"assets/audio/sons/menu-selecionar_opcao.ogg"
+#define PAUSE_STT_CHNG_SLCT		"assets/audio/sons/menu-mover.ogg"
+#define PAUSE_STT_PLAY_SOUND	"assets/audio/sons/menu-jogar.ogg"
 
 PauseState::PauseState()
 {
 	std::weak_ptr<GameObject> weak_ptr;
 	std::shared_ptr<GameObject> ptr;
+
+	float offset = 80;
 
 	// Pause img.
 	GameObject *go = new GameObject();
@@ -23,21 +35,34 @@ PauseState::PauseState()
 	ptr->box.x = Camera::pos.x;
 	ptr->box.y = Camera::pos.y;
 	Sprite *sp = new Sprite(*ptr, PAUSE_STT_BG);
+	sp->SetFullscreen();
 	ptr->AddComponent(sp);
+
+	Vec2 scale(0.5, 0.5);
 
 	// Pause txt.
 	GameObject *t1go = new GameObject();
 	weak_ptr = AddObject(t1go);
 	ptr = weak_ptr.lock();
-	Text *tx1 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Resume", {255, 255, 255, 255});
-	ptr->box.Centered({341 + Camera::pos.x, 500 + Camera::pos.y});
+	Sprite *tx1 = new Sprite(*ptr, PAUSE_STT_CONT);
+	Sprite *glw1 = new Sprite(*ptr, PAUSE_STT_CONT_GLW);
+	tx1->SetScale(scale);
+	glw1->SetScale(scale);
+	Vec2 pos1 = {((float) tx1->GetWidth())/2 + offset + Camera::pos.x, Game::GetInstance().GetWindowSize().y - tx1->GetHeight() + Camera::pos.y};
+	ptr->box.Centered(pos1);
+	ptr->AddComponent(glw1);
 	ptr->AddComponent(tx1);
 
 	GameObject *t2go = new GameObject();
 	weak_ptr = AddObject(t2go);
 	ptr = weak_ptr.lock();
-	Text *tx2 = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, "Quit", {255, 255, 255, 255});
-	ptr->box.Centered({683 + Camera::pos.x, 500 + Camera::pos.y});
+	Sprite *tx2 = new Sprite(*ptr, PAUSE_STT_QUIT);
+	Sprite *glw2 = new Sprite(*ptr, PAUSE_STT_QUIT_GLW);
+	tx2->SetScale(scale);
+	glw2->SetScale(scale);
+	Vec2 pos2 = {Game::GetInstance().GetWindowSize().x - ((float)tx2->GetWidth())/2 - offset + Camera::pos.x, Game::GetInstance().GetWindowSize().y - tx1->GetHeight() + Camera::pos.y};
+	ptr->box.Centered(pos2);
+	ptr->AddComponent(glw2);
 	ptr->AddComponent(tx2);
 
 	// Selection.
@@ -45,9 +70,29 @@ PauseState::PauseState()
 	weak_ptr = AddObject(sgo);
 	ptr = weak_ptr.lock();
 	selection = sgo;
-	Text *txs = new Text(*ptr, TTF_TEMPSITC, 50, Text::BLENDED, ">>", {255, 255, 255, 255}, 0.3);
-	ptr->box.Centered({240 + Camera::pos.x, 500 + Camera::pos.y});
-	ptr->AddComponent(txs);
+	selectionSprite = new Sprite(*ptr, CURSOR_PATH);
+	selectionSprite->SetScale(1.5, 1.5);
+	xpos[0] = pos1.x - tx1->GetWidth()/2 - selectionSprite->GetWidth()/2;
+	xpos[1] = pos2.x - tx2->GetWidth()/2 - selectionSprite->GetWidth()/2;
+	ypos = pos1.y;
+	ptr->box.Centered({xpos[0], ypos});
+	ptr->AddComponent(selectionSprite);
+
+	// sounds
+	GameObject *chngslctgo = new GameObject();
+	weak_ptr = AddObject(chngslctgo);
+	ptr = weak_ptr.lock();
+	changeSelection = new Sound(*ptr, PAUSE_STT_CHNG_SLCT);
+
+	GameObject *slctgo = new GameObject();
+	weak_ptr = AddObject(slctgo);
+	ptr = weak_ptr.lock();
+	select = new Sound(*ptr, PAUSE_STT_SLCT_SOUND);
+
+	GameObject *playgo = new GameObject();
+	weak_ptr = AddObject(playgo);
+	ptr = weak_ptr.lock();
+	play = new Sound(*ptr, PAUSE_STT_PLAY_SOUND);
 
 	// BGM
 
@@ -62,41 +107,78 @@ PauseState::~PauseState()
 void PauseState::Update(float dt)
 {
 	InputManager &input = InputManager::GetInstance();
+	static float counter = 0;
+	static bool fadingIn = true;
+	static float ease = 0.3;
 
-	if(input.KeyPress(ESCAPE_KEY)){
+	if(input.KeyPress(ESCAPE_KEY)) {
 		popRequested = true;
 	}
 
-	if(input.QuitRequested()){
+	if(input.QuitRequested()) {
 		quitRequested = true;
 	}
 
-	if (input.KeyPress(A_KEY) || input.KeyPress(LEFT_ARROW_KEY))
-	{
-		opt = RESUME;
-		selection->box.Centered({240 + Camera::pos.x, 500 + Camera::pos.y});
+	if (input.KeyPress(A_KEY) || input.KeyPress(LEFT_ARROW_KEY)) {
+		if(opt != RESUME) {
+			opt = RESUME;
+			selection->box.Centered({xpos[0], ypos});
+			if(changeSelection)
+				changeSelection->Play();
+		}
 	}
-	if (input.KeyPress(D_KEY) || input.KeyPress(RIGHT_ARROW_KEY))
-	{
-		opt = QUIT;
-		selection->box.Centered({600 + Camera::pos.x, 500 + Camera::pos.y});
+	if (input.KeyPress(D_KEY) || input.KeyPress(RIGHT_ARROW_KEY)) {
+		if(opt != QUIT) {
+			opt = QUIT;
+			selection->box.Centered({xpos[1], ypos});
+			if(changeSelection)
+				changeSelection->Play();
+		}
 	}
 
-	if (input.KeyPress(ENTER_KEY) || input.KeyPress(ENTER_KEY2))
-	{
+	if (input.KeyPress(ENTER_KEY) || input.KeyPress(ENTER_KEY2)) {
 		switch (opt)
 		{
 		case RESUME:
 			popRequested = true;
+			
+			if(play)
+				play->Play();
+
+			if(select)
+				select->Play();
 			break;
 
 		case QUIT:
 			quitRequested = true;
+
+			if(select)
+				select->Play();
 			break;
 
 		default:
 			break;
 		}
+	}
+
+	if(selectionSprite){
+		if(fadingIn){
+			counter += dt;
+			if(counter >= 1){
+				counter = 1;
+				fadingIn = false;
+			}
+		} else{
+			counter -= dt;
+			if(counter <= 0.3){
+				counter = 0.3;
+				fadingIn = true;
+			}
+		}
+
+		ease = SineEaseInOut(counter);
+
+		selectionSprite->SetAlphaMod(int (ease * 255));
 	}
 
 	UpdateArray(dt);

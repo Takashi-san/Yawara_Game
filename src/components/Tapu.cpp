@@ -9,7 +9,7 @@
 #include "Easing.h"
 
 #define TAPU_BULLET_SPEED	750
-#define TAPU_BULLET_DAMAGE	10
+#define TAPU_BULLET_DAMAGE	15
 #define TAPU_BULLET_RANGE	1000
 #define TAPU_SHOOT_CD		0.4
 #define TAPU_RAIO			100
@@ -26,10 +26,18 @@
 #define TAPU_DL			"assets/img/tapu/tapu_down_left.png"
 
 #define TAPU_BULLET			"assets/img/tapu/disparo.png"
+#define TAPU_BULLET_END		"assets/img/tapu/disparo_colisão.png"
 #define TAPU_BULLET_FRAME	5
 #define TAPU_BULLET_TIME	0.05
 
+#define TAPU_SHOOT			"assets/img/tapu/efeito_disparo.png"
+#define TAPU_SHOOT_FRAME	5
+#define TAPU_SHOOT_TIME		0.05
+#define TAPU_SHOOT_SOUND	"assets/audio/sons/tapu/disparo.ogg"
+
 Tapu::Tapu(GameObject& associated, std::weak_ptr<GameObject> Yawara) : Component(associated) {
+	shoot = new Sound(associated, TAPU_SHOOT_SOUND);
+
 	angle = 0;
 	this->yawara = Yawara;
 	dir = RIGHT;
@@ -101,6 +109,13 @@ void Tapu::Update(float dt)
 				shadow_sprite->SetScale(1 + (0.45 * ease), 1 + (0.45 * ease));
 			}
 		}
+
+		std::shared_ptr<GameObject> muzzle = shoot_fx.lock();
+		if(muzzle){
+			muzzle->box.Centered(associated.box.Center());
+			muzzle->box.x += shoot_fx_offset.x;
+			muzzle->box.y += shoot_fx_offset.y;
+		}		
 
 		dist = TapuCenter - YwrCenter;
 		changedDir = false;
@@ -176,10 +191,10 @@ void Tapu::Update(float dt)
 
 void Tapu::Render()
 {
-
 	Sprite *sp = static_cast<Sprite *>(associated.GetComponent("Sprite"));
 	if (sp && changedDir)
 	{
+	int currFrame = sp->GetFrame();
 
 		switch (dir)
 		{
@@ -215,6 +230,8 @@ void Tapu::Render()
 				sp->Open(TAPU_DR);
 				break;
 		}
+
+		sp->SetFrame(currFrame);
 	}
 }
 
@@ -229,20 +246,40 @@ void Tapu::Shoot()
 	std::shared_ptr<GameObject> ptr;
 
 	GameObject *go = new GameObject();
-	weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
-	ptr = weak_ptr.lock();
+	std::weak_ptr<GameObject> weak_bullet = Game::GetInstance().GetCurrentState().AddObject(go);
+	std::shared_ptr<GameObject> ptr_bullet = weak_bullet.lock();
 	
-	Bullet *bam = new Bullet(*ptr, angle, TAPU_BULLET_SPEED, TAPU_BULLET_DAMAGE * damageFactor, TAPU_BULLET_RANGE, TAPU_BULLET, TAPU_BULLET_FRAME, TAPU_BULLET_TIME, false);
-	ptr->box.Centered(associated.box.Center());
+	Bullet *bam = new Bullet(*ptr_bullet, angle, TAPU_BULLET_SPEED, TAPU_BULLET_DAMAGE * damageFactor, TAPU_BULLET_RANGE, TAPU_BULLET, TAPU_BULLET_END, TAPU_BULLET_FRAME, TAPU_BULLET_TIME, false);
+	ptr_bullet->box.Centered(associated.box.Center());
 	Vec2 offset(associated.box.w / 2, 0);
 	offset.Rotate(angle);
+	ptr_bullet->box.x += offset.x;
+	ptr_bullet->box.y += offset.y;
+	ptr_bullet->AddComponent(bam);
+
+	go = new GameObject();
+	shoot_fx = Game::GetInstance().GetCurrentState().AddObject(go);
+	ptr = shoot_fx.lock();
+
+	Sprite* sp = new Sprite(*ptr, TAPU_SHOOT, TAPU_SHOOT_FRAME, TAPU_SHOOT_TIME, TAPU_SHOOT_FRAME * TAPU_SHOOT_TIME);
+	sp->SetFrame(0);
+	ptr->AddComponent(sp);	
+	ptr->box.Centered(associated.box.Center());
 	ptr->box.x += offset.x;
 	ptr->box.y += offset.y;
-	ptr->AddComponent(bam);
+	shoot_fx_offset = offset;
+	ptr->angleDeg = angle/0.0174533;
+
+	shoot->PlayFadeIn(800);
 }
 
-void Tapu::SetDamageFactor(float factor){
+void Tapu::SetDamageFactor(float factor) {
 	damageFactor = factor;
+}
+
+float Tapu::GetDamageFactor() {
+
+	return damageFactor;
 }
 		
 void Tapu::NotifyCollision(GameObject &other)

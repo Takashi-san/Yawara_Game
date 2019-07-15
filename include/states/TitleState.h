@@ -14,12 +14,17 @@ class TitleState : public State
 {
 private:
 	GameObject* selection;
+	std::shared_ptr<GameObject> controlsgo;
 	enum Option { PLAY, OPTIONS, QUIT };
 	Option opt;
 	Music bgMusic;
 	Sprite* selectionSprite;
-	Sound *changeSelection, *play, *select;
+	Sound *changeSelection, *select;
 
+	float xpos[3], ypos;
+
+	Sprite* black;
+	Sprite* white;
 public:
 
 	TitleState();

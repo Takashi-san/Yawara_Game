@@ -10,23 +10,41 @@
 #include "Tongue.h"
 #include "Sound.h"
 #include "Tapu.h"
+#include "Bullet.h"
 #include "Hitbox.h"
+#include "MapColision.h"
 
 #define YWR_HP			100
 #define YWR_SPEED		500
-#define YWR_ATT			15
+#define YWR_ATT			30
 #define YWR_DEF			1
+#define YWR_HIT_COOL_DOWN 	1
+
+#define YWR_WALK_OFFSET 10
+#define YWR_WALK_RATIO	1
+
+#define YWR_ATK_CD		0.5
+#define YWR_HOWL_CD		0.5
 
 #define YWR_DGE_SPEED	2000
 #define YWR_DGE_CD		0.5
 #define YWR_DGE_ACT		0.2
 
-#define YWR_ATK_CD		0.5
+#define YWR_DGE 		"assets/img/yawara/yawara_dash.png"
+#define YWR_DGE_FRAME 	5
+#define YWR_DGE_TIME	0.04
+#define YWR_DASH_SOUND		"assets/audio/sons/yawara/dash.ogg"
 
-#define YWR_HOWL_CD		0.5
+#define YWR_SIT_GO		5
+#define YWR_SIT_FRAME	4
+#define YWR_SIT_TIME	0.1
+#define YWR_SIT_R 		"assets/img/yawara/yawara_sit_right.png"
+#define YWR_SIT_L 		"assets/img/yawara/yawara_sit_left.png"
 
-
-#define YWR_IDLE_FRAME		1
+#define YWR_IDLE_FRAME		5
+#define YWR_IDLE_FRAME_LR	4
+#define YWR_IDLE_FRAME_D	6
+#define YWR_IDLE_TIME		0.1
 #define YWR_IDLE_D			"assets/img/yawara/yawara_idle_down.png"
 #define YWR_IDLE_U			"assets/img/yawara/yawara_idle_up.png"
 #define YWR_IDLE_L			"assets/img/yawara/yawara_idle_left.png"
@@ -52,16 +70,17 @@
 #define YWR_BITE_FX			"assets/img/yawara/yawara_bite.png"
 #define YWR_BITE_FX_RADIUS	100
 
+#define YWR_BITE_SOUND		"assets/audio/sons/yawara/yawara_bite.ogg"
 #define YWR_BITE_FRAME		5
 #define YWR_BITE_TIME		0.07
-#define YWR_BITE_D			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_U			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_D			"assets/img/yawara/yawara_bite_down.png"
+#define YWR_BITE_U			"assets/img/yawara/yawara_bite_up.png"
 #define YWR_BITE_L			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_R			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_DL			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_DR			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_UL			"assets/img/yawara/yawara_bite_left.png"
-#define YWR_BITE_UR			"assets/img/yawara/yawara_bite_left.png"
+#define YWR_BITE_R			"assets/img/yawara/yawara_bite_right.png"
+#define YWR_BITE_DL			"assets/img/yawara/yawara_bite_down_left.png"
+#define YWR_BITE_DR			"assets/img/yawara/yawara_bite_down_right.png"
+#define YWR_BITE_UL			"assets/img/yawara/yawara_bite_up_left.png"
+#define YWR_BITE_UR			"assets/img/yawara/yawara_bite_up_right.png"
 
 #define YWR_HOWL_FRAME		5
 #define YWR_HOWL_TIME		0.07
@@ -75,22 +94,30 @@
 #define YWR_HOWL_UL			
 #define YWR_HOWL_UR			
 
-#define YWR_DEATH_FRAME	4
-#define YWR_DEATH		"assets/img/yawara/yawara_death_right.png"
-#define YWR_DEATH_SOUND	"assets/penguin/audio/boom.wav"
+#define YWR_DEATH_FRAME		4
+#define YWR_DEATH_TIME		0.1
+#define YWR_DEATH_EXTRA		2
+#define YWR_DEATH_R			"assets/img/yawara/yawara_death_right.png"
+#define YWR_DEATH_L			"assets/img/yawara/yawara_death_left.png"
+
+#define YWR_HIT_SOUND		"assets/audio/sons/yawara/yawara_hit.ogg"
 
 Yawara* Yawara::player;
 
 Yawara::Yawara(GameObject& associated) : Component(associated) {
 	player = this;
 
-	Sprite* sp = new Sprite(associated, YWR_IDLE_R, YWR_IDLE_FRAME, YWR_RUN_TIME);
+	Sprite* sp = new Sprite(associated, YWR_IDLE_R, YWR_IDLE_FRAME_LR, YWR_IDLE_TIME);
 	associated.AddComponent(sp);
 	Collider *cl = new Collider(associated);
 	associated.AddComponent(cl);
 
-	//sp->SetScale({0.7, 0.7});
-	//cl->SetScale({0.7, 0.7});
+	bite = new Sound(associated, YWR_BITE_SOUND);
+	associated.AddComponent(bite);
+	hit_scream = new Sound(associated, YWR_HIT_SOUND);
+	associated.AddComponent(hit_scream);
+	dash_sound = new Sound(associated, YWR_DASH_SOUND);
+	associated.AddComponent(dash_sound);
 
 	hp = YWR_HP;
 	att = YWR_ATT;
@@ -100,6 +127,8 @@ Yawara::Yawara(GameObject& associated) : Component(associated) {
 	act = MOV;
 	idle = true;
 	hitTime.Restart();
+	gotHit = false;
+	isDead = false;
 
 	boostMap[HPBOOST] = {false, 1};
 	boostMap[DEFBOOST] = {false, 1};
@@ -112,12 +141,27 @@ Yawara::~Yawara() {
 
 void Yawara::Start() {
 	// Gera efeito uivo.
-	GameObject *go = new GameObject();
+	GameObject* go = new GameObject();
 	std::weak_ptr<GameObject> weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
 	std::shared_ptr<GameObject> ptr = weak_ptr.lock();
 
 	howl = new Howl(*ptr);
 	ptr->AddComponent(howl);
+	
+	// Gera hurtbox de caminhada do yawara.
+	go = new GameObject();
+	weak_ptr = Game::GetInstance().GetCurrentState().AddObject(go);
+	ptr = weak_ptr.lock();
+	walk = weak_ptr;
+
+	ptr->box.w = associated.box.w*0.90;
+	walkbase = associated.box.w*0.9;
+	ptr->box.h = associated.box.h/3 + YWR_WALK_OFFSET;
+	ptr->box.Centered(associated.box.Center());
+	walkdif = ptr->box.y - associated.box.y;
+	ptr->box.y = ptr->box.y + walkdif;
+	Collider *cl = new Collider(*ptr);
+	ptr->AddComponent(cl);
 
 	// Gera Tapu.
 	go = new GameObject();
@@ -127,10 +171,11 @@ void Yawara::Start() {
 
 	Tapu* tp = new Tapu(*ptr, Game::GetInstance().GetCurrentState().GetObjectPtr(&associated));
 	ptr->AddComponent(tp);
+
+	player = this;
 }
 
 void Yawara::Render() {
-	
 }
 
 bool Yawara::Is(std::string type) {
@@ -140,15 +185,24 @@ bool Yawara::Is(std::string type) {
 void Yawara::NotifyCollision(GameObject& other) {
 	Hitbox *hitbox = static_cast<Hitbox *>(other.GetComponent("Hitbox"));
 	
-	if (hitbox && hitbox->targetsPlayer && hitTime.Get() >= HIT_COOL_DOWN)
+	if (((hitbox && hitbox->targetsPlayer) || (other.GetComponent("Bullet") && static_cast<Bullet *>(other.GetComponent("Bullet"))->targetsPlayer)) && hitTime.Get() >= YWR_HIT_COOL_DOWN)
 	{
 		float defended = def - 1;
 
 		if(defended > 1)
 			defended = 1;
 		
-		hp -= (1 - defended) * hitbox->GetDamage();
+		if(hitbox)
+			hp -= (1 - defended) * hitbox->GetDamage();
+		else
+			hp -= (1 - defended) * static_cast<Bullet *>(other.GetComponent("Bullet"))->GetDamage();
 		hitTime.Restart();
+		if (!isDead) {
+			gotHit = true;
+			if (hit_scream){
+				hit_scream->Play();
+			}
+		}
 	}
 }
 
@@ -172,6 +226,10 @@ int Yawara::GetMaxHP() {
 	return YWR_HP;
 }
 
+int Yawara::GetDirection() {
+	return dir;
+}
+
 void Yawara::Update(float dt) {
 	// Update cooldowns.
 	dge_cd.Update(dt);
@@ -181,41 +239,75 @@ void Yawara::Update(float dt) {
 
 	// Boosters.
 	if(boostMap[HPBOOST].isBoosted){
-		static Timer hpTimer;
-
-		if(hpTimer.Get() == 0)
-			hp = YWR_HP * boostMap[HPBOOST].factor;
-
-		hpTimer.Update(dt);
-
-		if(hpTimer.Get() >= 15){
-			hpTimer.Restart();
-
-			if(hp > YWR_HP)
-				hp = YWR_HP;
-
-			boostMap[HPBOOST] = {false, 1};
-		}
+		hp += (boostMap[HPBOOST].factor - 1) * YWR_HP;
+		boostMap[HPBOOST] = {false, 1};
 	}
 	if(boostMap[ATTBOOST].isBoosted){
-		static Timer attTimer;
-
-		if(attTimer.Get() == 0){
-			att = YWR_ATT * boostMap[ATTBOOST].factor;
-			std::shared_ptr<GameObject> tp_go = tapu.lock();
-			if(tp_go){
-				Tapu* tp =  static_cast<Tapu*> (tp_go->GetComponent("Tapu"));
-				if(tp)
-					tp->SetDamageFactor(boostMap[ATTBOOST].factor);
-			}
+		att += (boostMap[ATTBOOST].factor - 1) * YWR_ATT;
+		std::shared_ptr<GameObject> tp_go = tapu.lock();
+		if(tp_go){
+			Tapu* tp =  static_cast<Tapu*> (tp_go->GetComponent("Tapu"));
+			if(tp)
+				tp->SetDamageFactor(tp->GetDamageFactor() + (boostMap[ATTBOOST].factor - 1));
 		}
+		boostMap[ATTBOOST] = {false, 1};
+	}
+	if(boostMap[DEFBOOST].isBoosted){
+		def += (boostMap[DEFBOOST].factor - 1) * YWR_DEF;
+		boostMap[DEFBOOST] = {false, 1};
+	}
 
-		attTimer.Update(dt);
+	// Act or dead.
+	if (hp <= 0) {
+		static bool flag = true;
 
-		if(attTimer.Get() >= 15){
-			attTimer.Restart();
+		if (flag) {
+			flag = false;
+			isDead = true;
+			Camera::Unfollow();
+			
+			Vec2 pos = associated.box.Center();
+			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+			if (sp) {
+				switch (dir) {
+					case RIGHT:
+					case UP:
+					case UP_RIGHT:
+					case DOWN_RIGHT:
+						sp->Open(YWR_DEATH_R);
+					break;
+
+					case LEFT:
+					case DOWN:
+					case DOWN_LEFT:
+					case UP_LEFT:
+						sp->Open(YWR_DEATH_L);
+					break;
+
+					default:
+					break;
+				}
+				sp->SetFrameCount(YWR_DEATH_FRAME);
+				sp->SetFrameTime(YWR_DEATH_TIME);
+				sp->SetStopFrame(YWR_DEATH_FRAME - 1);
+				sp->SetSelfDestruct((YWR_DEATH_FRAME * YWR_DEATH_TIME) + YWR_DEATH_EXTRA);
+			}
+			associated.box.Centered(pos);
+		}
+	} else {
+		Comand(dt);
+		DoAction(dt);
+		static InputManager& input = InputManager::GetInstance();
+
+		if(input.KeyPress(SDLK_F1)) {
+			Boost(HPBOOST, 1.5);
+			Boost(DEFBOOST, 1.1);
+			Boost(ATTBOOST, 1.5);
+		}
+		if(input.KeyPress(SDLK_F2)) {
+			hp = YWR_HP;
+			def = YWR_DEF;
 			att = YWR_ATT;
-			boostMap[ATTBOOST] = {false, 1};
 			std::shared_ptr<GameObject> tp_go = tapu.lock();
 			if(tp_go){
 				Tapu* tp =  static_cast<Tapu*> (tp_go->GetComponent("Tapu"));
@@ -223,29 +315,36 @@ void Yawara::Update(float dt) {
 					tp->SetDamageFactor(1);
 			}
 		}
-	}
-	if(boostMap[DEFBOOST].isBoosted){
-		static Timer defTimer;
-
-		if(defTimer.Get() == 0)
-			def = YWR_DEF * boostMap[DEFBOOST].factor;
-
-		defTimer.Update(dt);
-
-		if(defTimer.Get() >= 15){
-			defTimer.Restart();
-			def = YWR_DEF;
-			boostMap[DEFBOOST] = {false, 1};
+		if(input.KeyPress(SDLK_F3)) {
+			hp = 0;
 		}
 	}
 
-	// Act or dead.
-	if (hp <= 0) {
-		Camera::Unfollow();
-		associated.RequestDelete();
-	} else {
-		Comand(dt);
-		DoAction(dt);
+	static Timer hitblink, blinkTimer;
+	static bool flag = true;
+
+	Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+	if (sp) {
+		if (gotHit) {
+			hitblink.Update(dt);
+			blinkTimer.Update(dt);
+			if (blinkTimer.Get() > YWR_HIT_COOL_DOWN/2) {
+				if (flag) {
+					sp->SetAlphaMod(0);
+				} else {
+					sp->SetAlphaMod(255);
+				}
+				flag = !flag;
+				blinkTimer.Restart();
+			}
+			if (hitblink.Get() > YWR_HIT_COOL_DOWN) {
+				gotHit = false;
+				flag = true;
+				hitblink.Restart();
+				blinkTimer.Restart();
+				sp->SetAlphaMod(255);
+			}
+		}
 	}
 }
 
@@ -350,7 +449,9 @@ void Yawara::Comand(float dt) {
 
 				// Change back sprite.
 				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
-				sp->SetFrameTime(YWR_RUN_TIME);
+				if (sp) {
+					sp->SetFrameTime(YWR_RUN_TIME);
+				}
 				change_sprite = true;
 
 				// Reset attack.
@@ -366,7 +467,9 @@ void Yawara::Comand(float dt) {
 
 				// Change back sprite.
 				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
-				sp->SetFrameTime(YWR_RUN_TIME);
+				if (sp) {
+					sp->SetFrameTime(YWR_RUN_TIME);
+				}
 				change_sprite = true;
 
 				// Return collider.
@@ -390,7 +493,9 @@ void Yawara::Comand(float dt) {
 
 				// Change back sprite.
 				Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
-				sp->SetFrameTime(YWR_RUN_TIME);
+				if (sp) {
+					sp->SetFrameTime(YWR_RUN_TIME);
+				}
 				change_sprite = true;
 
 				// Reset howl.
@@ -405,22 +510,84 @@ void Yawara::Comand(float dt) {
 }
 
 void Yawara::DoAction(float dt) {
+	static Timer sit;
+	static bool good_boy;
+	Vec2 pos;
+	
+	std::shared_ptr<GameObject> ptr = walk.lock();
+
 	switch (act) {
 		case MOV:
+			if (idle) {
+				sit.Update(dt);
+				if ((sit.Get() > YWR_SIT_GO) && !good_boy) {
+					pos = associated.box.Center();
+					Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
+					if (sp) {
+						switch (dir) {
+							case RIGHT:
+							case UP:
+							case UP_RIGHT:
+							case DOWN_RIGHT:
+								sp->Open(YWR_SIT_R);
+								dir = RIGHT;
+							break;
+
+							case LEFT:
+							case DOWN:
+							case DOWN_LEFT:
+							case UP_LEFT:
+								sp->Open(YWR_SIT_L);
+								dir = LEFT;
+							break;
+
+							default:
+							break;
+						}
+						sp->SetFrameCount(YWR_SIT_FRAME);
+						sp->SetFrameTime(YWR_SIT_TIME);
+						sp->SetStopFrame(YWR_SIT_FRAME - 1);
+					}
+					associated.box.Centered(pos);
+					sit.Restart();
+					good_boy = true;
+				}
+			} else {
+				sit.Restart();
+				good_boy = false;
+			}
+
 			SetMov();
-			associated.box.x += speed.x*dt;
-			associated.box.y += speed.y*dt;
+			if (ptr) {
+				pos = MapColision::GetInstance().Validate(ptr->box, speed, dt);
+				ptr->box.x = pos.x;
+				ptr->box.y = pos.y;
+				associated.box.Centered(ptr->box.Center());
+				associated.box.y = associated.box.y - walkdif;
+			}
 		break;
 
 		case ATK:
+			sit.Restart();
+			good_boy = false;
 		break;
 
 		case DGE:
-			associated.box.x += speed.x*dt;
-			associated.box.y += speed.y*dt;
+			sit.Restart();
+			good_boy = false;
+
+			if (ptr) {
+				pos = MapColision::GetInstance().Validate(ptr->box, speed, dt);
+				ptr->box.x = pos.x;
+				ptr->box.y = pos.y;
+				associated.box.Centered(ptr->box.Center());
+				associated.box.y = associated.box.y - walkdif;
+			}
 		break;
 
 		case HOWL:
+			sit.Restart();
+			good_boy = false;
 		break;
 
 		default:
@@ -436,93 +603,124 @@ void Yawara::SetMov() {
 			speed = {0, 0};
 			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 			if (sp) {
-				switch (dir) {
-					case RIGHT:
-						sp->Open(YWR_IDLE_R);
-					break;
+				std::shared_ptr<GameObject> ptr = walk.lock();
+				if (ptr) {
+					switch (dir) {
+						case RIGHT:
+							sp->Open(YWR_IDLE_R);
+							sp->SetFrameCount(YWR_IDLE_FRAME_LR);
+							ptr->box.w = walkbase;
+						break;
 
-					case LEFT:
-						sp->Open(YWR_IDLE_L);
-					break;
+						case LEFT:
+							sp->Open(YWR_IDLE_L);
+							sp->SetFrameCount(YWR_IDLE_FRAME_LR);
+							ptr->box.w = walkbase;
+						break;
 
-					case UP:
-						sp->Open(YWR_IDLE_U);
-					break;
+						case UP:
+							sp->Open(YWR_IDLE_U);
+							sp->SetFrameCount(YWR_IDLE_FRAME);
+							ptr->box.w = walkbase*YWR_WALK_RATIO;
+						break;
 
-					case DOWN:
-						sp->Open(YWR_IDLE_D);
-					break;
+						case DOWN:
+							sp->Open(YWR_IDLE_D);
+							sp->SetFrameCount(YWR_IDLE_FRAME_D);
+							ptr->box.w = walkbase*YWR_WALK_RATIO;
+						break;
 
-					case UP_RIGHT:
-						sp->Open(YWR_IDLE_UR);
-					break;
+						case UP_RIGHT:
+							sp->Open(YWR_IDLE_UR);
+							sp->SetFrameCount(YWR_IDLE_FRAME);
+							ptr->box.w = walkbase;
+						break;
 
-					case DOWN_RIGHT:
-						sp->Open(YWR_IDLE_DR);
-					break;
+						case DOWN_RIGHT:
+							sp->Open(YWR_IDLE_DR);
+							sp->SetFrameCount(YWR_IDLE_FRAME_D);
+							ptr->box.w = walkbase;
+						break;
 
-					case UP_LEFT:
-						sp->Open(YWR_IDLE_UL);
-					break;
+						case UP_LEFT:
+							sp->Open(YWR_IDLE_UL);
+							sp->SetFrameCount(YWR_IDLE_FRAME);
+							ptr->box.w = walkbase;
+						break;
 
-					case DOWN_LEFT:
-						sp->Open(YWR_IDLE_DL);
-					break;
+						case DOWN_LEFT:
+							sp->Open(YWR_IDLE_DL);
+							sp->SetFrameCount(YWR_IDLE_FRAME_D);
+							ptr->box.w = walkbase;
+						break;
 
-					default:
-					break;
+						default:
+						break;
+					}
+					sp->SetFrameTime(YWR_IDLE_TIME);
 				}
-				sp->SetFrameCount(YWR_IDLE_FRAME);
 			}
 		} else {
 			Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 			if (sp) {
-				switch (dir) {
-					case RIGHT:
-						speed = {YWR_SPEED, 0};
-						sp->Open(YWR_RUN_R);
-					break;
+				std::shared_ptr<GameObject> ptr = walk.lock();
+				if (ptr) {
+					switch (dir) {
+						case RIGHT:
+							speed = {YWR_SPEED, 0};
+							sp->Open(YWR_RUN_R);
+							ptr->box.w = walkbase;
+						break;
 
-					case LEFT:
-						speed = {-YWR_SPEED, 0};
-						sp->Open(YWR_RUN_L);
-					break;
+						case LEFT:
+							speed = {-YWR_SPEED, 0};
+							sp->Open(YWR_RUN_L);
+							ptr->box.w = walkbase;
+						break;
 
-					case DOWN:
-						speed = {0, YWR_SPEED};
-						sp->Open(YWR_RUN_D);
-					break;
+						case DOWN:
+							speed = {0, YWR_SPEED};
+							sp->Open(YWR_RUN_D);
+							ptr->box.w = walkbase*YWR_WALK_RATIO;
+						break;
 
-					case DOWN_RIGHT:
-						speed = {YWR_SPEED/2, YWR_SPEED/2};
-						sp->Open(YWR_RUN_DR);
-					break;
+						case DOWN_RIGHT:
+							speed = {YWR_SPEED/2, YWR_SPEED/2};
+							sp->Open(YWR_RUN_DR);
+							ptr->box.w = walkbase;
+						break;
 
-					case DOWN_LEFT:
-						speed = {-YWR_SPEED/2, YWR_SPEED/2};
-						sp->Open(YWR_RUN_DL);
-					break;
+						case DOWN_LEFT:
+							speed = {-YWR_SPEED/2, YWR_SPEED/2};
+							sp->Open(YWR_RUN_DL);
+							ptr->box.w = walkbase;
+						break;
 
-					case UP:
-						speed = {0, -YWR_SPEED};
-						sp->Open(YWR_RUN_U);
-					break;
+						case UP:
+							speed = {0, -YWR_SPEED};
+							sp->Open(YWR_RUN_U);
+							ptr->box.w = walkbase*YWR_WALK_RATIO;
+						break;
 
-					case UP_RIGHT:
-						speed = {YWR_SPEED/2, -YWR_SPEED/2};
-						sp->Open(YWR_RUN_UR);
-					break;
+						case UP_RIGHT:
+							speed = {YWR_SPEED/2, -YWR_SPEED/2};
+							sp->Open(YWR_RUN_UR);
+							ptr->box.w = walkbase;
+						break;
 
-					case UP_LEFT:
-						speed = {-YWR_SPEED/2, -YWR_SPEED/2};
-						sp->Open(YWR_RUN_UL);
-					break;
+						case UP_LEFT:
+							speed = {-YWR_SPEED/2, -YWR_SPEED/2};
+							sp->Open(YWR_RUN_UL);
+							ptr->box.w = walkbase;
+						break;
 
-					default:
-						speed = {0, 0};
-					break;
+						default:
+							speed = {0, 0};
+						break;
+					}
+					sp->SetFrameCount(YWR_RUN_FRAME);
+					sp->SetFrameTime(YWR_RUN_TIME);
 				}
-				sp->SetFrameCount(YWR_RUN_FRAME);
 			}
 		}
 		associated.box.Centered(position);
@@ -534,56 +732,62 @@ void Yawara::SetDge() {
 	
 	Sprite* sp = static_cast<Sprite*>(associated.GetComponent("Sprite"));
 	if (sp) {
-		sp->Open("assets/penguin/img/dash.png");
-		sp->SetFrameCount(4);
-		sp->SetFrameTime(0.04);
-		switch (dir) {
-			case RIGHT:
-				speed = {YWR_DGE_SPEED, 0};
-				associated.angleDeg = 0;
-			break;
+		std::shared_ptr<GameObject> ptr = walk.lock();
+		if (ptr) {
+			ptr->box.w = walkbase*YWR_WALK_RATIO;
+			sp->Open(YWR_DGE);
+			sp->SetFrameCount(YWR_DGE_FRAME);
+			sp->SetFrameTime(YWR_DGE_TIME);
+			switch (dir) {
+				case RIGHT:
+					speed = {YWR_DGE_SPEED, 0};
+					associated.angleDeg = 0;
+				break;
 
-			case LEFT:
-				speed = {-YWR_DGE_SPEED, 0};
-				associated.angleDeg = 180;
-			break;
+				case LEFT:
+					speed = {-YWR_DGE_SPEED, 0};
+					associated.angleDeg = 180;
+				break;
 
-			case DOWN:
-				speed = {0, YWR_DGE_SPEED};
-				associated.angleDeg = 90;
-			break;
+				case DOWN:
+					speed = {0, YWR_DGE_SPEED};
+					associated.angleDeg = 90;
+				break;
 
-			case DOWN_RIGHT:
-				speed = {YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
-				associated.angleDeg = 45;
-			break;
+				case DOWN_RIGHT:
+					speed = {YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
+					associated.angleDeg = 45;
+				break;
 
-			case DOWN_LEFT:
-				speed = {-YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
-				associated.angleDeg = 135;
-			break;
+				case DOWN_LEFT:
+					speed = {-YWR_DGE_SPEED/2, YWR_DGE_SPEED/2};
+					associated.angleDeg = 135;
+				break;
 
-			case UP:
-				speed = {0, -YWR_DGE_SPEED};
-				associated.angleDeg = 270;
-			break;
+				case UP:
+					speed = {0, -YWR_DGE_SPEED};
+					associated.angleDeg = 270;
+				break;
 
-			case UP_RIGHT:
-				speed = {YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
-				associated.angleDeg = 315;
-			break;
+				case UP_RIGHT:
+					speed = {YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
+					associated.angleDeg = 315;
+				break;
 
-			case UP_LEFT:
-				speed = {-YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
-				associated.angleDeg = 225;
-			break;
+				case UP_LEFT:
+					speed = {-YWR_DGE_SPEED/2, -YWR_DGE_SPEED/2};
+					associated.angleDeg = 225;
+				break;
 
-			default:
-				speed = {0, 0};
-			break;
+				default:
+					speed = {0, 0};
+				break;
+			}
 		}
 	}
 	associated.box.Centered(position);
+
+	dash_sound->Play(1, 130);
 }
 
 void Yawara::SetAtk() {
@@ -678,6 +882,8 @@ void Yawara::SetAtk() {
 		}
 		associated.box.Centered(position);
 	}
+
+	bite->Play();
 }
 
 void Yawara::SetHowl() {
@@ -696,6 +902,7 @@ void Yawara::SetHowl() {
 			case DOWN_RIGHT:
 			case UP_RIGHT:
 				sp->Open(YWR_HOWL_R);
+				dir = RIGHT;
 			break;
 
 			case LEFT:
@@ -703,6 +910,7 @@ void Yawara::SetHowl() {
 			case DOWN_LEFT:
 			case UP_LEFT:
 				sp->Open(YWR_HOWL_L);
+				dir = LEFT;
 			break;
 
 			default:

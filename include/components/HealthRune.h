@@ -12,15 +12,19 @@ class HealthRune : public Item
 {
 private:
     float hpFactor;
-    Sprite* sp, *top_layer_sprite;
+    Sprite* sp, *top_layer_sprite, *ressonance;
     Sound* activationSound;
 
 public:
-    HealthRune(GameObject&, float);
+    enum Color {DARK = 0, MEDIUM, LIGHT};
+
+    HealthRune(GameObject&, float, Color = DARK);
     
     void Update(float);
     void Render();
     bool Is(std::string);
 
     void Start();
+
+    void ChangeColor(Color);
 };

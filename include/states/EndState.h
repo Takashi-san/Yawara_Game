@@ -2,6 +2,8 @@
 
 #include "State.h"
 #include "Music.h"
+#include "Sound.h"
+#include "Sprite.h"
 
 #include <string>
 #include <iostream>
@@ -24,4 +26,12 @@ public:
 
 private:
 	Music bgMusic;
+	GameObject* selection;
+
+	enum Option {NEWGAME, QUIT};
+	Option Opt;
+
+	float xpos[2], ypos;
+	Sound *changeSelection, *select;
+	Sprite *selectionSprite;
 };

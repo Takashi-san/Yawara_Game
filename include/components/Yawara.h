@@ -5,6 +5,8 @@
 #include "Vec2.h"
 #include "Timer.h"
 #include "Howl.h"
+#include "Sound.h"
+#include "Sprite.h"
 
 #include <string>
 #include <iostream>
@@ -12,10 +14,6 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
-
-#define SAFE_DISTANCE_UP 16 * 0.7
-#define SAFE_DISTANCE_DOWN 48 * 0.7
-#define HIT_COOL_DOWN 1
 
 class Yawara : public Component{
 private:
@@ -34,6 +32,9 @@ private:
 	int safeY;
 
 	std::weak_ptr<GameObject> tapu;
+	std::weak_ptr<GameObject> walk;
+	std::weak_ptr<GameObject> shadow_ptr;
+	Sprite* shadow;
 
 	typedef struct
 	{
@@ -44,6 +45,14 @@ private:
 	std::unordered_map<int, boosters> boostMap;
 
 	Howl* howl;
+	Sound* bite;
+	Sound* hit_scream;
+	Sound* dash_sound;
+
+	bool gotHit;
+	bool isDead;
+	float walkdif;
+	float walkbase;
 
 	void Comand(float);
 	void DoAction(float);
@@ -76,6 +85,7 @@ public:
 	Vec2 GetCenterPos();
 	int GetHP();
 	int GetMaxHP();
+	int GetDirection();
 
 	enum Boosts { HPBOOST, ATTBOOST, DEFBOOST };
 

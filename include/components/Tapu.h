@@ -3,6 +3,8 @@
 #include "Component.h"
 #include "GameObject.h"
 #include "Vec2.h"
+#include "Sprite.h"
+#include "Sound.h"
 
 #include <string>
 #include <iostream>
@@ -20,9 +22,12 @@ class Tapu : public Component
         bool changedDir;
 
         std::weak_ptr<GameObject> shadow_ptr;
+        std::weak_ptr<GameObject> shoot_fx;
+        Vec2 shoot_fx_offset;
 
         float damageFactor;
 
+        Sound* shoot;
     public:
         Tapu(GameObject &, std::weak_ptr<GameObject>);
 
@@ -35,4 +40,5 @@ class Tapu : public Component
         void Shoot();
 
         void SetDamageFactor(float);
+        float GetDamageFactor();
 };

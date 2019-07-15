@@ -12,7 +12,7 @@ class DefenseRune : public Item
 {
 private:
     float defFactor;
-    Sprite* sp;
+    Sprite* sp, *top_layer_sprite;
     Sound* activationSound;
 
 public:
